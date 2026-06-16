@@ -133,6 +133,12 @@ async function uploadFile(url, filePath) {
   });
 }
 
+function delay(ms) {
+  return new Promise((resolveDelay) => {
+    setTimeout(resolveDelay, ms);
+  });
+}
+
 function findExistingApp() {
   const apps = awsJson(['list-apps']).apps || [];
   return apps.find((app) => app.name === config.appName);
@@ -232,19 +238,31 @@ function waitForJob(appId, branchName, jobId) {
 }
 
 async function deployZip(appId, branchName, zipPath) {
-  const deployment = awsJson(['create-deployment', '--app-id', appId, '--branch-name', branchName]);
-  console.log(`Uploading ${branchName} artifact`);
-  await uploadFile(deployment.zipUploadUrl, zipPath);
-  const job = awsJson([
-    'start-deployment',
-    '--app-id',
-    appId,
-    '--branch-name',
-    branchName,
-    '--job-id',
-    deployment.jobId,
-  ]).jobSummary;
-  waitForJob(appId, branchName, job.jobId);
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const deployment = awsJson(['create-deployment', '--app-id', appId, '--branch-name', branchName]);
+      console.log(`Uploading ${branchName} artifact${attempt > 1 ? ` (attempt ${attempt})` : ''}`);
+      await uploadFile(deployment.zipUploadUrl, zipPath);
+      const job = awsJson([
+        'start-deployment',
+        '--app-id',
+        appId,
+        '--branch-name',
+        branchName,
+        '--job-id',
+        deployment.jobId,
+      ]).jobSummary;
+      waitForJob(appId, branchName, job.jobId);
+      return;
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        throw error;
+      }
+      console.warn(`  ${branchName} upload/deploy attempt ${attempt} failed: ${error.message}`);
+      await delay(3000 * attempt);
+    }
+  }
 }
 
 function addWorktree(sourceRef, name) {
