@@ -274,11 +274,22 @@ function removeWorktree(path) {
   run('git', ['worktree', 'remove', '--force', path]);
 }
 
+function runBranchBuild(worktree) {
+  try {
+    run('npm', ['run', 'build'], { cwd: worktree });
+  } catch (error) {
+    console.warn(`Build failed with shared dependencies: ${error.message}`);
+    console.warn('Installing branch-local dependencies and retrying build.');
+    run('npm', ['install', '--no-audit', '--no-fund'], { cwd: worktree });
+    run('npm', ['run', 'build'], { cwd: worktree });
+  }
+}
+
 function buildBranch(branch) {
   const worktree = addWorktree(branch.sourceRef, branch.deployBranch);
   try {
     console.log(`Building ${branch.sourceRef}`);
-    run('npm', ['run', 'build'], { cwd: worktree });
+    runBranchBuild(worktree);
     const distDir = join(worktree, 'dist');
     if (!existsSync(join(distDir, 'index.html'))) {
       throw new Error(`${branch.sourceRef} did not produce dist/index.html`);
