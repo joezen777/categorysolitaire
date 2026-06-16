@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-import { createReadStream, existsSync, mkdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { request as httpRequest } from 'node:http';
-import { request as httpsRequest } from 'node:https';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
@@ -98,39 +96,22 @@ function zipDirectory(sourceDir, zipPath) {
 }
 
 async function uploadFile(url, filePath) {
-  const parsed = new URL(url);
-  const requestImpl = parsed.protocol === 'http:' ? httpRequest : httpsRequest;
-  const size = statSync(filePath).size;
-
-  await new Promise((resolveUpload, rejectUpload) => {
-    const req = requestImpl(
-      parsed,
-      {
-        method: 'PUT',
-        headers: {
-          'content-type': 'application/zip',
-          'content-length': size,
-        },
-      },
-      (res) => {
-        let body = '';
-        res.setEncoding('utf8');
-        res.on('data', (chunk) => {
-          body += chunk;
-        });
-        res.on('end', () => {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            resolveUpload();
-          } else {
-            rejectUpload(new Error(`Upload failed with HTTP ${res.statusCode}: ${body}`));
-          }
-        });
-      },
-    );
-
-    req.on('error', rejectUpload);
-    createReadStream(filePath).pipe(req);
-  });
+  run(
+    'curl',
+    [
+      '--fail',
+      '--silent',
+      '--show-error',
+      '--request',
+      'PUT',
+      '--header',
+      'content-type: application/zip',
+      '--upload-file',
+      filePath,
+      url,
+    ],
+    { capture: true },
+  );
 }
 
 function delay(ms) {
@@ -237,10 +218,27 @@ function waitForJob(appId, branchName, jobId) {
   }
 }
 
+function settlePreviousJobs(appId, branchName) {
+  const jobs = awsJson(['list-jobs', '--app-id', appId, '--branch-name', branchName]).jobSummaries || [];
+  const cancellable = new Set(['CREATED', 'PENDING']);
+  const waitable = new Set(['PROVISIONING', 'RUNNING']);
+
+  for (const job of jobs) {
+    if (cancellable.has(job.status)) {
+      console.log(`  stopping stale ${branchName} job ${job.jobId}: ${job.status}`);
+      awsJson(['stop-job', '--app-id', appId, '--branch-name', branchName, '--job-id', job.jobId]);
+    } else if (waitable.has(job.status)) {
+      console.log(`  waiting for active ${branchName} job ${job.jobId}: ${job.status}`);
+      waitForJob(appId, branchName, job.jobId);
+    }
+  }
+}
+
 async function deployZip(appId, branchName, zipPath) {
   const maxAttempts = 3;
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
+      settlePreviousJobs(appId, branchName);
       const deployment = awsJson(['create-deployment', '--app-id', appId, '--branch-name', branchName]);
       console.log(`Uploading ${branchName} artifact${attempt > 1 ? ` (attempt ${attempt})` : ''}`);
       await uploadFile(deployment.zipUploadUrl, zipPath);
