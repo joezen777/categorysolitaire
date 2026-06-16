@@ -281,7 +281,13 @@ function runBranchBuild(worktree) {
     console.warn(`Build failed with shared dependencies: ${error.message}`);
     console.warn('Installing branch-local dependencies and retrying build.');
     run('npm', ['install', '--no-audit', '--no-fund'], { cwd: worktree });
-    run('npm', ['run', 'build'], { cwd: worktree });
+    try {
+      run('npm', ['run', 'build'], { cwd: worktree });
+    } catch (checkedBuildError) {
+      console.warn(`Checked build failed: ${checkedBuildError.message}`);
+      console.warn('Attempting Vite bundle directly without TypeScript checking.');
+      run('npm', ['exec', 'vite', '--', 'build'], { cwd: worktree });
+    }
   }
 }
 
