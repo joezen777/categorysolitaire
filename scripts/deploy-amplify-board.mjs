@@ -190,7 +190,7 @@ function branchExists(appId, branchName) {
   return result.status === 0;
 }
 
-function ensureBranch(appId, branchName, displayName, stage = 'EXPERIMENTAL') {
+function ensureBranch(appId, branchName, displayName = branchName, stage = 'EXPERIMENTAL') {
   if (branchExists(appId, branchName)) {
     console.log(`Using existing branch ${branchName}`);
     return;
@@ -514,7 +514,7 @@ async function main() {
     deployedBranches.push({ ...branch, url });
 
     if (!skipAws) {
-      ensureBranch(app.appId, branch.deployBranch, branch.label);
+      ensureBranch(app.appId, branch.deployBranch, branch.deployBranch);
       await deployZip(app.appId, branch.deployBranch, zipPath);
     }
   }
@@ -522,7 +522,7 @@ async function main() {
   const dashboardUrl = `https://${config.dashboardBranch}.${app.defaultDomain}/`;
   const dashboardZip = buildDashboard(app, deployedBranches);
   if (!skipAws) {
-    ensureBranch(app.appId, config.dashboardBranch, 'Dashboard', 'PRODUCTION');
+    ensureBranch(app.appId, config.dashboardBranch, config.dashboardBranch, 'PRODUCTION');
     await deployZip(app.appId, config.dashboardBranch, dashboardZip);
   }
 
