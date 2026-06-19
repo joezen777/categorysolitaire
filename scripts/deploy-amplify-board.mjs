@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 const config = {
   appName: process.env.AMPLIFY_APP_NAME || 'categorysolitaire-vibe-board',
   dashboardBranch: 'dashboard',
+  region: process.env.AWS_REGION,
   branches: [
     { sourceRef: 'origin/claude.vibe', deployBranch: 'claude-vibe', label: 'Claude Vibe' },
     { sourceRef: 'origin/codex.vibe', deployBranch: 'codex-vibe', label: 'Codex Vibe' },
@@ -46,8 +47,6 @@ function aws(args, options = {}) {
   const fullArgs = [
     'amplify',
     ...args,
-    '--profile',
-    config.profile,
     '--region',
     config.region,
     '--output',
