@@ -2,6 +2,7 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { collectMetrics, createNullMetrics } from './collect-metrics.mjs';
 
 const config = {
   appName: process.env.AMPLIFY_APP_NAME || 'categorysolitaire-vibe-board',
@@ -290,19 +291,16 @@ function runBranchBuild(worktree) {
 
 function buildBranch(branch) {
   const worktree = addWorktree(branch.sourceRef, branch.deployBranch);
-  try {
-    console.log(`Building ${branch.sourceRef}`);
-    runBranchBuild(worktree);
-    const distDir = join(worktree, 'dist');
-    if (!existsSync(join(distDir, 'index.html'))) {
-      throw new Error(`${branch.sourceRef} did not produce dist/index.html`);
-    }
-    const zipPath = join(artifactDir, `${branch.deployBranch}.zip`);
-    zipDirectory(distDir, zipPath);
-    return zipPath;
-  } finally {
+  console.log(`Building ${branch.sourceRef}`);
+  runBranchBuild(worktree);
+  const distDir = join(worktree, 'dist');
+  if (!existsSync(join(distDir, 'index.html'))) {
     removeWorktree(worktree);
+    throw new Error(`${branch.sourceRef} did not produce dist/index.html`);
   }
+  const zipPath = join(artifactDir, `${branch.deployBranch}.zip`);
+  zipDirectory(distDir, zipPath);
+  return { zipPath, worktreePath: worktree };
 }
 
 function htmlEscape(value) {
@@ -314,201 +312,428 @@ function htmlEscape(value) {
     .replaceAll("'", '&#39;');
 }
 
+// ---------------------------------------------------------------------------
+// Baseball Card Configuration
+// ---------------------------------------------------------------------------
+
+const STAT_GROUPS = {
+  Code: [
+    { key: 'sloc', abbr: 'SLoC', label: 'Source Lines of Code', desc: 'Total non-blank, non-comment lines of source code.' },
+    { key: 'fileCount', abbr: 'Files', label: 'File Count', desc: 'Number of source files in the project.' },
+    { key: 'avgFileSize', abbr: 'Avg', label: 'Average File Size', desc: 'Mean number of lines per source file.' },
+    { key: 'bundleSize', abbr: 'Bndl', label: 'Bundle Size (KB)', desc: 'Total size of the production build output.' },
+  ],
+  Quality: [
+    { key: 'maintainability', abbr: 'MI', label: 'Maintainability Index', desc: 'Composite score (0-100) indicating how maintainable the code is.' },
+    { key: 'maxComplexity', abbr: 'Cplx', label: 'Max Cyclomatic Complexity', desc: 'Highest complexity score of any single function.' },
+    { key: 'duplication', abbr: 'Dup%', label: 'Duplication Percentage', desc: 'Percentage of code that appears in more than one location.' },
+  ],
+  Health: [
+    { key: 'securityIssues', abbr: 'SecI', label: 'Security Issues', desc: 'Number of known vulnerabilities in dependencies.' },
+    { key: 'tsErrors', abbr: 'TSE', label: 'TypeScript Errors', desc: 'Compilation errors under strict TypeScript mode.' },
+    { key: 'unusedExports', abbr: 'UExp', label: 'Unused Exports', desc: 'Exported symbols not imported anywhere in the project.' },
+  ],
+  Process: [
+    { key: 'commits', abbr: 'Cmts', label: 'Commit Count', desc: 'Total number of git commits on the branch.' },
+    { key: 'churn', abbr: 'Chrn', label: 'Code Churn', desc: 'Sum of lines added and deleted across all commits.' },
+    { key: 'coverage', abbr: 'Cov%', label: 'Test Coverage', desc: 'Percentage of source lines exercised by tests.' },
+  ],
+  UX: [
+    { key: 'lighthouseA11y', abbr: 'LhA', label: 'Lighthouse Accessibility', desc: 'Automated accessibility audit score (0-100).' },
+  ],
+  Dependencies: [
+    { key: 'depCount', abbr: 'Deps', label: 'Dependency Count', desc: 'Total number of runtime and dev dependencies.' },
+    { key: 'bundleWeight', abbr: 'Bwt', label: 'Bundle Weight (KB)', desc: 'Total JavaScript bundle size shipped to browser.' },
+  ],
+};
+
+// 8-bit pixel-art SVG logos (inline, max 25% card width)
+const CLAUDE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="card-logo"><rect x="4" y="4" width="24" height="24" rx="4" fill="#D97757"/><rect x="8" y="10" width="4" height="4" fill="#fff"/><rect x="20" y="10" width="4" height="4" fill="#fff"/><rect x="10" y="18" width="12" height="3" rx="1" fill="#fff"/><rect x="12" y="8" width="8" height="2" fill="#fff" opacity="0.5"/></svg>`;
+
+const CODEX_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="card-logo"><rect x="4" y="4" width="24" height="24" rx="4" fill="#10A37F"/><rect x="8" y="8" width="6" height="6" fill="#fff"/><rect x="18" y="8" width="6" height="6" fill="#fff"/><rect x="8" y="18" width="16" height="6" rx="2" fill="#fff"/><rect x="14" y="12" width="4" height="4" fill="#10A37F"/></svg>`;
+
+const CEREBRAS_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="card-logo"><rect x="4" y="4" width="24" height="24" rx="4" fill="#007ACC"/><rect x="8" y="8" width="4" height="16" fill="#fff"/><rect x="12" y="8" width="4" height="4" fill="#fff"/><rect x="12" y="14" width="4" height="4" fill="#fff"/><rect x="16" y="8" width="4" height="4" fill="#fff"/><rect x="20" y="8" width="4" height="16" fill="#fff"/></svg>`;
+
+const KIRO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="card-logo"><rect x="4" y="4" width="24" height="24" rx="4" fill="#FF9900"/><rect x="8" y="8" width="4" height="16" fill="#fff"/><rect x="14" y="8" width="4" height="4" fill="#fff"/><rect x="14" y="14" width="4" height="4" fill="#fff"/><rect x="18" y="8" width="6" height="4" fill="#fff"/><rect x="18" y="20" width="6" height="4" fill="#fff"/><rect x="20" y="12" width="4" height="8" fill="#fff"/></svg>`;
+
+const BRANCH_CONFIG = {
+  'claude-vibe': { llm: 'Claude', paradigm: 'Vibe', ide: 'Claude CLI', logo: CLAUDE_SVG },
+  'codex-vibe': { llm: 'Codex', paradigm: 'Vibe', ide: 'Codex', logo: CODEX_SVG },
+  'cerebras-vibe': { llm: 'Cerebras', paradigm: 'Vibe', ide: 'VSCode Extension', logo: CEREBRAS_SVG },
+  'develop-kiro-vibe': { llm: 'Kiro', paradigm: 'Vibe', ide: 'Kiro', logo: KIRO_SVG },
+};
+
+/**
+ * Formats a metric value for display; null renders as "—" (dash).
+ */
+function formatMetric(value) {
+  if (value === null || value === undefined) return '—';
+  return String(value);
+}
+
+/**
+ * Renders the stat groups for a card as HTML.
+ */
+function renderStatGroups(metrics, cardIndex) {
+  const groups = Object.entries(STAT_GROUPS).map(([groupName, stats]) => {
+    const statItems = stats.map(stat => {
+      const value = metrics ? metrics[stat.key] : null;
+      const tipId = `tip-${cardIndex}-${stat.key}`;
+      return `
+            <div class="stat-item">
+              <button class="stat-label" aria-describedby="${tipId}" data-tip="${tipId}">${htmlEscape(stat.abbr)}</button>
+              <div id="${tipId}" role="tooltip" class="stat-tooltip" aria-hidden="true">
+                <strong>${htmlEscape(stat.label)}</strong>
+                <span>${htmlEscape(stat.desc)}</span>
+              </div>
+              <span class="stat-value">${formatMetric(value)}</span>
+            </div>`;
+    }).join('');
+
+    return `
+          <div class="stat-group">
+            <h3 class="stat-group-heading">${htmlEscape(groupName)}</h3>
+            ${statItems}
+          </div>`;
+  }).join('');
+
+  return groups;
+}
+
+/**
+ * Renders the full baseball card dashboard as a self-contained HTML string.
+ * No external stylesheets, scripts, images, or fetch calls.
+ */
 function renderDashboard(app, deployedBranches) {
-  const cards = deployedBranches
-    .map(
-      (branch) => `
-        <article class="branch-card">
-          <div>
-            <p class="eyebrow">${htmlEscape(branch.deployBranch)}</p>
-            <h2>${htmlEscape(branch.label)}</h2>
-            <p>${htmlEscape(branch.message)}</p>
+  const cards = deployedBranches.map((branch, index) => {
+    const branchConfig = BRANCH_CONFIG[branch.deployBranch] || {
+      llm: branch.label || branch.deployBranch,
+      paradigm: 'Vibe',
+      ide: 'Unknown',
+      logo: KIRO_SVG,
+    };
+
+    const statGroupsHtml = renderStatGroups(branch.metrics, index);
+
+    return `
+      <article class="baseball-card" data-card-index="${index}">
+        <div class="card-header">
+          <div class="card-logo-container">
+            ${branchConfig.logo}
           </div>
-          <dl>
-            <div><dt>Source</dt><dd>${htmlEscape(branch.sourceRef.replace('origin/', ''))}</dd></div>
-            <div><dt>Commit</dt><dd>${htmlEscape(branch.commit)}</dd></div>
-          </dl>
-          <a href="${branch.url}" target="_blank" rel="noreferrer">Open app</a>
-        </article>`,
-    )
-    .join('\n');
+          <div class="card-info">
+            <h2 class="card-llm-name">${htmlEscape(branchConfig.llm)}</h2>
+            <p class="card-paradigm">${htmlEscape(branchConfig.paradigm)}</p>
+            <p class="card-ide">${htmlEscape(branchConfig.ide)}</p>
+          </div>
+        </div>
+        <div class="card-stats">
+          ${statGroupsHtml}
+        </div>
+        <div class="card-footer">
+          <a href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">Open App</a>
+        </div>
+      </article>`;
+  }).join('\n');
+
+  const dotIndicators = deployedBranches.length > 1
+    ? `<div class="carousel-dots" aria-label="Card navigation">${deployedBranches.map((_, i) =>
+        `<svg class="dot${i === 0 ? ' active' : ''}" data-dot="${i}" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="${i === 0 ? '#4a3728' : '#ccc'}"/></svg>`
+      ).join('')}</div>`
+    : '';
 
   return `<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Category Solitaire Branch Board</title>
-    <style>
-      :root {
-        color: #162019;
-        background: #f8faf6;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background:
-          linear-gradient(120deg, rgba(28, 121, 94, 0.12), transparent 42%),
-          linear-gradient(250deg, rgba(210, 68, 52, 0.12), transparent 38%),
-          #f8faf6;
-      }
-
-      main {
-        width: min(1180px, calc(100vw - 40px));
-        margin: 0 auto;
-        padding: 48px 0;
-      }
-
-      header {
-        display: grid;
-        gap: 14px;
-        margin-bottom: 28px;
-      }
-
-      .eyebrow {
-        margin: 0;
-        color: #597064;
-        font-size: 0.77rem;
-        font-weight: 800;
-        letter-spacing: 0;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        max-width: 820px;
-        margin: 0;
-        font-size: clamp(2.2rem, 6vw, 4.6rem);
-        line-height: 0.98;
-        letter-spacing: 0;
-      }
-
-      header p {
-        max-width: 680px;
-        margin: 0;
-        color: #4c5f54;
-        font-size: 1.02rem;
-        line-height: 1.6;
-      }
-
-      .board {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
-      }
-
-      .branch-card {
-        min-height: 360px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 24px;
-        padding: 22px;
-        border: 1px solid rgba(22, 32, 25, 0.16);
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.78);
-        box-shadow: 0 18px 50px rgba(27, 50, 36, 0.08);
-      }
-
-      h2 {
-        margin: 10px 0 12px;
-        font-size: 1.35rem;
-        letter-spacing: 0;
-      }
-
-      .branch-card p:not(.eyebrow) {
-        margin: 0;
-        color: #52645a;
-        line-height: 1.45;
-      }
-
-      dl {
-        display: grid;
-        gap: 10px;
-        margin: 0;
-      }
-
-      dt {
-        color: #718076;
-        font-size: 0.72rem;
-        font-weight: 800;
-        text-transform: uppercase;
-      }
-
-      dd {
-        margin: 3px 0 0;
-        overflow-wrap: anywhere;
-        color: #17251c;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 0.84rem;
-      }
-
-      a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        padding: 0 16px;
-        border-radius: 6px;
-        background: #1a6c53;
-        color: white;
-        font-weight: 800;
-        text-decoration: none;
-      }
-
-      a:hover {
-        background: #14533f;
-      }
-
-      footer {
-        margin-top: 26px;
-        color: #66766b;
-        font-size: 0.88rem;
-      }
-
-      @media (max-width: 980px) {
-        .board {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (max-width: 620px) {
-        main {
-          width: min(100vw - 28px, 1180px);
-          padding: 30px 0;
-        }
-
-        .board {
-          grid-template-columns: 1fr;
-        }
-
-        .branch-card {
-          min-height: 300px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <header>
-        <p class="eyebrow">Amplify branch board</p>
-        <h1>Category Solitaire variants</h1>
-        <p>Four deployed branch builds from this repository, collected in one board for quick comparison.</p>
-      </header>
-      <section class="board" aria-label="Deployed branch apps">
-        ${cards}
-      </section>
-      <footer>Amplify app ${htmlEscape(app.appId)} · ${htmlEscape(new Date().toISOString())}</footer>
-    </main>
-  </body>
-</html>
-`;
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Category Solitaire - AI Baseball Cards</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --card-bg-claude:#FFF5F0;
+  --card-bg-codex:#F0FFF8;
+  --card-bg-cerebras:#F0F6FF;
+  --card-bg-kiro:#FFFBF0;
+  --card-border:#4a3728;
+  --pixel-font:"Courier New",Courier,monospace;
+  --body-font:system-ui,-apple-system,sans-serif;
 }
+body{
+  font-family:var(--body-font);
+  background:#f5f0e8;
+  min-height:100vh;
+  padding:24px;
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 19px,rgba(74,55,40,0.03) 19px,rgba(74,55,40,0.03) 20px),
+    repeating-linear-gradient(90deg,transparent,transparent 19px,rgba(74,55,40,0.03) 19px,rgba(74,55,40,0.03) 20px);
+}
+main{max-width:1200px;margin:0 auto}
+header{text-align:center;margin-bottom:32px}
+h1{
+  font-family:var(--pixel-font);
+  font-size:clamp(1.8rem,4vw,3rem);
+  color:#4a3728;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+header p{color:#6b5744;font-size:1rem}
+.board{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+}
+.baseball-card{
+  border:3px solid var(--card-border);
+  border-radius:12px;
+  padding:20px;
+  background:var(--card-bg-kiro);
+  box-shadow:4px 4px 0 rgba(74,55,40,0.2);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  position:relative;
+  overflow:hidden;
+}
+.baseball-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:6px;
+  background:repeating-linear-gradient(90deg,#c4452b 0,#c4452b 10px,#fff 10px,#fff 20px,#1a4b8c 20px,#1a4b8c 30px,#fff 30px,#fff 40px);
+}
+.baseball-card::after{
+  content:"";
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:6px;
+  background:repeating-linear-gradient(90deg,#c4452b 0,#c4452b 10px,#fff 10px,#fff 20px,#1a4b8c 20px,#1a4b8c 30px,#fff 30px,#fff 40px);
+}
+.baseball-card:nth-child(1){background:var(--card-bg-claude)}
+.baseball-card:nth-child(2){background:var(--card-bg-codex)}
+.baseball-card:nth-child(3){background:var(--card-bg-cerebras)}
+.baseball-card:nth-child(4){background:var(--card-bg-kiro)}
+.card-header{display:flex;gap:12px;align-items:center;padding-top:8px}
+.card-logo-container{width:25%;max-width:80px;flex-shrink:0}
+.card-logo{width:100%;height:auto;display:block}
+.card-info{flex:1}
+.card-llm-name{
+  font-family:var(--pixel-font);
+  font-size:1.4rem;
+  color:#4a3728;
+  letter-spacing:1px;
+}
+.card-paradigm{
+  font-family:var(--pixel-font);
+  font-size:0.85rem;
+  color:#8b6f47;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-top:4px;
+}
+.card-ide{
+  font-size:0.8rem;
+  color:#6b5744;
+  margin-top:2px;
+  font-style:italic;
+}
+.card-stats{display:flex;flex-direction:column;gap:12px;flex:1}
+.stat-group{border-top:1px dashed rgba(74,55,40,0.3);padding-top:8px}
+.stat-group-heading{
+  font-family:var(--pixel-font);
+  font-size:0.75rem;
+  color:#8b6f47;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:6px;
+}
+.stat-item{display:flex;align-items:center;gap:6px;margin-bottom:4px;position:relative}
+.stat-label{
+  background:none;
+  border:1px solid rgba(74,55,40,0.3);
+  border-radius:3px;
+  font-family:var(--pixel-font);
+  font-size:12px;
+  color:#4a3728;
+  cursor:help;
+  padding:1px 4px;
+  min-width:40px;
+  text-align:center;
+  line-height:1.4;
+}
+.stat-label:hover,.stat-label:focus{
+  background:rgba(74,55,40,0.1);
+  outline:2px solid #4a3728;
+  outline-offset:1px;
+}
+.stat-value{
+  font-family:var(--pixel-font);
+  font-size:14px;
+  font-weight:bold;
+  color:#2d1f14;
+}
+.stat-tooltip{
+  display:none;
+  position:absolute;
+  left:0;
+  bottom:calc(100% + 6px);
+  background:#4a3728;
+  color:#fff;
+  padding:8px 10px;
+  border-radius:4px;
+  font-size:12px;
+  min-width:180px;
+  max-width:260px;
+  z-index:100;
+  box-shadow:2px 2px 6px rgba(0,0,0,0.3);
+  transition:opacity 200ms ease;
+}
+.stat-tooltip.visible{display:block}
+.stat-tooltip strong{display:block;margin-bottom:3px;font-size:13px}
+.stat-tooltip span{display:block;opacity:0.9;line-height:1.3}
+.card-footer{margin-top:auto;padding-top:8px}
+.card-footer a{
+  display:inline-block;
+  background:#4a3728;
+  color:#fff;
+  padding:8px 16px;
+  border-radius:4px;
+  text-decoration:none;
+  font-family:var(--pixel-font);
+  font-size:13px;
+  letter-spacing:0.5px;
+}
+.card-footer a:hover{background:#6b5744}
+footer{text-align:center;margin-top:32px;color:#8b6f47;font-size:0.85rem}
+
+/* Carousel styles for mobile */
+.carousel-dots{
+  display:none;
+  justify-content:center;
+  gap:8px;
+  margin-top:16px;
+}
+.dot{cursor:pointer;transition:opacity 200ms}
+.dot:not(.active){opacity:0.5}
+
+@media(max-width:768px){
+  body{padding:12px}
+  .board{
+    display:flex;
+    overflow:hidden;
+    gap:0;
+    position:relative;
+  }
+  .baseball-card{
+    min-width:90vw;
+    flex-shrink:0;
+    margin:0 5vw 0 0;
+  }
+  .board{
+    transition:transform 300ms ease;
+  }
+  .carousel-dots{display:flex}
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>AI Baseball Cards</h1>
+    <p>Category Solitaire branch variants compared side-by-side</p>
+  </header>
+  <section class="board" aria-label="AI Baseball Cards" id="card-board">
+    ${cards}
+  </section>
+  ${dotIndicators}
+  <footer>Amplify app ${htmlEscape(app.appId)} &middot; ${htmlEscape(new Date().toISOString())}</footer>
+</main>
+<script>
+(function(){
+  // Tooltip system
+  var activeTooltip=null;
+  function showTooltip(el){
+    hideAllTooltips();
+    var tipId=el.getAttribute('data-tip');
+    var tip=document.getElementById(tipId);
+    if(tip){tip.classList.add('visible');tip.setAttribute('aria-hidden','false');activeTooltip=tip;}
+  }
+  function hideAllTooltips(){
+    if(activeTooltip){activeTooltip.classList.remove('visible');activeTooltip.setAttribute('aria-hidden','true');activeTooltip=null;}
+  }
+  var labels=document.querySelectorAll('.stat-label');
+  for(var i=0;i<labels.length;i++){
+    labels[i].addEventListener('mouseenter',function(){showTooltip(this);});
+    labels[i].addEventListener('focus',function(){showTooltip(this);});
+    labels[i].addEventListener('mouseleave',function(){hideAllTooltips();});
+    labels[i].addEventListener('blur',function(){hideAllTooltips();});
+    labels[i].addEventListener('touchstart',function(e){
+      e.preventDefault();
+      var tipId=this.getAttribute('data-tip');
+      var tip=document.getElementById(tipId);
+      if(tip&&tip.classList.contains('visible')){hideAllTooltips();}
+      else{showTooltip(this);}
+    },{passive:false});
+  }
+  document.addEventListener('touchstart',function(e){
+    if(!e.target.classList.contains('stat-label')){hideAllTooltips();}
+  });
+
+  // Carousel system (mobile only)
+  var board=document.getElementById('card-board');
+  var cards=board?board.querySelectorAll('.baseball-card'):[];
+  var dots=document.querySelectorAll('.dot');
+  var pos=0;
+  var startX=0,startY=0,startTime=0,tracking=false;
+
+  function updateCarousel(){
+    if(!board||cards.length<=1)return;
+    var cardWidth=cards[0].offsetWidth+parseFloat(getComputedStyle(cards[0]).marginRight||0);
+    board.style.transform='translateX(-'+(pos*cardWidth)+'px)';
+    for(var i=0;i<dots.length;i++){
+      dots[i].classList.toggle('active',i===pos);
+      var circle=dots[i].querySelector('circle');
+      if(circle)circle.setAttribute('fill',i===pos?'#4a3728':'#ccc');
+    }
+  }
+
+  if(cards.length>1&&'ontouchstart' in window){
+    board.addEventListener('touchstart',function(e){
+      startX=e.touches[0].clientX;
+      startY=e.touches[0].clientY;
+      startTime=Date.now();
+      tracking=true;
+    },{passive:true});
+    board.addEventListener('touchmove',function(e){
+      if(!tracking)return;
+      var dy=Math.abs(e.touches[0].clientY-startY);
+      if(dy>30)tracking=false;
+    },{passive:true});
+    board.addEventListener('touchend',function(e){
+      if(!tracking)return;
+      var dx=e.changedTouches[0].clientX-startX;
+      var dt=Date.now()-startTime;
+      if(Math.abs(dx)>50&&dt<300){
+        if(dx<0){pos=Math.min(pos+1,cards.length-1);}
+        else{pos=Math.max(pos-1,0);}
+        updateCarousel();
+      }
+      tracking=false;
+    },{passive:true});
+  }
+
+  for(var d=0;d<dots.length;d++){
+    dots[d].addEventListener('click',(function(idx){return function(){pos=idx;updateCarousel();};})(d));
+  }
+})();
+</script>
+</body>
+</html>`;
+}
+
+// Export for testing
+export { renderDashboard, STAT_GROUPS, BRANCH_CONFIG, formatMetric, htmlEscape };
 
 function buildDashboard(app, deployedBranches) {
   const dashboardDir = join(artifactDir, 'dashboard');
@@ -539,9 +764,37 @@ async function main() {
 
   const deployedBranches = [];
   for (const branch of metadata) {
-    const zipPath = skipBuild ? join(artifactDir, `${branch.deployBranch}.zip`) : buildBranch(branch);
+    let zipPath;
+    let metrics = null;
+
+    if (skipBuild) {
+      zipPath = join(artifactDir, `${branch.deployBranch}.zip`);
+      // When --skip-build is active, skip metrics collection entirely
+      metrics = createNullMetrics();
+    } else {
+      const buildResult = buildBranch(branch);
+      zipPath = buildResult.zipPath;
+
+      // Collect metrics after build, before worktree removal.
+      // Wrap in try/catch with 120s Promise.race timeout for resilience.
+      try {
+        const METRICS_TIMEOUT_MS = 120_000;
+        metrics = await Promise.race([
+          collectMetrics(buildResult.worktreePath, branch),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Metrics collection timed out (120s)')), METRICS_TIMEOUT_MS)
+          ),
+        ]);
+      } catch (metricsError) {
+        console.warn(`[deploy] Metrics collection failed for ${branch.label}: ${metricsError.message}`);
+        metrics = createNullMetrics();
+      }
+
+      removeWorktree(buildResult.worktreePath);
+    }
+
     const url = `https://${branch.deployBranch}.${app.defaultDomain}/`;
-    deployedBranches.push({ ...branch, url });
+    deployedBranches.push({ ...branch, url, metrics });
 
     if (!skipAws) {
       ensureBranch(app.appId, branch.deployBranch, branch.deployBranch);
@@ -563,7 +816,15 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error.message);
-  process.exit(1);
-});
+// Only run main() when this script is executed directly, not when imported
+const isDirectExecution = process.argv[1] && (
+  process.argv[1].endsWith('deploy-amplify-board.mjs') ||
+  process.argv[1].includes('deploy-amplify-board')
+);
+
+if (isDirectExecution) {
+  main().catch((error) => {
+    console.error(error.message);
+    process.exit(1);
+  });
+}
