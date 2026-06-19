@@ -163,8 +163,6 @@ function branchExists(appId, branchName) {
       appId,
       '--branch-name',
       branchName,
-      '--profile',
-      config.profile,
       '--region',
       config.region,
       '--output',
