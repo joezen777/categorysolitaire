@@ -9,6 +9,8 @@
   },
   "devDependencies": {
     "fast-check": "^4.1.1",
+    "jscpd": "^4.0.5",
+    "typhonjs-escomplex": "^0.2.0",
     "vitest": "^3.2.4"
   },
   "description": "[Click for Online Demo](https://dashboard.d3px1xkakdd95h.amplifyapp.com/)",

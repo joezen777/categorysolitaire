@@ -464,49 +464,156 @@ async function collectDuplication(worktreePath, signal) {
 }
 
 // ---------------------------------------------------------------------------
-// Remaining Metric Helper Stubs (Tasks 1.4 - 1.6)
+// Remaining Metric Helpers (Tasks 1.4 - 1.6)
 // ---------------------------------------------------------------------------
 
 /** @param {string} worktreePath @param {AbortSignal} signal */
 async function collectSecurityIssues(worktreePath, signal) {
-  // TODO: Implement in task 1.4
-  return null;
+  const stdout = await execShell('npm audit --json', worktreePath, signal);
+  const audit = JSON.parse(stdout);
+
+  // Prefer metadata.vulnerabilities (npm v7+) which has severity counts
+  if (audit.metadata && audit.metadata.vulnerabilities) {
+    const vulns = audit.metadata.vulnerabilities;
+    const total = Object.values(vulns).reduce((sum, count) => sum + count, 0);
+    return total;
+  }
+
+  // Fallback: count entries in the vulnerabilities object (npm v6)
+  if (audit.vulnerabilities && typeof audit.vulnerabilities === 'object') {
+    return Object.keys(audit.vulnerabilities).length;
+  }
+
+  return 0;
 }
 
 /** @param {string} worktreePath @param {AbortSignal} signal */
 async function collectTsErrors(worktreePath, signal) {
-  // TODO: Implement in task 1.4
-  return null;
+  const tsconfigPath = join(worktreePath, 'tsconfig.json');
+  if (!existsSync(tsconfigPath)) return 0;
+
+  const stdout = await execShell(
+    'npx tsc --noEmit --strict 2>&1 | grep -c "error TS" || true',
+    worktreePath,
+    signal,
+  );
+
+  const count = parseInt(stdout.trim(), 10);
+  return isNaN(count) ? 0 : count;
 }
 
 /** @param {string} worktreePath @param {AbortSignal} signal */
 async function collectUnusedExports(worktreePath, signal) {
-  // TODO: Implement in task 1.4
-  return null;
+  const srcDir = join(worktreePath, 'src');
+  if (!existsSync(srcDir)) return 0;
+
+  const exportsStdout = await execShell(
+    'grep -r "^export" src/ --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" | wc -l',
+    worktreePath,
+    signal,
+  );
+
+  const importsStdout = await execShell(
+    `grep -r "from ['\\"]\\./" src/ --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" | wc -l`,
+    worktreePath,
+    signal,
+  );
+
+  const exports = parseInt(exportsStdout.trim(), 10);
+  const imports = parseInt(importsStdout.trim(), 10);
+
+  if (isNaN(exports) || isNaN(imports)) return null;
+  return Math.max(0, exports - imports);
 }
 
 /** @param {string} worktreePath @param {AbortSignal} signal */
 async function collectCommits(worktreePath, signal) {
-  // TODO: Implement in task 1.5
-  return null;
+  const stdout = await execShell('git log --oneline | wc -l', worktreePath, signal);
+  const count = parseInt(stdout.trim(), 10);
+  return isNaN(count) ? null : count;
 }
 
 /** @param {string} worktreePath @param {AbortSignal} signal */
 async function collectChurn(worktreePath, signal) {
-  // TODO: Implement in task 1.5
-  return null;
+  const stdout = await execShell(
+    `git log --pretty=format: --numstat | awk '{s+=$1+$2}END{print s}'`,
+    worktreePath,
+    signal,
+  );
+
+  const value = parseInt(stdout.trim(), 10);
+  return isNaN(value) ? null : value;
 }
 
 /** @param {string} worktreePath @param {AbortSignal} signal */
 async function collectCoverage(worktreePath, signal) {
-  // TODO: Implement in task 1.5
-  return null;
+  const coveragePath = join(worktreePath, 'coverage', 'coverage-summary.json');
+  if (!existsSync(coveragePath)) return null;
+
+  const content = readFileSync(coveragePath, 'utf-8');
+  const json = JSON.parse(content);
+
+  const pct = json?.total?.lines?.pct;
+  if (pct == null || isNaN(pct)) return null;
+  return pct;
 }
 
 /** @param {string} worktreePath @param {AbortSignal} signal */
 async function collectLighthouseA11y(worktreePath, signal) {
-  // TODO: Implement in task 1.6
-  return null;
+  const indexPath = join(worktreePath, 'dist', 'index.html');
+  if (!existsSync(indexPath)) return null;
+
+  const html = readFileSync(indexPath, 'utf-8');
+  let score = 0;
+
+  // Does it have <html lang="...">? (+20)
+  if (/<html[^>]+lang\s*=\s*["'][^"']+["']/i.test(html)) {
+    score += 20;
+  }
+
+  // Does it have a <title>? (+15)
+  if (/<title[^>]*>.+<\/title>/i.test(html)) {
+    score += 15;
+  }
+
+  // Does it have <meta name="viewport">? (+15)
+  if (/<meta[^>]+name\s*=\s*["']viewport["']/i.test(html)) {
+    score += 15;
+  }
+
+  // Count <img tags without alt attribute, deduct 5 per instance (min 0 for this check)
+  const imgTags = html.match(/<img[^>]*>/gi) || [];
+  let imgsWithoutAlt = 0;
+  for (const img of imgTags) {
+    if (!/alt\s*=/i.test(img)) {
+      imgsWithoutAlt++;
+    }
+  }
+  score -= imgsWithoutAlt * 5;
+  if (score < 0) score = 0;
+
+  // Does it have <main> or role="main"? (+15)
+  if (/<main[\s>]/i.test(html) || /role\s*=\s*["']main["']/i.test(html)) {
+    score += 15;
+  }
+
+  // Does it have <h1>? (+10)
+  if (/<h1[\s>]/i.test(html)) {
+    score += 10;
+  }
+
+  // Are there any <button> or <a> tags? (+10)
+  if (/<button[\s>]/i.test(html) || /<a[\s>]/i.test(html)) {
+    score += 10;
+  }
+
+  // Does it have ARIA attributes (aria-)? (+15)
+  if (/aria-/i.test(html)) {
+    score += 15;
+  }
+
+  // Cap at 100
+  return Math.min(score, 100);
 }
 
 /** @param {string} worktreePath @param {AbortSignal} signal */

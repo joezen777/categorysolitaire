@@ -371,32 +371,23 @@ function formatMetric(value) {
 }
 
 /**
- * Renders the stat groups for a card as HTML.
+ * Renders the stat groups for a card as an HTML table matching 1987 Topps back style.
  */
 function renderStatGroups(metrics, cardIndex) {
   const groups = Object.entries(STAT_GROUPS).map(([groupName, stats]) => {
-    const statItems = stats.map(stat => {
+    const rows = stats.map(stat => {
       const value = metrics ? metrics[stat.key] : null;
       const tipId = `tip-${cardIndex}-${stat.key}`;
-      return `
-            <div class="stat-item">
-              <button class="stat-label" aria-describedby="${tipId}" data-tip="${tipId}">${htmlEscape(stat.abbr)}</button>
-              <div id="${tipId}" role="tooltip" class="stat-tooltip" aria-hidden="true">
-                <strong>${htmlEscape(stat.label)}</strong>
-                <span>${htmlEscape(stat.desc)}</span>
-              </div>
-              <span class="stat-value">${formatMetric(value)}</span>
-            </div>`;
+      return `<tr>
+<td class="stat-abbr" data-tip="${tipId}" tabindex="0" aria-describedby="${tipId}">${htmlEscape(stat.abbr)}<div id="${tipId}" role="tooltip" class="stat-tooltip" aria-hidden="true"><strong>${htmlEscape(stat.label)}</strong><span>${htmlEscape(stat.desc)}</span></div></td>
+<td class="stat-val"><span class="stat-value">${formatMetric(value)}</span></td>
+</tr>`;
     }).join('');
 
-    return `
-          <div class="stat-group">
-            <h3 class="stat-group-heading">${htmlEscape(groupName)}</h3>
-            ${statItems}
-          </div>`;
+    return `<tr class="group-header"><th colspan="2">${htmlEscape(groupName)}</th></tr>${rows}`;
   }).join('');
 
-  return groups;
+  return `<table class="stat-table">${groups}</table>`;
 }
 
 /**
@@ -416,21 +407,16 @@ function renderDashboard(app, deployedBranches) {
 
     return `
       <article class="baseball-card" data-card-index="${index}">
-        <div class="card-header">
-          <div class="card-logo-container">
-            ${branchConfig.logo}
-          </div>
-          <div class="card-info">
-            <h2 class="card-llm-name">${htmlEscape(branchConfig.llm)}</h2>
-            <p class="card-paradigm">${htmlEscape(branchConfig.paradigm)}</p>
-            <p class="card-ide">${htmlEscape(branchConfig.ide)}</p>
+        <div class="card-banner">
+          <div class="card-logo-container">${branchConfig.logo}</div>
+          <div class="card-name">
+            <span class="card-llm">${htmlEscape(branchConfig.llm)}</span>
+            <span class="card-meta">${htmlEscape(branchConfig.paradigm)} &middot; ${htmlEscape(branchConfig.ide)}</span>
           </div>
         </div>
-        <div class="card-stats">
-          ${statGroupsHtml}
-        </div>
+        ${statGroupsHtml}
         <div class="card-footer">
-          <a href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">Open App</a>
+          <a href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>
         </div>
       </article>`;
   }).join('\n');
@@ -450,188 +436,142 @@ function renderDashboard(app, deployedBranches) {
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --card-bg-claude:#FFF5F0;
-  --card-bg-codex:#F0FFF8;
-  --card-bg-cerebras:#F0F6FF;
-  --card-bg-kiro:#FFFBF0;
-  --card-border:#4a3728;
+  --cream:#f5f0dc;
+  --tan:#e8dfc8;
+  --ink:#1a1a1a;
+  --rule:#8b7355;
+  --header-bg:#c4452b;
+  --header-text:#fff;
   --pixel-font:"Courier New",Courier,monospace;
-  --body-font:system-ui,-apple-system,sans-serif;
+  --card-bg-claude:#FFF8F4;
+  --card-bg-codex:#F4FFF9;
+  --card-bg-cerebras:#F4F8FF;
+  --card-bg-kiro:#FFFCF4;
 }
 body{
-  font-family:var(--body-font);
-  background:#f5f0e8;
-  min-height:100vh;
-  padding:24px;
-  background-image:
-    repeating-linear-gradient(0deg,transparent,transparent 19px,rgba(74,55,40,0.03) 19px,rgba(74,55,40,0.03) 20px),
-    repeating-linear-gradient(90deg,transparent,transparent 19px,rgba(74,55,40,0.03) 19px,rgba(74,55,40,0.03) 20px);
-}
-main{max-width:1200px;margin:0 auto}
-header{text-align:center;margin-bottom:32px}
-h1{
   font-family:var(--pixel-font);
-  font-size:clamp(1.8rem,4vw,3rem);
-  color:#4a3728;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  margin-bottom:8px;
+  background:var(--cream);
+  min-height:100vh;
+  padding:16px;
 }
-header p{color:#6b5744;font-size:1rem}
+main{max-width:1100px;margin:0 auto}
+header{text-align:center;margin-bottom:16px}
+h1{font-size:14px;color:var(--ink);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px}
+header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacing:1px}
 .board{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:12px;
 }
 .baseball-card{
-  border:3px solid var(--card-border);
-  border-radius:12px;
-  padding:20px;
-  background:var(--card-bg-kiro);
-  box-shadow:4px 4px 0 rgba(74,55,40,0.2);
+  border:3px solid var(--ink);
+  background:var(--cream);
   display:flex;
   flex-direction:column;
-  gap:16px;
   position:relative;
   overflow:hidden;
-}
-.baseball-card::before{
-  content:"";
-  position:absolute;
-  top:0;left:0;right:0;
-  height:6px;
-  background:repeating-linear-gradient(90deg,#c4452b 0,#c4452b 10px,#fff 10px,#fff 20px,#1a4b8c 20px,#1a4b8c 30px,#fff 30px,#fff 40px);
-}
-.baseball-card::after{
-  content:"";
-  position:absolute;
-  bottom:0;left:0;right:0;
-  height:6px;
-  background:repeating-linear-gradient(90deg,#c4452b 0,#c4452b 10px,#fff 10px,#fff 20px,#1a4b8c 20px,#1a4b8c 30px,#fff 30px,#fff 40px);
 }
 .baseball-card:nth-child(1){background:var(--card-bg-claude)}
 .baseball-card:nth-child(2){background:var(--card-bg-codex)}
 .baseball-card:nth-child(3){background:var(--card-bg-cerebras)}
 .baseball-card:nth-child(4){background:var(--card-bg-kiro)}
-.card-header{display:flex;gap:12px;align-items:center;padding-top:8px}
-.card-logo-container{width:25%;max-width:80px;flex-shrink:0}
+.card-banner{
+  background:var(--header-bg);
+  color:var(--header-text);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 8px;
+}
+.card-logo-container{width:25%;max-width:24px;flex-shrink:0}
 .card-logo{width:100%;height:auto;display:block}
-.card-info{flex:1}
-.card-llm-name{
-  font-family:var(--pixel-font);
-  font-size:1.4rem;
-  color:#4a3728;
-  letter-spacing:1px;
+.card-name{display:flex;flex-direction:column;line-height:1.1}
+.card-llm{font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:1px}
+.card-meta{font-size:9px;opacity:0.85;text-transform:uppercase;letter-spacing:0.5px}
+.stat-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:10px;
+  line-height:1.2;
 }
-.card-paradigm{
-  font-family:var(--pixel-font);
-  font-size:0.85rem;
-  color:#8b6f47;
+.stat-table tr.group-header th{
+  background:var(--tan);
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  font-size:9px;
+  font-weight:bold;
   text-transform:uppercase;
   letter-spacing:1px;
-  margin-top:4px;
+  text-align:left;
+  padding:2px 6px;
+  color:var(--ink);
 }
-.card-ide{
-  font-size:0.8rem;
-  color:#6b5744;
-  margin-top:2px;
-  font-style:italic;
+.stat-table td{
+  padding:1px 6px;
+  border-bottom:1px solid rgba(139,115,85,0.2);
+  vertical-align:middle;
 }
-.card-stats{display:flex;flex-direction:column;gap:12px;flex:1}
-.stat-group{border-top:1px dashed rgba(74,55,40,0.3);padding-top:8px}
-.stat-group-heading{
-  font-family:var(--pixel-font);
-  font-size:0.75rem;
-  color:#8b6f47;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  margin-bottom:6px;
-}
-.stat-item{display:flex;align-items:center;gap:6px;margin-bottom:4px;position:relative}
-.stat-label{
-  background:none;
-  border:1px solid rgba(74,55,40,0.3);
-  border-radius:3px;
-  font-family:var(--pixel-font);
-  font-size:12px;
-  color:#4a3728;
+.stat-table td.stat-abbr{
+  color:var(--rule);
+  font-size:9px;
+  width:42px;
   cursor:help;
-  padding:1px 4px;
-  min-width:40px;
-  text-align:center;
-  line-height:1.4;
+  position:relative;
 }
-.stat-label:hover,.stat-label:focus{
-  background:rgba(74,55,40,0.1);
-  outline:2px solid #4a3728;
-  outline-offset:1px;
+.stat-table td.stat-val{
+  text-align:right;
 }
 .stat-value{
   font-family:var(--pixel-font);
-  font-size:14px;
   font-weight:bold;
-  color:#2d1f14;
+  color:var(--ink);
+  font-size:11px;
+}
+.stat-table td.stat-abbr:hover,.stat-table td.stat-abbr:focus{
+  background:rgba(139,115,85,0.1);
+  outline:1px solid var(--rule);
 }
 .stat-tooltip{
   display:none;
   position:absolute;
-  left:0;
-  bottom:calc(100% + 6px);
-  background:#4a3728;
+  left:0;bottom:100%;
+  background:var(--ink);
   color:#fff;
-  padding:8px 10px;
-  border-radius:4px;
-  font-size:12px;
-  min-width:180px;
-  max-width:260px;
+  padding:4px 6px;
+  font-size:9px;
+  min-width:140px;
+  max-width:200px;
   z-index:100;
-  box-shadow:2px 2px 6px rgba(0,0,0,0.3);
-  transition:opacity 200ms ease;
+  line-height:1.3;
 }
 .stat-tooltip.visible{display:block}
-.stat-tooltip strong{display:block;margin-bottom:3px;font-size:13px}
-.stat-tooltip span{display:block;opacity:0.9;line-height:1.3}
-.card-footer{margin-top:auto;padding-top:8px}
+.stat-tooltip strong{display:block;font-size:10px;margin-bottom:1px}
+.stat-tooltip span{opacity:0.85}
+.card-footer{
+  border-top:2px solid var(--ink);
+  padding:3px 8px;
+  text-align:right;
+}
 .card-footer a{
-  display:inline-block;
-  background:#4a3728;
-  color:#fff;
-  padding:8px 16px;
-  border-radius:4px;
+  color:var(--header-bg);
   text-decoration:none;
-  font-family:var(--pixel-font);
-  font-size:13px;
-  letter-spacing:0.5px;
+  font-size:9px;
+  font-weight:bold;
+  text-transform:uppercase;
+  letter-spacing:1px;
 }
-.card-footer a:hover{background:#6b5744}
-footer{text-align:center;margin-top:32px;color:#8b6f47;font-size:0.85rem}
+.card-footer a:hover{text-decoration:underline}
+footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-spacing:0.5px}
 
-/* Carousel styles for mobile */
-.carousel-dots{
-  display:none;
-  justify-content:center;
-  gap:8px;
-  margin-top:16px;
-}
-.dot{cursor:pointer;transition:opacity 200ms}
-.dot:not(.active){opacity:0.5}
+.carousel-dots{display:none;justify-content:center;gap:6px;margin-top:8px}
+.dot{cursor:pointer;transition:opacity 150ms}
+.dot:not(.active){opacity:0.4}
 
-@media(max-width:768px){
-  body{padding:12px}
-  .board{
-    display:flex;
-    overflow:hidden;
-    gap:0;
-    position:relative;
-  }
-  .baseball-card{
-    min-width:90vw;
-    flex-shrink:0;
-    margin:0 5vw 0 0;
-  }
-  .board{
-    transition:transform 300ms ease;
-  }
+@media(max-width:600px){
+  body{padding:8px}
+  .board{display:flex;overflow:hidden;gap:0;position:relative}
+  .baseball-card{min-width:92vw;flex-shrink:0;margin:0 4vw 0 0}
+  .board{transition:transform 250ms ease}
   .carousel-dots{display:flex}
 }
 </style>
@@ -640,91 +580,60 @@ footer{text-align:center;margin-top:32px;color:#8b6f47;font-size:0.85rem}
 <main>
   <header>
     <h1>AI Baseball Cards</h1>
-    <p>Category Solitaire branch variants compared side-by-side</p>
+    <p>Category Solitaire &middot; Branch Variants</p>
   </header>
   <section class="board" aria-label="AI Baseball Cards" id="card-board">
     ${cards}
   </section>
   ${dotIndicators}
-  <footer>Amplify app ${htmlEscape(app.appId)} &middot; ${htmlEscape(new Date().toISOString())}</footer>
+  <footer>${htmlEscape(new Date().toISOString().slice(0,10))}</footer>
 </main>
 <script>
 (function(){
-  // Tooltip system
   var activeTooltip=null;
-  function showTooltip(el){
-    hideAllTooltips();
+  function show(el){
+    hide();
     var tipId=el.getAttribute('data-tip');
     var tip=document.getElementById(tipId);
     if(tip){tip.classList.add('visible');tip.setAttribute('aria-hidden','false');activeTooltip=tip;}
   }
-  function hideAllTooltips(){
+  function hide(){
     if(activeTooltip){activeTooltip.classList.remove('visible');activeTooltip.setAttribute('aria-hidden','true');activeTooltip=null;}
   }
-  var labels=document.querySelectorAll('.stat-label');
-  for(var i=0;i<labels.length;i++){
-    labels[i].addEventListener('mouseenter',function(){showTooltip(this);});
-    labels[i].addEventListener('focus',function(){showTooltip(this);});
-    labels[i].addEventListener('mouseleave',function(){hideAllTooltips();});
-    labels[i].addEventListener('blur',function(){hideAllTooltips();});
-    labels[i].addEventListener('touchstart',function(e){
+  var cells=document.querySelectorAll('.stat-abbr');
+  for(var i=0;i<cells.length;i++){
+    cells[i].addEventListener('mouseenter',function(){show(this);});
+    cells[i].addEventListener('focus',function(){show(this);});
+    cells[i].addEventListener('mouseleave',function(){hide();});
+    cells[i].addEventListener('blur',function(){hide();});
+    cells[i].addEventListener('touchstart',function(e){
       e.preventDefault();
       var tipId=this.getAttribute('data-tip');
       var tip=document.getElementById(tipId);
-      if(tip&&tip.classList.contains('visible')){hideAllTooltips();}
-      else{showTooltip(this);}
+      if(tip&&tip.classList.contains('visible')){hide();}else{show(this);}
     },{passive:false});
   }
-  document.addEventListener('touchstart',function(e){
-    if(!e.target.classList.contains('stat-label')){hideAllTooltips();}
-  });
-
-  // Carousel system (mobile only)
+  document.addEventListener('touchstart',function(e){if(!e.target.classList.contains('stat-abbr'))hide();});
   var board=document.getElementById('card-board');
   var cards=board?board.querySelectorAll('.baseball-card'):[];
   var dots=document.querySelectorAll('.dot');
-  var pos=0;
-  var startX=0,startY=0,startTime=0,tracking=false;
-
+  var pos=0,startX=0,startY=0,startTime=0,tracking=false;
   function updateCarousel(){
     if(!board||cards.length<=1)return;
-    var cardWidth=cards[0].offsetWidth+parseFloat(getComputedStyle(cards[0]).marginRight||0);
-    board.style.transform='translateX(-'+(pos*cardWidth)+'px)';
+    var w=cards[0].offsetWidth+parseFloat(getComputedStyle(cards[0]).marginRight||0);
+    board.style.transform='translateX(-'+(pos*w)+'px)';
     for(var i=0;i<dots.length;i++){
       dots[i].classList.toggle('active',i===pos);
-      var circle=dots[i].querySelector('circle');
-      if(circle)circle.setAttribute('fill',i===pos?'#4a3728':'#ccc');
+      var c=dots[i].querySelector('circle');
+      if(c)c.setAttribute('fill',i===pos?'#1a1a1a':'#ccc');
     }
   }
-
   if(cards.length>1&&'ontouchstart' in window){
-    board.addEventListener('touchstart',function(e){
-      startX=e.touches[0].clientX;
-      startY=e.touches[0].clientY;
-      startTime=Date.now();
-      tracking=true;
-    },{passive:true});
-    board.addEventListener('touchmove',function(e){
-      if(!tracking)return;
-      var dy=Math.abs(e.touches[0].clientY-startY);
-      if(dy>30)tracking=false;
-    },{passive:true});
-    board.addEventListener('touchend',function(e){
-      if(!tracking)return;
-      var dx=e.changedTouches[0].clientX-startX;
-      var dt=Date.now()-startTime;
-      if(Math.abs(dx)>50&&dt<300){
-        if(dx<0){pos=Math.min(pos+1,cards.length-1);}
-        else{pos=Math.max(pos-1,0);}
-        updateCarousel();
-      }
-      tracking=false;
-    },{passive:true});
+    board.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;startY=e.touches[0].clientY;startTime=Date.now();tracking=true;},{passive:true});
+    board.addEventListener('touchmove',function(e){if(!tracking)return;if(Math.abs(e.touches[0].clientY-startY)>30)tracking=false;},{passive:true});
+    board.addEventListener('touchend',function(e){if(!tracking)return;var dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>50&&Date.now()-startTime<300){if(dx<0)pos=Math.min(pos+1,cards.length-1);else pos=Math.max(pos-1,0);updateCarousel();}tracking=false;},{passive:true});
   }
-
-  for(var d=0;d<dots.length;d++){
-    dots[d].addEventListener('click',(function(idx){return function(){pos=idx;updateCarousel();};})(d));
-  }
+  for(var d=0;d<dots.length;d++)dots[d].addEventListener('click',(function(idx){return function(){pos=idx;updateCarousel();};})(d));
 })();
 </script>
 </body>
