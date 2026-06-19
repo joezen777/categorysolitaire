@@ -236,6 +236,123 @@ const Game: React.FC = () => {
     });
   }, [gameState.draftPile.length]);
 
+  // Move card to destination (must be defined before functions that reference it)
+  const handleMoveCard = useCallback((
+    card: GameCard,
+    fromSource: string,
+    fromIndex: number,
+    target: DropTarget
+  ) => {
+    setGameState(prev => {
+      const newState = { ...prev };
+
+      // Remove card from source
+      switch (fromSource) {
+        case 'draft':
+          newState.draftPile = prev.draftPile.filter(c => c.id !== card.id);
+          break;
+        case 'tableau':
+          newState.tableau = prev.tableau.map((col, i) => {
+            if (i === fromIndex) {
+              const newCards = col.cards.filter(c => c.id !== card.id);
+              // Flip top card if face down
+              if (newCards.length > 0 && newCards[newCards.length - 1].faceUp === 'down') {
+                newCards[newCards.length - 1].faceUp = 'up';
+              }
+              return { ...col, cards: newCards };
+            }
+            return col;
+          });
+          break;
+        case 'foundation':
+          newState.foundation = prev.foundation.map((slot, i) => {
+            if (i === fromIndex) {
+              return {
+                ...slot,
+                cards: slot.cards.filter(c => c.id !== card.id),
+                categoryTitle: slot.cards.length <= 1 ? null : slot.categoryTitle,
+              };
+            }
+            return slot;
+          });
+          break;
+      }
+
+      // Add card to destination
+      if (target.zone === 'foundation') {
+        newState.foundation = prev.foundation.map((slot, i) => {
+          if (i === target.index) {
+            const newCard = { ...card, source: 'foundation', sourceIndex: i };
+            if (card.isTitleCard) {
+              return {
+                ...slot,
+                categoryTitle: card.categoryTitle,
+                cards: [newCard],
+              };
+            }
+            return {
+              ...slot,
+              cards: [...slot.cards, newCard],
+            };
+          }
+          return slot;
+        });
+
+        // Check for category completion
+        const updatedSlot = newState.foundation[target.index];
+        if (updatedSlot.categoryTitle) {
+          const titleCard = updatedSlot.cards.find(c => c.isTitleCard);
+          const itemCount = updatedSlot.cards.filter(c => !c.isTitleCard).length;
+          
+          // Get expected item count from deck config
+          const categoryCards = starterDeckCards.filter(c => c.categoryTitle === updatedSlot.categoryTitle);
+          const expectedCount = categoryCards.filter(c => !c.isTitleCard).length;
+
+          if (itemCount === expectedCount && titleCard) {
+            // Category complete
+            setTimeout(() => {
+              audioManager.playCategoryComplete();
+              setGameState(prevState => {
+                const newFoundation = prevState.foundation.map((slot, i) => {
+                  if (i === target.index) {
+                    return {
+                      id: slot.id,
+                      categoryTitle: null,
+                      cards: [],
+                    };
+                  }
+                  return slot;
+                });
+                return {
+                  ...prevState,
+                  foundation: newFoundation,
+                  score: prevState.score + 100,
+                };
+              });
+            }, 500);
+          }
+        }
+      } else if (target.zone === 'tableau') {
+        newState.tableau = prev.tableau.map((col, i) => {
+          if (i === target.index) {
+            const newCard = { ...card, source: 'tableau', sourceIndex: i };
+            return {
+              ...col,
+              cards: [...col.cards, newCard],
+            };
+          }
+          return col;
+        });
+
+        newState.score += 5;
+      }
+
+      audioManager.playSuccess();
+
+      return newState;
+    });
+  }, []);
+
   // Handle card click (tap-to-move)
   const handleCardClick = useCallback((card: GameCard, source: string, index: number) => {
     if (card.faceUp !== 'up') return;
@@ -398,122 +515,6 @@ const Game: React.FC = () => {
       audioManager.playError();
     }
   }, [gameState.foundation, gameState.tableau, draggingCards, handleMoveCard]);
-
-  // Move card to destination
-  const handleMoveCard = useCallback((
-    card: GameCard,
-    fromSource: string,
-    fromIndex: number,
-    target: DropTarget
-  ) => {
-    setGameState(prev => {
-      const newState = { ...prev };
-
-      // Remove card from source
-      switch (fromSource) {
-        case 'draft':
-          newState.draftPile = prev.draftPile.filter(c => c.id !== card.id);
-          break;
-        case 'tableau':
-          newState.tableau = prev.tableau.map((col, i) => {
-            if (i === fromIndex) {
-              const newCards = col.cards.filter(c => c.id !== card.id);
-              // Flip top card if face down
-              if (newCards.length > 0 && newCards[newCards.length - 1].faceUp === 'down') {
-                newCards[newCards.length - 1].faceUp = 'up';
-              }
-              return { ...col, cards: newCards };
-            }
-            return col;
-          });
-          break;
-        case 'foundation':
-          newState.foundation = prev.foundation.map((slot, i) => {
-            if (i === fromIndex) {
-              return {
-                ...slot,
-                cards: slot.cards.filter(c => c.id !== card.id),
-                categoryTitle: slot.cards.length <= 1 ? null : slot.categoryTitle,
-              };
-            }
-            return slot;
-          });
-          break;
-      }
-
-      // Add card to destination
-      if (target.zone === 'foundation') {
-        newState.foundation = prev.foundation.map((slot, i) => {
-          if (i === target.index) {
-            const newCard = { ...card, source: 'foundation', sourceIndex: i };
-            if (card.isTitleCard) {
-              return {
-                ...slot,
-                categoryTitle: card.categoryTitle,
-                cards: [newCard],
-              };
-            }
-            return {
-              ...slot,
-              cards: [...slot.cards, newCard],
-            };
-          }
-          return slot;
-        });
-
-        // Check for category completion
-        const updatedSlot = newState.foundation[target.index];
-        if (updatedSlot.categoryTitle) {
-          const titleCard = updatedSlot.cards.find(c => c.isTitleCard);
-          const itemCount = updatedSlot.cards.filter(c => !c.isTitleCard).length;
-          
-          // Get expected item count from deck config
-          const categoryCards = starterDeckCards.filter(c => c.categoryTitle === updatedSlot.categoryTitle);
-          const expectedCount = categoryCards.filter(c => !c.isTitleCard).length;
-
-          if (itemCount === expectedCount && titleCard) {
-            // Category complete
-            setTimeout(() => {
-              audioManager.playCategoryComplete();
-              setGameState(prevState => {
-                const newFoundation = prevState.foundation.map((slot, i) => {
-                  if (i === target.index) {
-                    return {
-                      id: slot.id,
-                      categoryTitle: null,
-                      cards: [],
-                    };
-                  }
-                  return slot;
-                });
-                return {
-                  ...prevState,
-                  foundation: newFoundation,
-                  score: prevState.score + 100,
-                };
-              });
-            }, 500);
-          }
-        }
-      } else if (target.zone === 'tableau') {
-        newState.tableau = prev.tableau.map((col, i) => {
-          if (i === target.index) {
-            const newCard = { ...card, source: 'tableau', sourceIndex: i };
-            return {
-              ...col,
-              cards: [...col.cards, newCard],
-            };
-          }
-          return col;
-        });
-      }
-
-      newState.score += 10;
-      audioManager.playSuccess();
-
-      return newState;
-    });
-  }, []);
 
   // Handle restart
   const handleRestart = useCallback(() => {

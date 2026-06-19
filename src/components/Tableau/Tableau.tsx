@@ -2,6 +2,7 @@ import React from 'react';
 import { TableauColumn as TableauColumnType, GameCard } from '../../types/game';
 import { Box, styled } from '@mui/material';
 import DraggableCard from '../DraggableCard/DraggableCard';
+import Card from '../Card/Card';
 import DropZone from '../DropZone/DropZone';
 
 interface TableauProps {
