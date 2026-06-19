@@ -6,6 +6,7 @@ import { collectMetrics, createNullMetrics } from './collect-metrics.mjs';
 
 const config = {
   appName: process.env.AMPLIFY_APP_NAME || 'categorysolitaire-vibe-board',
+  customDomain: process.env.AMPLIFY_CUSTOM_DOMAIN || 'solitaire.cardbrdbx.com',
   dashboardBranch: 'dashboard',
   region: process.env.AWS_REGION,
   branches: [
@@ -793,7 +794,7 @@ async function main() {
       removeWorktree(buildResult.worktreePath);
     }
 
-    const url = `https://${branch.deployBranch}.${app.defaultDomain}/`;
+    const url = `https://${branch.deployBranch}.${config.customDomain}/`;
     deployedBranches.push({ ...branch, url, metrics });
 
     if (!skipAws) {
@@ -802,7 +803,7 @@ async function main() {
     }
   }
 
-  const dashboardUrl = `https://${config.dashboardBranch}.${app.defaultDomain}/`;
+  const dashboardUrl = `https://${config.customDomain}/`;
   const dashboardZip = buildDashboard(app, deployedBranches);
   if (!skipAws) {
     ensureBranch(app.appId, config.dashboardBranch, config.dashboardBranch, 'PRODUCTION');
