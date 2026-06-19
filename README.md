@@ -1,3 +1,13 @@
+# Live Demo
+
+[Click for Online Demo](https://dashboard.d3px1xkakdd95h.amplifyapp.com/)
+
+# The Goal
+
+To show the practical performance, accuracy and reliability of different LLMs and different agentic development patterns.  I plan to go through vibe coding, spec driven development, steering files impact and finally semi-autonomous chained agents development. 
+
+I also want to show metrics on code drift, rate of bugs, and ease of new features & maintainability.  
+
 # Starting prompt
 
 Create a solitaire style mobile responsive web app using React/Vite/MUI components. Instead of a classic playing cards deck, we have a card deck that has several different categories. Make the code modular to easily substitute in new decks, using a clean JSON array for the deck data that separates `id`, `categoryTitle`, and `itemName` so it is easily swappable. 
