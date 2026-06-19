@@ -43,7 +43,8 @@ aws iam create-policy \
     ]
   }'
 
-# Create the IAM role with GitHub OIDC trust (main branch only)
+# Create the IAM role with GitHub OIDC trust
+# Uses "environment:main" because the workflow specifies `environment: main`
 aws iam create-role \
   --role-name "$ROLE_NAME" \
   --description "GitHub Actions role for deploying Amplify board" \
@@ -54,13 +55,13 @@ aws iam create-role \
       {
         "Effect": "Allow",
         "Principal": {
-          "Federated": "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
+          "Federated": "arn:aws:iam::'"${ACCOUNT_ID}"':oidc-provider/token.actions.githubusercontent.com"
         },
         "Action": "sts:AssumeRoleWithWebIdentity",
         "Condition": {
           "StringEquals": {
             "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-            "token.actions.githubusercontent.com:sub": "repo:joezen777/categorysolitaire:ref:refs/heads/main"
+            "token.actions.githubusercontent.com:sub": "repo:joezen777/categorysolitaire:environment:main"
           }
         }
       }
