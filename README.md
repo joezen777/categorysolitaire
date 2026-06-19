@@ -1,6 +1,6 @@
 # Live Demo
 
-[Click for Online Demo](https://dashboard.d3px1xkakdd95h.amplifyapp.com/)
+[Click for Online Demo](https://solitaire.cardbrdbx.com/)
 
 # The Goal
 
