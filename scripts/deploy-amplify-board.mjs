@@ -5,8 +5,6 @@ import { spawnSync } from 'node:child_process';
 
 const config = {
   appName: process.env.AMPLIFY_APP_NAME || 'categorysolitaire-vibe-board',
-  profile: process.env.AWS_PROFILE || 'opensearchdev',
-  region: process.env.AWS_REGION || 'us-east-1',
   dashboardBranch: 'dashboard',
   branches: [
     { sourceRef: 'origin/claude.vibe', deployBranch: 'claude-vibe', label: 'Claude Vibe' },
