@@ -6,7 +6,8 @@ import { collectMetrics, createNullMetrics } from './collect-metrics.mjs';
 
 const config = {
   appName: process.env.AMPLIFY_APP_NAME || 'categorysolitaire-vibe-board',
-  customDomain: process.env.AMPLIFY_CUSTOM_DOMAIN || 'solitaire.cardbrdbx.com',
+  customDomain: process.env.AMPLIFY_CUSTOM_DOMAIN || 'cardbrdbx.com',
+  subdomainPrefix: process.env.AMPLIFY_SUBDOMAIN_PREFIX || 'solitaire',
   dashboardBranch: 'dashboard',
   region: process.env.AWS_REGION,
   branches: [
@@ -202,8 +203,8 @@ function ensureBranch(appId, branchName, displayName = branchName, stage = 'EXPE
 function ensureDomainAssociation(appId, deployedBranches) {
   // Build sub-domain settings: root → dashboard, each branch → its prefix
   const subDomainSettings = [
-    { prefix: '', branchName: config.dashboardBranch },
-    ...deployedBranches.map(b => ({ prefix: b.deployBranch, branchName: b.deployBranch })),
+    { prefix: config.subdomainPrefix, branchName: config.dashboardBranch },
+    ...deployedBranches.map(b => ({ prefix: `${b.deployBranch}-${config.subdomainPrefix}`, branchName: b.deployBranch })),
   ];
 
   const subDomainArg = JSON.stringify(subDomainSettings);
@@ -479,7 +480,7 @@ function renderDashboard(app, deployedBranches) {
     const statGroupsHtml = renderStatGroups(branch.metrics, index);
     const shortCommit = (branch.commit || 'local-preview').slice(0, 7);
     const repoName = (branch.sourceRef || '').replace(/^origin\//, '') || branch.deployBranch;
-    const displayUrl = branch.url || `https://${branch.deployBranch}.${config.customDomain}/`;
+    const displayUrl = branch.url || `https://${branch.deployBranch}-${config.subdomainPrefix}.${config.customDomain}/`;
 
     return `
       <div class="card-slide" data-card-index="${index}">
@@ -637,7 +638,7 @@ async function main() {
       removeWorktree(buildResult.worktreePath);
     }
 
-    const url = `https://${branch.deployBranch}.${config.customDomain}/`;
+    const url = `https://${branch.deployBranch}-${config.subdomainPrefix}.${config.customDomain}/`;
     deployedBranches.push({ ...branch, url, metrics });
 
     if (!skipAws) {
@@ -646,7 +647,7 @@ async function main() {
     }
   }
 
-  const dashboardUrl = `https://${config.customDomain}/`;
+  const dashboardUrl = `https://${config.subdomainPrefix}.${config.customDomain}/`;
   const dashboardZip = buildDashboard(app, deployedBranches);
   if (!skipAws) {
     ensureBranch(app.appId, config.dashboardBranch, config.dashboardBranch, 'PRODUCTION');
