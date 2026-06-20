@@ -393,7 +393,16 @@ describe('Property 5: Card structure completeness', () => {
           if (!html.includes(config.ide)) throw new Error(`IDE label "${config.ide}" not found`);
         }
 
+        if (!html.includes('card-slide')) throw new Error('No card-slide class');
         if (!html.includes('baseball-card')) throw new Error('No baseball-card class');
+        if (!html.includes('open-app-button')) throw new Error('No standalone open-app-button class');
+        if (html.includes('card-footer')) throw new Error('Deprecated card-footer block found');
+        if (!html.includes("board.querySelectorAll('.card-slide')")) {
+          throw new Error('Carousel selector does not use card-slide');
+        }
+        if (html.includes("board.querySelectorAll('.baseball-card')")) {
+          throw new Error('Carousel selector still uses baseball-card');
+        }
         if (!html.includes('border:3px solid')) throw new Error('No bordered card style');
         if (!html.includes('--card-bg-')) throw new Error('No pastel background CSS vars');
         if (!html.includes('--pixel-font')) throw new Error('No pixel font CSS var');
