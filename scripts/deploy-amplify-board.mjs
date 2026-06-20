@@ -199,6 +199,58 @@ function ensureBranch(appId, branchName, displayName = branchName, stage = 'EXPE
   console.log(`Created branch ${branchName}`);
 }
 
+function ensureDomainAssociation(appId, deployedBranches) {
+  // Build sub-domain settings: root → dashboard, each branch → its prefix
+  const subDomainSettings = [
+    { prefix: '', branchName: config.dashboardBranch },
+    ...deployedBranches.map(b => ({ prefix: b.deployBranch, branchName: b.deployBranch })),
+  ];
+
+  const subDomainArg = JSON.stringify(subDomainSettings);
+
+  // Try update first (domain already associated), fall back to create
+  const updateResult = spawnSync(
+    'aws',
+    [
+      'amplify', 'update-domain-association',
+      '--app-id', appId,
+      '--domain-name', config.customDomain,
+      '--sub-domain-settings', subDomainArg,
+      '--region', config.region,
+      '--output', 'json',
+      '--no-cli-pager',
+    ],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+
+  if (updateResult.status === 0) {
+    console.log(`Updated domain association: ${config.customDomain}`);
+    return;
+  }
+
+  // If update failed (domain not yet associated), create it
+  const createResult = spawnSync(
+    'aws',
+    [
+      'amplify', 'create-domain-association',
+      '--app-id', appId,
+      '--domain-name', config.customDomain,
+      '--sub-domain-settings', subDomainArg,
+      '--region', config.region,
+      '--output', 'json',
+      '--no-cli-pager',
+    ],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+
+  if (createResult.status === 0) {
+    console.log(`Created domain association: ${config.customDomain}`);
+  } else {
+    console.warn(`Domain association failed: ${createResult.stderr || createResult.stdout}`);
+    console.warn('Branch subdomains may not be accessible on the custom domain.');
+  }
+}
+
 function waitForJob(appId, branchName, jobId) {
   const terminal = new Set(['SUCCEED', 'FAILED', 'CANCELLED']);
   for (;;) {
@@ -803,6 +855,7 @@ async function main() {
   if (!skipAws) {
     ensureBranch(app.appId, config.dashboardBranch, config.dashboardBranch, 'PRODUCTION');
     await deployZip(app.appId, config.dashboardBranch, dashboardZip);
+    ensureDomainAssociation(app.appId, deployedBranches);
   }
 
   console.log('\nDeployment board');
