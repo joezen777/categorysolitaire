@@ -512,7 +512,7 @@ function renderDashboard(app, deployedBranches) {
             <div class="domain-mark" aria-label="cardbrdbx.com"><span class="globe"></span><strong>CARDBRDBX</strong><em>.com</em></div>
           </footer>
         </article>
-        <a class="open-app-button" href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>
+        <a class="open-app-button" href="${htmlEscape(displayUrl)}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>
       </div>`;
   }).join('\n');
 
