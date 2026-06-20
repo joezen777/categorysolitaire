@@ -396,6 +396,9 @@ describe('Property 5: Card structure completeness', () => {
         if (!html.includes('card-slide')) throw new Error('No card-slide class');
         if (!html.includes('baseball-card')) throw new Error('No baseball-card class');
         if (!html.includes('open-app-button')) throw new Error('No standalone open-app-button class');
+        if (!html.includes('color:var(--header-text)')) throw new Error('Open App button should use readable text color');
+        if (html.includes('color:var(--header-bg);')) throw new Error('Open App button text matches its background');
+        if (html.includes('padding:6px 8px 0')) throw new Error('Open App button has clipped bottom padding');
         if (html.includes('card-footer')) throw new Error('Deprecated card-footer block found');
         if (!html.includes("board.querySelectorAll('.card-slide')")) {
           throw new Error('Carousel selector does not use card-slide');
@@ -404,6 +407,8 @@ describe('Property 5: Card structure completeness', () => {
           throw new Error('Carousel selector still uses baseball-card');
         }
         if (!html.includes('border:3px solid')) throw new Error('No bordered card style');
+        if (!html.includes('min-height:0')) throw new Error('Card should shrink/grow to full content height');
+        if (!html.includes('overflow:visible')) throw new Error('Card bottom must not clip vertical content');
         if (!html.includes('--card-bg-')) throw new Error('No pastel background CSS vars');
         if (!html.includes('--pixel-font')) throw new Error('No pixel font CSS var');
         if (!html.includes('"Courier New"')) throw new Error('No pixel-style font-family');

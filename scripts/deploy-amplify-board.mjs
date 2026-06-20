@@ -478,8 +478,7 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
 }
 .baseball-card{
   border:3px solid var(--card-navy);
-  aspect-ratio:2.5/3.5;
-  min-height:420px;
+  min-height:0;
   background:
     radial-gradient(circle at 18% 14%,rgba(255,255,255,0.42) 0 1px,transparent 1px 6px),
     radial-gradient(circle at 78% 38%,rgba(111,75,36,0.18) 0 1px,transparent 1px 7px),
@@ -489,7 +488,7 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
   display:flex;
   flex-direction:column;
   position:relative;
-  overflow:hidden;
+  overflow:visible;
   box-shadow:inset 0 0 0 4px var(--card-gold),inset 0 0 0 7px var(--card-cream),4px 5px 0 rgba(20,39,70,0.28);
   color:var(--card-ink);
 }
@@ -619,23 +618,23 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
 .stat-tooltip strong{display:block;font-size:10px;margin-bottom:1px}
 .stat-tooltip span{opacity:0.85}
 .open-app-button{
-  align-self:center;
   display:block;
   width:100%;
   max-width:180px;
   border:2px solid var(--ink);
   background:var(--header-bg);
   color:var(--header-text);
-  padding:6px 10px;
   text-align:center;
   align-self:flex-end;
-  color:var(--header-bg);
   text-decoration:none;
   font-size:10px;
   font-weight:bold;
   text-transform:uppercase;
   letter-spacing:1px;
-  padding:6px 8px 0;
+  padding:8px 10px;
+}
+.open-app-button:visited{
+  color:var(--header-text);
 }
 .open-app-button:hover,.open-app-button:focus{
   background:var(--ink);
@@ -658,7 +657,7 @@ footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-
   .card-slide{min-width:92vw;flex-shrink:0;margin:0 4vw 0 0}
   .card-slide{min-width:calc(100vw - 16px);max-width:calc(100vw - 16px);flex:0 0 calc(100vw - 16px);padding:0 8px 0 0}
   .baseball-card{width:100%}
-  .open-app-button{padding:8px 8px 0}
+  .open-app-button{padding:8px 10px}
   .swipe-safe-zone{display:block;height:64px;background:transparent;pointer-events:none}
   .board{transition:transform 250ms ease}
   .carousel-dots{display:flex}
