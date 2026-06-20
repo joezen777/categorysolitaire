@@ -36,7 +36,33 @@ aws iam create-policy \
           "amplify:StartDeployment",
           "amplify:TagResource",
           "amplify:UntagResource",
-          "amplify:ListTagsForResource"
+          "amplify:ListTagsForResource",
+          "amplify:CreateDomainAssociation",
+          "amplify:UpdateDomainAssociation",
+          "amplify:GetDomainAssociation",
+          "amplify:ListDomainAssociations"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "Route53ForAmplifyDomains",
+        "Effect": "Allow",
+        "Action": [
+          "route53:ChangeResourceRecordSets",
+          "route53:ListHostedZones",
+          "route53:ListResourceRecordSets",
+          "route53:GetHostedZone"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "ACMForAmplifyDomains",
+        "Effect": "Allow",
+        "Action": [
+          "acm:RequestCertificate",
+          "acm:DescribeCertificate",
+          "acm:ListCertificates",
+          "acm:DeleteCertificate"
         ],
         "Resource": "*"
       }
