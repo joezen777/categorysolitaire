@@ -706,8 +706,7 @@ footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-
   main{max-width:none}
   header{margin-bottom:12px}
   .board{display:flex;overflow:hidden;gap:0;position:relative}
-  .card-slide{min-width:92vw;flex-shrink:0;margin:0 4vw 0 0}
-  .card-slide{min-width:calc(100vw - 16px);max-width:calc(100vw - 16px);flex:0 0 calc(100vw - 16px);padding:0 8px 0 0}
+  .card-slide{min-width:calc(100vw - 16px);max-width:calc(100vw - 16px);flex:0 0 calc(100vw - 16px);margin:0 8px 0 0}
   .baseball-card{width:100%}
   .open-app-button{padding:8px 10px}
   .swipe-safe-zone{display:block;height:64px;background:transparent;pointer-events:none}
@@ -760,7 +759,8 @@ footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-
   var pos=0,startX=0,startY=0,startTime=0,tracking=false;
   function updateCarousel(){
     if(!board||cards.length<=1)return;
-    var w=cards[0].offsetWidth+parseFloat(getComputedStyle(cards[0]).marginRight||0);
+    var style=getComputedStyle(cards[0]);
+    var w=cards[0].offsetWidth+(parseInt(style.marginRight,10)||0);
     board.style.transform='translateX(-'+(pos*w)+'px)';
     for(var i=0;i<dots.length;i++){
       dots[i].classList.toggle('active',i===pos);
@@ -771,7 +771,7 @@ footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-
   if(cards.length>1&&'ontouchstart' in window){
     board.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;startY=e.touches[0].clientY;startTime=Date.now();tracking=true;},{passive:true});
     board.addEventListener('touchmove',function(e){if(!tracking)return;if(Math.abs(e.touches[0].clientY-startY)>30)tracking=false;},{passive:true});
-    board.addEventListener('touchend',function(e){if(!tracking)return;var dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>50&&Date.now()-startTime<300){if(dx<0)pos=Math.min(pos+1,cards.length-1);else pos=Math.max(pos-1,0);updateCarousel();}tracking=false;},{passive:true});
+    board.addEventListener('touchend',function(e){if(!tracking)return;var dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>40&&Date.now()-startTime<800){if(dx<0)pos=Math.min(pos+1,cards.length-1);else pos=Math.max(pos-1,0);updateCarousel();}tracking=false;},{passive:true});
   }
   for(var d=0;d<dots.length;d++)dots[d].addEventListener('click',(function(idx){return function(){pos=idx;updateCarousel();};})(d));
 })();
