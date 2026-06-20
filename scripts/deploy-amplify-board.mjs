@@ -317,32 +317,32 @@ function htmlEscape(value) {
 
 const STAT_GROUPS = {
   Code: [
-    { key: 'sloc', abbr: 'SLoC', label: 'Source Lines of Code', desc: 'Total non-blank, non-comment lines of source code.' },
-    { key: 'fileCount', abbr: 'Files', label: 'File Count', desc: 'Number of source files in the project.' },
-    { key: 'avgFileSize', abbr: 'Avg', label: 'Average File Size', desc: 'Mean number of lines per source file.' },
-    { key: 'bundleSize', abbr: 'Bndl', label: 'Bundle Size (KB)', desc: 'Total size of the production build output.' },
+    { key: 'sloc', abbr: 'Source Lines of Code', label: 'Source Lines of Code', desc: 'Total non-blank, non-comment lines of source code.' },
+    { key: 'fileCount', abbr: 'Source File Count', label: 'File Count', desc: 'Number of source files in the project.' },
+    { key: 'avgFileSize', abbr: 'Avg Lines per File', label: 'Average File Size', desc: 'Mean number of lines per source file.' },
+    { key: 'bundleSize', abbr: 'Bundle Size (KB)', label: 'Bundle Size (KB)', desc: 'Total size of the production build output.' },
   ],
   Quality: [
-    { key: 'maintainability', abbr: 'MI', label: 'Maintainability Index', desc: 'Composite score (0-100) indicating how maintainable the code is.' },
-    { key: 'maxComplexity', abbr: 'Cplx', label: 'Max Cyclomatic Complexity', desc: 'Highest complexity score of any single function.' },
-    { key: 'duplication', abbr: 'Dup%', label: 'Duplication Percentage', desc: 'Percentage of code that appears in more than one location.' },
+    { key: 'maintainability', abbr: 'Maintainability Index', label: 'Maintainability Index', desc: 'Composite score (0-100) indicating how maintainable the code is.' },
+    { key: 'maxComplexity', abbr: 'Max Cyclomatic Complexity', label: 'Max Cyclomatic Complexity', desc: 'Highest complexity score of any single function.' },
+    { key: 'duplication', abbr: 'Duplication %', label: 'Duplication Percentage', desc: 'Percentage of code that appears in more than one location.' },
   ],
   Health: [
-    { key: 'securityIssues', abbr: 'SecI', label: 'Security Issues', desc: 'Number of known vulnerabilities in dependencies.' },
-    { key: 'tsErrors', abbr: 'TSE', label: 'TypeScript Errors', desc: 'Compilation errors under strict TypeScript mode.' },
-    { key: 'unusedExports', abbr: 'UExp', label: 'Unused Exports', desc: 'Exported symbols not imported anywhere in the project.' },
+    { key: 'securityIssues', abbr: 'Security Vulnerabilities', label: 'Security Issues', desc: 'Number of known vulnerabilities in dependencies.' },
+    { key: 'tsErrors', abbr: 'TypeScript Errors', label: 'TypeScript Errors', desc: 'Compilation errors under strict TypeScript mode.' },
+    { key: 'unusedExports', abbr: 'Unused Exports', label: 'Unused Exports', desc: 'Exported symbols not imported anywhere in the project.' },
   ],
   Process: [
-    { key: 'commits', abbr: 'Cmts', label: 'Commit Count', desc: 'Total number of git commits on the branch.' },
-    { key: 'churn', abbr: 'Chrn', label: 'Code Churn', desc: 'Sum of lines added and deleted across all commits.' },
-    { key: 'coverage', abbr: 'Cov%', label: 'Test Coverage', desc: 'Percentage of source lines exercised by tests.' },
+    { key: 'commits', abbr: 'Total Commits', label: 'Commit Count', desc: 'Total number of git commits on the branch.' },
+    { key: 'churn', abbr: 'Code Churn (lines)', label: 'Code Churn', desc: 'Sum of lines added and deleted across all commits.' },
+    { key: 'coverage', abbr: 'Test Coverage %', label: 'Test Coverage', desc: 'Percentage of source lines exercised by tests.' },
   ],
   UX: [
-    { key: 'lighthouseA11y', abbr: 'LhA', label: 'Lighthouse Accessibility', desc: 'Automated accessibility audit score (0-100).' },
+    { key: 'lighthouseA11y', abbr: 'Accessibility Score', label: 'Lighthouse Accessibility', desc: 'Automated accessibility audit score (0-100).' },
   ],
   Dependencies: [
-    { key: 'depCount', abbr: 'Deps', label: 'Dependency Count', desc: 'Total number of runtime and dev dependencies.' },
-    { key: 'bundleWeight', abbr: 'Bwt', label: 'Bundle Weight (KB)', desc: 'Total JavaScript bundle size shipped to browser.' },
+    { key: 'depCount', abbr: 'Dependency Count', label: 'Dependency Count', desc: 'Total number of runtime and dev dependencies.' },
+    { key: 'bundleWeight', abbr: 'JS Bundle Weight (KB)', label: 'Bundle Weight (KB)', desc: 'Total JavaScript bundle size shipped to browser.' },
   ],
 };
 
@@ -514,9 +514,9 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
 .stat-table td.stat-abbr{
   color:var(--rule);
   font-size:9px;
-  width:42px;
   cursor:help;
   position:relative;
+  white-space:nowrap;
 }
 .stat-table td.stat-val{
   text-align:right;
