@@ -199,6 +199,58 @@ function ensureBranch(appId, branchName, displayName = branchName, stage = 'EXPE
   console.log(`Created branch ${branchName}`);
 }
 
+function ensureDomainAssociation(appId, deployedBranches) {
+  // Build sub-domain settings: root → dashboard, each branch → its prefix
+  const subDomainSettings = [
+    { prefix: '', branchName: config.dashboardBranch },
+    ...deployedBranches.map(b => ({ prefix: b.deployBranch, branchName: b.deployBranch })),
+  ];
+
+  const subDomainArg = JSON.stringify(subDomainSettings);
+
+  // Try update first (domain already associated), fall back to create
+  const updateResult = spawnSync(
+    'aws',
+    [
+      'amplify', 'update-domain-association',
+      '--app-id', appId,
+      '--domain-name', config.customDomain,
+      '--sub-domain-settings', subDomainArg,
+      '--region', config.region,
+      '--output', 'json',
+      '--no-cli-pager',
+    ],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+
+  if (updateResult.status === 0) {
+    console.log(`Updated domain association: ${config.customDomain}`);
+    return;
+  }
+
+  // If update failed (domain not yet associated), create it
+  const createResult = spawnSync(
+    'aws',
+    [
+      'amplify', 'create-domain-association',
+      '--app-id', appId,
+      '--domain-name', config.customDomain,
+      '--sub-domain-settings', subDomainArg,
+      '--region', config.region,
+      '--output', 'json',
+      '--no-cli-pager',
+    ],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
+  );
+
+  if (createResult.status === 0) {
+    console.log(`Created domain association: ${config.customDomain}`);
+  } else {
+    console.warn(`Domain association failed: ${createResult.stderr || createResult.stdout}`);
+    console.warn('Branch subdomains may not be accessible on the custom domain.');
+  }
+}
+
 function waitForJob(appId, branchName, jobId) {
   const terminal = new Set(['SUCCEED', 'FAILED', 'CANCELLED']);
   for (;;) {
@@ -480,7 +532,8 @@ body{font-family:var(--pixel);background:radial-gradient(circle at 25% 8%,#fff8d
 main{max-width:1220px;margin:0 auto}header{text-align:center;margin-bottom:14px}h1{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#5d4930}header p{display:none}.board{display:grid;grid-template-columns:repeat(4,minmax(250px,1fr));gap:14px;align-items:start}.card-slide{display:flex;flex-direction:column;gap:10px;min-width:0}.baseball-card{position:relative;overflow:visible;min-height:0;border:3px solid var(--navy);color:var(--ink);padding:12px 14px;background:radial-gradient(circle at 14% 22%,rgba(69,48,20,.2) 0 1px,transparent 1px 8px),radial-gradient(circle at 82% 16%,rgba(255,255,255,.22) 0 1px,transparent 1px 7px),repeating-linear-gradient(0deg,rgba(9,43,71,.045) 0 1px,transparent 1px 5px),linear-gradient(135deg,#f3df9e,#d5b657 20%,#efd690 56%,#c99f2e);box-shadow:inset 0 0 0 5px var(--gold),inset 0 0 0 9px #f7e8b8,5px 6px 0 rgba(6,29,49,.38)}
 .baseball-card:before{content:"";position:absolute;inset:9px;border:2px solid var(--navy);clip-path:polygon(4% 0,96% 0,100% 4%,100% 96%,96% 100%,4% 100%,0 96%,0 4%);pointer-events:none}.baseball-card:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,247,206,.24),transparent 20% 75%,rgba(20,39,70,.2));mix-blend-mode:multiply;pointer-events:none}.baseball-card>*{position:relative;z-index:1}.top-banner{display:grid;grid-template-columns:78px 1fr;align-items:stretch;background:var(--navy);clip-path:polygon(4% 0,96% 0,100% 50%,96% 100%,4% 100%,0 50%);border:3px solid var(--navy2);min-height:70px;margin-bottom:10px}.commit-tag{display:flex;align-items:center;justify-content:center;background:var(--gold);color:#050505;font-family:var(--condensed);font-size:28px;letter-spacing:1px;font-weight:900;clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%);text-transform:lowercase}.title-stack{display:flex;align-items:center;min-width:0;padding:6px 12px 6px 18px}.card-title{font-family:var(--condensed);font-size:clamp(26px,3.2vw,42px);line-height:.95;text-transform:uppercase;letter-spacing:2px;color:#f3e2b0;text-shadow:2px 2px 0 rgba(0,0,0,.28);white-space:normal}.card-title i{font-style:normal;color:var(--gold);margin:0 10px}.card-title b{color:var(--gold);font-weight:900}.micro-meta{display:grid;grid-template-columns:.8fr 1.4fr 1fr .8fr;gap:8px;border-top:3px solid var(--navy);border-bottom:3px solid var(--navy);padding:7px 8px;margin-bottom:10px;font-size:10px;font-weight:900;text-transform:lowercase;color:#111;background:rgba(232,198,89,.45)}.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat-box{border:2px solid var(--navy);background:rgba(247,232,184,.42);min-height:148px}.stat-head{display:flex;justify-content:space-between;align-items:center;background:var(--navy);color:var(--gold2);padding:5px 7px;font-family:var(--condensed);font-size:19px;text-transform:uppercase;letter-spacing:1.3px}.stat-head span{font-family:var(--pixel);font-size:9px;color:#f7e8b8}.stat-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;padding:6px 7px}.stat-abbr{display:flex;align-items:flex-end;min-width:0;font-weight:900;font-size:10px;line-height:1.1;cursor:help;position:relative;white-space:normal}.leader-line{height:1px;flex:1;border-bottom:2px dotted var(--ink);margin:0 3px 2px;opacity:.8}.stat-value{display:inline-flex;min-width:42px;min-height:28px;align-items:center;justify-content:center;border:2px solid var(--navy);background:linear-gradient(#f3d365,var(--gold));box-shadow:inset 0 0 0 1px #fff2b8,1px 1px 0 var(--shadow);font-size:13px;font-weight:900;color:var(--navy)}.stat-tooltip{display:none;position:absolute;left:0;bottom:100%;background:#111;color:#fff;padding:5px 7px;font-size:9px;min-width:150px;max-width:220px;z-index:100;line-height:1.3}.stat-tooltip.visible{display:block}.stat-tooltip strong{display:block;color:var(--gold2);margin-bottom:2px}.scouting-report{display:grid;grid-template-columns:92px 1fr;gap:12px;margin-top:12px;border:2px solid var(--navy);border-radius:14px;padding:10px;background:rgba(247,232,184,.42)}.mascot-wrap{align-self:center;width:25%}.scouting-report .mascot-wrap{width:auto}.card-logo{display:block;width:100%;height:auto;filter:drop-shadow(3px 4px 0 rgba(9,43,71,.25))}.report-copy h2{display:inline-block;background:var(--navy);color:var(--gold2);font-family:var(--condensed);font-size:20px;letter-spacing:1.2px;text-transform:uppercase;padding:2px 8px;margin-bottom:6px}.report-copy p{font-size:12px;font-weight:900;line-height:1.38;font-style:italic}.bottom-panel{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-top:12px}.trait-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 10px;background:rgba(214,173,56,.7);border:2px solid var(--navy);padding:7px;font-size:10px;text-transform:uppercase;font-weight:900}.trait-strip b{color:var(--navy)}.domain-mark{display:grid;justify-items:center;color:#f3e2b0;text-shadow:2px 2px 0 var(--navy);font-family:var(--condensed);font-size:20px;letter-spacing:1px;min-width:106px}.domain-mark em{font-family:var(--pixel);font-size:9px;color:var(--gold2);font-style:normal}.globe{width:78px;height:36px;border:2px solid #f3e2b0;border-radius:50%;display:block;margin-bottom:-24px;background:repeating-radial-gradient(circle,transparent 0 7px,rgba(243,226,176,.55) 8px 9px),linear-gradient(90deg,transparent 48%,#f3e2b0 49% 51%,transparent 52%)}.open-app-button{display:block;align-self:center;width:70%;border:3px solid var(--ink);background:#c7472e;color:var(--header-text);text-align:center;text-decoration:none;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:9px 10px;box-shadow:3px 3px 0 rgba(0,0,0,.2)}.open-app-button:visited{color:#fff}.open-app-button:hover,.open-app-button:focus{background:var(--navy);outline:2px solid var(--gold);outline-offset:2px}.carousel-dots{display:none;justify-content:center;gap:8px;margin:12px 0}.dot{width:12px;height:12px;border:2px solid var(--navy);background:#d7c9a4;transform:rotate(45deg)}.dot.active{background:var(--gold)}footer.page-footer{text-align:center;margin-top:12px;color:#5d4930;font-size:9px;letter-spacing:.5px}
 @media(max-width:1120px){.board{grid-template-columns:repeat(2,minmax(270px,1fr))}.baseball-card{min-height:720px}}
-@media(max-width:700px){body{padding:8px}.board{display:flex;overflow-x:auto;overflow-y:visible;gap:0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}.board::-webkit-scrollbar{display:none}.card-slide{flex:0 0 calc(100vw - 16px);max-width:calc(100vw - 16px);padding:0 8px;scroll-snap-align:start}.baseball-card{min-height:auto;padding:10px}.top-banner{grid-template-columns:86px 1fr}.card-title{font-size:30px}.micro-meta{grid-template-columns:1fr;font-size:10px}.stat-grid{grid-template-columns:1fr}.stat-box{min-height:0}.scouting-report{grid-template-columns:78px 1fr}.bottom-panel{grid-template-columns:1fr}.domain-mark{justify-self:end}.carousel-dots{display:flex}.open-app-button{width:78%}}
+@media(max-width:700px){body{padding:8px}.board{display:flex;overflow-x:auto;overflow-y:visible;gap:0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}.board::-webkit-scrollbar{display:none}.card-slide{flex:0 0 calc(100vw - 16px);max-width:calc(100vw - 16px);margin:0 8px 0 0;scroll-snap-align:start}.baseball-card{min-height:auto;padding:10px}.top-banner{grid-template-columns:86px 1fr}.card-title{font-size:30px}.micro-meta{grid-template-columns:1fr;font-size:10px}.stat-grid{grid-template-columns:1fr}.stat-box{min-height:0}.scouting-report{grid-template-columns:78px 1fr}.bottom-panel{grid-template-columns:1fr}.domain-mark{justify-self:end}.carousel-dots{display:flex}.open-app-button{width:78%}}
+
 </style>
 </head>
 <body>
@@ -503,10 +556,18 @@ main{max-width:1220px;margin:0 auto}header{text-align:center;margin-bottom:14px}
   for(var i=0;i<cells.length;i++){cells[i].addEventListener('mouseenter',function(){show(this);});cells[i].addEventListener('focus',function(){show(this);});cells[i].addEventListener('mouseleave',hide);cells[i].addEventListener('blur',hide);cells[i].addEventListener('touchstart',function(e){var tipId=this.getAttribute('data-tip');var tip=document.getElementById(tipId);if(tip&&tip.classList.contains('visible')){hide();}else{show(this);}}, {passive:true});}
   document.addEventListener('touchstart',function(e){if(!e.target.closest||!e.target.closest('.stat-abbr'))hide();},{passive:true});
   var board=document.getElementById('card-board');var cards=board?board.querySelectorAll('.card-slide'):[];var dots=document.querySelectorAll('.dot');
+  var activeCard=0,startX=0,startY=0,startTime=0,tracking=false;
   function setDot(idx){for(var i=0;i<dots.length;i++)dots[i].classList.toggle('active',i===idx);}
-  function scrollToCard(idx){if(!board||!cards[idx])return;board.scrollTo({left:cards[idx].offsetLeft-board.offsetLeft,behavior:'smooth'});setDot(idx);}
+  function cardStep(){if(!cards.length)return 1;var style=getComputedStyle(cards[0]);return cards[0].offsetWidth+(parseInt(style.marginRight,10)||0);}
+  function scrollToCard(idx){if(!board||!cards[idx])return;activeCard=idx;board.scrollTo({left:idx*cardStep(),behavior:'smooth'});setDot(idx);}
   for(var d=0;d<dots.length;d++)dots[d].addEventListener('click',(function(idx){return function(){scrollToCard(idx);};})(d));
-  if(board&&cards.length>1){board.addEventListener('scroll',function(){var idx=Math.round(board.scrollLeft/Math.max(1,cards[0].offsetWidth));setDot(Math.max(0,Math.min(cards.length-1,idx)));},{passive:true});}
+  if(board&&cards.length>1){
+    board.addEventListener('scroll',function(){var idx=Math.round(board.scrollLeft/Math.max(1,cardStep()));activeCard=Math.max(0,Math.min(cards.length-1,idx));setDot(activeCard);},{passive:true});
+    board.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;startY=e.touches[0].clientY;startTime=Date.now();tracking=true;},{passive:true});
+    board.addEventListener('touchmove',function(e){if(!tracking)return;if(Math.abs(e.touches[0].clientY-startY)>30)tracking=false;},{passive:true});
+    board.addEventListener('touchend',function(e){if(!tracking)return;var dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>40&&Date.now()-startTime<800){if(dx<0)activeCard=Math.min(activeCard+1,cards.length-1);else activeCard=Math.max(activeCard-1,0);scrollToCard(activeCard);}tracking=false;},{passive:true});
+  }
+
 })();
 </script>
 </body>
@@ -588,6 +649,7 @@ async function main() {
   if (!skipAws) {
     ensureBranch(app.appId, config.dashboardBranch, config.dashboardBranch, 'PRODUCTION');
     await deployZip(app.appId, config.dashboardBranch, dashboardZip);
+    ensureDomainAssociation(app.appId, deployedBranches);
   }
 
   console.log('\nDeployment board');
