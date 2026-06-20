@@ -418,6 +418,18 @@ function renderDashboard(app, deployedBranches) {
           ${statGroupsHtml}
         </article>
         <a class="open-app-button" href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">Open App</a>
+      <article class="baseball-card">
+        <div class="card-banner">
+          <div class="card-logo-container">${branchConfig.logo}</div>
+          <div class="card-name">
+            <span class="card-llm">${htmlEscape(branchConfig.llm)}</span>
+            <span class="card-meta">${htmlEscape(branchConfig.paradigm)} &middot; ${htmlEscape(branchConfig.ide)}</span>
+          </div>
+        </div>
+        ${statGroupsHtml}
+      </article>
+      <a class="open-app-button" href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>
+      <div class="swipe-safe-zone" aria-hidden="true"></div>
       </div>`;
   }).join('\n');
 
@@ -562,17 +574,22 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
   color:var(--header-text);
   padding:6px 10px;
   text-align:center;
+  align-self:flex-end;
+  color:var(--header-bg);
   text-decoration:none;
   font-size:10px;
   font-weight:bold;
   text-transform:uppercase;
   letter-spacing:1px;
+  padding:6px 8px 0;
 }
 .open-app-button:hover,.open-app-button:focus{
   background:var(--ink);
   outline:2px solid var(--rule);
   outline-offset:2px;
 }
+.open-app-button:hover{text-decoration:underline}
+.swipe-safe-zone{display:none}
 footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-spacing:0.5px}
 
 .carousel-dots{display:none;justify-content:center;gap:6px;margin-top:8px}
@@ -581,8 +598,14 @@ footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-
 
 @media(max-width:600px){
   body{padding:8px}
+  main{max-width:none}
+  header{margin-bottom:12px}
   .board{display:flex;overflow:hidden;gap:0;position:relative}
   .card-slide{min-width:92vw;flex-shrink:0;margin:0 4vw 0 0}
+  .card-slide{min-width:calc(100vw - 16px);max-width:calc(100vw - 16px);flex:0 0 calc(100vw - 16px);padding:0 8px 0 0}
+  .baseball-card{width:100%}
+  .open-app-button{padding:8px 8px 0}
+  .swipe-safe-zone{display:block;height:64px;background:transparent;pointer-events:none}
   .board{transition:transform 250ms ease}
   .carousel-dots{display:flex}
 }
