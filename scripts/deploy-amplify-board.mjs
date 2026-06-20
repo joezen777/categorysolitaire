@@ -406,7 +406,8 @@ function renderDashboard(app, deployedBranches) {
     const statGroupsHtml = renderStatGroups(branch.metrics, index);
 
     return `
-      <article class="baseball-card" data-card-index="${index}">
+      <div class="card-slide" data-card-index="${index}">
+      <article class="baseball-card">
         <div class="card-banner">
           <div class="card-logo-container">${branchConfig.logo}</div>
           <div class="card-name">
@@ -415,10 +416,10 @@ function renderDashboard(app, deployedBranches) {
           </div>
         </div>
         ${statGroupsHtml}
-        <div class="card-footer">
-          <a href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>
-        </div>
-      </article>`;
+      </article>
+      <a class="open-app-button" href="${htmlEscape(branch.url || '#')}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>
+      <div class="swipe-safe-zone" aria-hidden="true"></div>
+      </div>`;
   }).join('\n');
 
   const dotIndicators = deployedBranches.length > 1
@@ -463,6 +464,10 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
   grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:12px;
 }
+.card-slide{
+  display:flex;
+  flex-direction:column;
+}
 .baseball-card{
   border:3px solid var(--ink);
   background:var(--cream);
@@ -471,10 +476,10 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
   position:relative;
   overflow:hidden;
 }
-.baseball-card:nth-child(1){background:var(--card-bg-claude)}
-.baseball-card:nth-child(2){background:var(--card-bg-codex)}
-.baseball-card:nth-child(3){background:var(--card-bg-cerebras)}
-.baseball-card:nth-child(4){background:var(--card-bg-kiro)}
+.card-slide:nth-child(1) .baseball-card{background:var(--card-bg-claude)}
+.card-slide:nth-child(2) .baseball-card{background:var(--card-bg-codex)}
+.card-slide:nth-child(3) .baseball-card{background:var(--card-bg-cerebras)}
+.card-slide:nth-child(4) .baseball-card{background:var(--card-bg-kiro)}
 .card-banner{
   background:var(--header-bg);
   color:var(--header-text);
@@ -547,20 +552,18 @@ header p{color:var(--rule);font-size:10px;text-transform:uppercase;letter-spacin
 .stat-tooltip.visible{display:block}
 .stat-tooltip strong{display:block;font-size:10px;margin-bottom:1px}
 .stat-tooltip span{opacity:0.85}
-.card-footer{
-  border-top:2px solid var(--ink);
-  padding:3px 8px;
-  text-align:right;
-}
-.card-footer a{
+.open-app-button{
+  align-self:flex-end;
   color:var(--header-bg);
   text-decoration:none;
   font-size:9px;
   font-weight:bold;
   text-transform:uppercase;
   letter-spacing:1px;
+  padding:6px 8px 0;
 }
-.card-footer a:hover{text-decoration:underline}
+.open-app-button:hover{text-decoration:underline}
+.swipe-safe-zone{display:none}
 footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-spacing:0.5px}
 
 .carousel-dots{display:none;justify-content:center;gap:6px;margin-top:8px}
@@ -569,8 +572,13 @@ footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-
 
 @media(max-width:600px){
   body{padding:8px}
+  main{max-width:none}
+  header{margin-bottom:12px}
   .board{display:flex;overflow:hidden;gap:0;position:relative}
-  .baseball-card{min-width:92vw;flex-shrink:0;margin:0 4vw 0 0}
+  .card-slide{min-width:calc(100vw - 16px);max-width:calc(100vw - 16px);flex:0 0 calc(100vw - 16px);padding:0 8px 0 0}
+  .baseball-card{width:100%}
+  .open-app-button{padding:8px 8px 0}
+  .swipe-safe-zone{display:block;height:64px;background:transparent;pointer-events:none}
   .board{transition:transform 250ms ease}
   .carousel-dots{display:flex}
 }
@@ -615,7 +623,7 @@ footer{text-align:center;margin-top:12px;color:var(--rule);font-size:9px;letter-
   }
   document.addEventListener('touchstart',function(e){if(!e.target.classList.contains('stat-abbr'))hide();});
   var board=document.getElementById('card-board');
-  var cards=board?board.querySelectorAll('.baseball-card'):[];
+  var cards=board?board.querySelectorAll('.card-slide'):[];
   var dots=document.querySelectorAll('.dot');
   var pos=0,startX=0,startY=0,startTime=0,tracking=false;
   function updateCarousel(){
