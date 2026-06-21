@@ -2,6 +2,50 @@
 
 [Click for Online Demo](https://solitaire.cardbrdbx.com/)
 
+# Visual QA Agent
+
+This repo includes a local, visual-first QA agent for playing Category Solitaire against any deployed branch or local app URL. It observes browser screenshots, asks a local multimodal model for card/drop-target coordinates, then uses Playwright mouse/touch gestures to drag, tap, and tap-to-move. The agent does not read app source or hidden game state while playing, which keeps it useful for nondeterministic app implementations and future generated levels.
+
+Install browser support once from WSL2 Ubuntu:
+
+```bash
+npm install
+npm run qa:agent:install
+```
+
+Run a mechanics probe against a deployed branch:
+
+```bash
+npm run qa:agent -- --branch codex-vibe --mode mechanics --headed
+```
+
+Run a solve or training pass against a local dev server:
+
+```bash
+npm run qa:agent -- --url http://localhost:5173 --mode solve --max-steps 200
+npm run qa:agent -- --url http://localhost:5173 --mode train --episodes 5 --max-steps 250
+```
+
+The agent stops when it wins, when the visual planner reports no valid draw/recycle/card-move actions, or when it recycles through the deck twice without a successful card move. `--max-steps` is still available as a safety guard for bad model output or unexpected UI loops.
+
+Use a local multimodal Qwen-style model through Ollama or any OpenAI-compatible server:
+
+```bash
+QA_VISION_PROVIDER=ollama \
+QA_VISION_MODEL=qwen2.5vl:7b \
+QA_VISION_URL=http://127.0.0.1:11434/api/chat \
+npm run qa:agent -- --branch codex-vibe --mode train --episodes 3
+```
+
+Each QA run writes screenshots and an animated `playthrough.gif` under `.qa-agent-artifacts/<run-id>/`. To rebuild a GIF from an existing run, use:
+
+```bash
+npm run qa:agent:gif
+npm run qa:agent:gif -- --run-dir .qa-agent-artifacts/<run-id> --max-width 540 --delay-ms 500
+```
+
+If no vision endpoint is configured, the script still launches and records screenshots with a weak heuristic fallback, but real play requires a multimodal model that can return screenshot coordinates. Learned Q-values are stored in `.qa-agent-policy.json`; screenshots, GIFs, and JSON run reports are stored under `.qa-agent-artifacts/` and `.qa-agent-reports/`.
+
 # The Goal
 
 To show the practical performance, accuracy and reliability of different LLMs and different agentic development patterns.  I plan to go through vibe coding, spec driven development, steering files impact and finally semi-autonomous chained agents development. 

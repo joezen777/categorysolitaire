@@ -3,3 +3,6 @@ dist/
 .vite/
 .amplify-artifacts/
 .amplify-worktrees/
+.qa-agent-artifacts/
+.qa-agent-reports/
+.qa-agent-policy*.json

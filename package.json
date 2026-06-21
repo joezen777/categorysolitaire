@@ -5,11 +5,17 @@
   "private": true,
   "scripts": {
     "test": "vitest --run",
-    "test:properties": "vitest --run tests/properties/"
+    "test:properties": "vitest --run tests/properties/",
+    "qa:agent": "node scripts/qa-agent.mjs",
+    "qa:agent:gif": "node scripts/make-qa-agent-gif.mjs",
+    "qa:agent:install": "playwright install chromium"
   },
   "devDependencies": {
     "fast-check": "^4.1.1",
+    "gifenc": "^1.0.3",
     "jscpd": "^4.0.5",
+    "playwright": "^1.61.0",
+    "pngjs": "^7.0.0",
     "typhonjs-escomplex": "^0.1.0",
     "vitest": "^3.2.4"
   },
