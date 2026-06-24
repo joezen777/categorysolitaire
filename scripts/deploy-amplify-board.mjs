@@ -15,6 +15,7 @@ const config = {
     { sourceRef: 'origin/codex.vibe', deployBranch: 'codex-vibe', label: 'Codex Vibe' },
     { sourceRef: 'origin/cerebras.vibe', deployBranch: 'cerebras-vibe', label: 'Cerebras Vibe' },
     { sourceRef: 'origin/develop.kiro.vibe', deployBranch: 'develop-kiro-vibe', label: 'Develop Kiro Vibe' },
+    { sourceRef: 'origin/gemini.antigravity.vibe', deployBranch: 'gemini-vibe', label: 'Gemini Vibe' },
   ],
 };
 
@@ -408,6 +409,8 @@ const CEREBRAS_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96
 
 const KIRO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" class="card-logo mascot kiro-mascot" aria-hidden="true"><path fill="#0b2c48" d="M20 35c0-16 12-25 28-25s28 9 28 25v45l-10-7-9 8-9-8-9 8-9-8-10 7z"/><path fill="#d8b64b" d="M28 36c0-12 8-18 20-18s20 6 20 18v28l-7-5-7 6-6-6-6 6-7-6-7 5z"/><path fill="#0b2c48" d="M35 39h8v9h-8zM53 39h8v9h-8zM39 56h18v5H39zM22 30h-9v-8h15zM74 30h9v-8H68z"/></svg>`;
 
+const GEMINI_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" class="card-logo mascot gemini-mascot" aria-hidden="true"><path fill="#0b2c48" d="M22 28h52l7 10v32l-9 12H26L15 70V38z"/><path fill="#d8b64b" d="M26 24h44l7 10H19zM30 40h36v28H30z"/><path fill="#0b2c48" d="M38 48h6v6h-6zM52 48h6v6h-6zM42 60h12v3H42z"/><ellipse cx="48" cy="48" rx="38" ry="12" fill="none" stroke="#0b2c48" stroke-width="4"/><path fill="#0b2c48" d="M48 14l6-6-6-6-6 6zM48 82l6 6-6 6-6-6z"/></svg>`;
+
 const BRANCH_CONFIG = {
   'claude-vibe': {
     llm: 'Claude 4 Sonnet', shortName: 'Claude', paradigm: 'Vibe Mode', ide: 'Claude CLI', language: 'TypeScript', logo: CLAUDE_SVG,
@@ -428,6 +431,11 @@ const BRANCH_CONFIG = {
     llm: 'Kiro', shortName: 'Kiro', paradigm: 'Vibe Mode', ide: 'Kiro', language: 'TypeScript', logo: KIRO_SVG,
     report: 'Kiro leans spec-first and haunts the branch with product-shaped intent. Its friendly 80s ghost keeps requirements rattling around the attic.',
     traits: { built: 'Spec', tests: 'Eerie', lint: 'Orderly', security: 'Wary', vibe: 'Ghost' },
+  },
+  'gemini-vibe': {
+    llm: 'Gemini 3.5 Flash', shortName: 'Gemini', paradigm: 'Vibe Mode', ide: 'Antigravity IDE', language: 'JavaScript', logo: GEMINI_SVG,
+    report: 'Fast and multi-modal, Gemini brings antigravity energy to the board, pushing features through the stratosphere. Its space-twin mascot floats above the grid wearing a chrome retro space helmet.',
+    traits: { built: 'Cosmic', tests: 'Weightless', lint: 'Clean', security: 'Shielded', vibe: 'Float' },
   },
 };
 

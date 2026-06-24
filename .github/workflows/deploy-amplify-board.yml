@@ -3,7 +3,7 @@ name: Deploy Amplify Board
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, gemini.antigravity.vibe]
 
 permissions:
   id-token: write
