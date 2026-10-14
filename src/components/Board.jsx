@@ -1,6 +1,7 @@
 import { Box, IconButton, Typography } from '@mui/material';
 import { keyframes } from '@mui/material/styles';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 import Card, { CardBack, EmptySlot } from './Card';
 import { foundationProgress } from '../game/moves';
 
@@ -24,12 +25,33 @@ function Source({ cards, onDraw, onRecycle }) {
   );
 }
 
+// Wraps a card so it can be dragged (and still tapped) when `from` is a legal move source.
+function Draggable({ id, from, disabled, children, sx, ...props }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id, data: { from }, disabled });
+  return (
+    <Box
+      ref={setNodeRef}
+      {...(disabled ? {} : { ...attributes, ...listeners })}
+      sx={{ touchAction: disabled ? 'auto' : 'none', opacity: isDragging ? 0.35 : 1, ...sx }}
+      {...props}
+    >
+      {children}
+    </Box>
+  );
+}
+
 // Only the top (last) draft card is shown and available for moves.
 function Draft({ cards, selected, onSelect }) {
   const top = cards[cards.length - 1];
   return (
     <Box data-testid="draft" data-count={cards.length} onClick={top ? onSelect : undefined} sx={top ? clickable : undefined}>
-      {top ? <Card card={top} selected={selected} /> : <EmptySlot label="Draft" />}
+      {top ? (
+        <Draggable id="draft" from={{ type: 'draft' }}>
+          <Card card={top} selected={selected} />
+        </Draggable>
+      ) : (
+        <EmptySlot label="Draft" />
+      )}
     </Box>
   );
 }
@@ -84,8 +106,9 @@ function Glitter({ categoryTitle }) {
 
 function Foundation({ cards, slot, glitter, onClick }) {
   const progress = foundationProgress(cards);
+  const { setNodeRef } = useDroppable({ id: `slot-${slot}`, data: { to: { type: 'foundation', slot } } });
   return (
-    <Box data-testid="foundation" data-count={cards.length} onClick={() => onClick(slot)} sx={clickable}>
+    <Box ref={setNodeRef} data-testid="foundation" data-count={cards.length} onClick={() => onClick(slot)} sx={clickable}>
       <Typography
         data-testid="foundation-progress"
         align="center"
@@ -101,42 +124,84 @@ function Foundation({ cards, slot, glitter, onClick }) {
   );
 }
 
-function Column({ cards, faceUpCount, index, selection, onClick }) {
-  const firstFaceUp = cards.length - faceUpCount;
-  const selectedFrom = selection?.type === 'tableau' && selection.col === index ? selection.index : Infinity;
+// Card geometry in container-width units (cqw): a card is 140 tall (5:7), and a covered
+// card shows only its top strip so its label stays visible.
+export const CARD_H = 140;
+export const FACE_DOWN_STEP = 26;
+export const FACE_UP_STEP = 44;
+
+// Absolute `top` offsets for a stack; faceUpFlags[i] says whether card i is face up.
+export function stackOffsets(faceUpFlags) {
+  const tops = [];
+  let top = 0;
+  for (const up of faceUpFlags) {
+    tops.push(top);
+    top += up ? FACE_UP_STEP : FACE_DOWN_STEP;
+  }
+  const last = tops.length ? tops[tops.length - 1] : 0;
+  return { tops, height: tops.length ? last + CARD_H : CARD_H };
+}
+
+// Static preview of a dragged unit, rendered in the drag overlay.
+export function DragStack({ cards, width }) {
+  const { tops, height } = stackOffsets(cards.map(() => true));
   return (
-    <Box
-      data-testid="tableau-column"
-      data-count={cards.length}
-      data-column={index}
-      onClick={() => onClick(index, cards.length === 0 ? -1 : null)}
-      sx={{ minHeight: 40, ...clickable }}
-    >
-      {cards.length === 0 && <EmptySlot label="Empty" />}
-      {cards.map((card, i) => {
-        const last = i === cards.length - 1;
-        const faceUp = i >= firstFaceUp;
-        const sx = last
-          ? { mt: i === 0 ? 0 : 0.5 }
-          : { aspectRatio: faceUp ? '5 / 2.2' : '5 / 1.3', overflow: 'hidden', mb: 0.25 };
-        return (
-          <Box
-            key={card.id}
-            sx={sx}
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick(index, i);
-            }}
-          >
-            {faceUp ? <Card card={card} compact={!last} selected={i >= selectedFrom} /> : <CardBack />}
+    <Box sx={{ width, containerType: 'inline-size' }}>
+      <Box sx={{ position: 'relative', height: `${height}cqw` }}>
+        {cards.map((card, i) => (
+          <Box key={card.id} sx={{ position: 'absolute', left: 0, right: 0, top: `${tops[i]}cqw` }}>
+            <Card card={card} compact={i < cards.length - 1} />
           </Box>
-        );
-      })}
+        ))}
+      </Box>
     </Box>
   );
 }
 
-export default function Board({ game, selection, glitter, onDraw, onRecycle, onDraftClick, onColumnClick, onFoundationClick }) {
+function Column({ cards, faceUpCount, index, selection, canDrag, onClick }) {
+  const { setNodeRef } = useDroppable({ id: `col-${index}`, data: { to: { type: 'tableau', col: index } } });
+  const firstFaceUp = cards.length - faceUpCount;
+  const selectedFrom = selection?.type === 'tableau' && selection.col === index ? selection.index : Infinity;
+  const { tops, height } = stackOffsets(cards.map((_, i) => i >= firstFaceUp));
+  return (
+    <Box
+      ref={setNodeRef}
+      data-testid="tableau-column"
+      data-count={cards.length}
+      data-column={index}
+      onClick={() => onClick(index, cards.length === 0 ? -1 : null)}
+      sx={{ containerType: 'inline-size', ...clickable }}
+    >
+      <Box sx={{ position: 'relative', height: `${height}cqw` }}>
+        {cards.length === 0 && <EmptySlot label="Empty" />}
+        {cards.map((card, i) => {
+          const last = i === cards.length - 1;
+          const faceUp = i >= firstFaceUp;
+          const from = { type: 'tableau', col: index, index };
+          return (
+            <Draggable
+              key={card.id}
+              id={`tableau-${index}-${i}`}
+              from={from}
+              disabled={!faceUp || !canDrag(from)}
+              data-testid="tableau-card"
+              data-top={tops[i]}
+              sx={{ position: 'absolute', left: 0, right: 0, top: `${tops[i]}cqw` }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick(index, i);
+              }}
+            >
+              {faceUp ? <Card card={card} compact={!last} selected={i >= selectedFrom} /> : <CardBack />}
+            </Draggable>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
+export default function Board({ game, selection, glitter, canDrag, onDraw, onRecycle, onDraftClick, onColumnClick, onFoundationClick }) {
   return (
     <Box sx={{ maxWidth: 640, mx: 'auto', p: 2, boxSizing: 'border-box' }}>
       <Box component="header" data-testid="header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -163,6 +228,7 @@ export default function Board({ game, selection, glitter, onDraw, onRecycle, onD
             faceUpCount={game.faceUpCounts[i]}
             index={i}
             selection={selection}
+            canDrag={canDrag}
             onClick={onColumnClick}
           />
         ))}

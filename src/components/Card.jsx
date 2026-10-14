@@ -45,7 +45,7 @@ export default function Card({ card, compact = false, selected = false }) {
       data-card-id={card.id}
       sx={{
         ...frame,
-        p: 0.5,
+        p: compact ? 0.25 : 0.5,
         bgcolor: isTitle ? 'primary.main' : 'background.paper',
         color: isTitle ? 'primary.contrastText' : 'text.primary',
         display: 'flex',
@@ -65,7 +65,12 @@ export default function Card({ card, compact = false, selected = false }) {
           <Typography sx={{ fontSize: 'clamp(8px, 2.4vw, 12px)' }}>{card.itemCount} items</Typography>
         </>
       ) : (
-        <Typography sx={{ fontSize: 'clamp(9px, 2.8vw, 15px)', lineHeight: 1.15 }}>{card.itemName}</Typography>
+        <Typography
+          noWrap={compact}
+          sx={{ fontSize: compact ? 'clamp(8px, 2.3vw, 11px)' : 'clamp(9px, 2.8vw, 15px)', lineHeight: compact ? 1.1 : 1.15 }}
+        >
+          {card.itemName}
+        </Typography>
       )}
     </Box>
   );
