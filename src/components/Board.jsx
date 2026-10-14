@@ -1,5 +1,6 @@
-import { Box, ButtonBase, IconButton, SvgIcon, Typography } from '@mui/material';
+import { Alert, Box, ButtonBase, IconButton, Snackbar, SvgIcon, Typography, keyframes } from '@mui/material';
 import Card, { CardBack, EmptySlot } from './Card.jsx';
+import { foundationProgress } from '../game/rules.js';
 
 // Vertical offsets between overlapping tableau cards, as multiples of card width.
 const FACE_DOWN_OFFSET = 0.18;
@@ -27,6 +28,22 @@ function TopBar({ score }) {
   );
 }
 
+const shake = keyframes`
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+`;
+
+// Highlight for selected cards and a shake animation for rejected moves.
+function interactionSx(selected, rejected) {
+  return {
+    borderRadius: 1,
+    outline: selected ? '3px solid #ffeb3b' : 'none',
+    outlineOffset: 1,
+    animation: rejected ? `${shake} 0.35s ease-in-out` : 'none',
+  };
+}
+
 function SourcePile({ source, canRecycle, onClick }) {
   const label = source.length ? 'Draw a card' : canRecycle ? 'Recycle draft pile' : 'Source empty';
   return (
@@ -43,12 +60,19 @@ function SourcePile({ source, canRecycle, onClick }) {
   );
 }
 
-function DraftPile({ draft, cardsById }) {
+function DraftPile({ draft, cardsById, selected, rejectKey, onClick }) {
   const top = draft[draft.length - 1];
   return (
     <Box data-testid="draft" data-count={draft.length}>
       {top ? (
-        <Box data-testid="draft-top" data-card-id={top.id}>
+        <Box
+          key={rejectKey}
+          data-testid="draft-top"
+          data-card-id={top.id}
+          data-selected={selected}
+          onClick={onClick}
+          sx={{ cursor: 'pointer', ...interactionSx(selected, rejectKey != null) }}
+        >
           <Card card={cardsById[top.id]} faceUp />
         </Box>
       ) : (
@@ -58,7 +82,7 @@ function DraftPile({ draft, cardsById }) {
   );
 }
 
-function TableauColumn({ column, cardsById, index }) {
+function TableauColumn({ column, cardsById, index, selectedIndex, rejectKey, onCardClick, onColumnClick }) {
   let top = 0;
   const tops = column.map((entry) => {
     const t = top;
@@ -76,24 +100,75 @@ function TableauColumn({ column, cardsById, index }) {
         height: `calc(var(--card-w) * ${lastTop + CARD_HEIGHT_RATIO})`,
       }}
     >
-      {column.length === 0 && <EmptySlot />}
-      {column.map((entry, i) => (
-        <Box
-          key={entry.id}
-          data-card-id={entry.id}
-          data-face-up={entry.faceUp}
-          sx={{ position: 'absolute', left: 0, top: `calc(var(--card-w) * ${tops[i]})` }}
-        >
-          <Card card={cardsById[entry.id]} faceUp={entry.faceUp} />
+      {column.length === 0 && (
+        <Box data-testid={`tableau-empty-${index}`} onClick={onColumnClick} sx={{ cursor: 'pointer' }}>
+          <EmptySlot />
         </Box>
-      ))}
+      )}
+      {column.map((entry, i) => {
+        const selected = selectedIndex != null && i >= selectedIndex;
+        return (
+          <Box
+            key={selected && rejectKey != null ? `${entry.id}-${rejectKey}` : entry.id}
+            data-card-id={entry.id}
+            data-face-up={entry.faceUp}
+            data-selected={selected}
+            onClick={() => onCardClick(i)}
+            sx={{
+              position: 'absolute',
+              left: 0,
+              top: `calc(var(--card-w) * ${tops[i]})`,
+              cursor: 'pointer',
+              ...interactionSx(selected, selected && rejectKey != null),
+            }}
+          >
+            <Card card={cardsById[entry.id]} faceUp={entry.faceUp} />
+          </Box>
+        );
+      })}
+    </Box>
+  );
+}
+
+function FoundationSlot({ slot, index, cardsById, onClick }) {
+  const progress = foundationProgress(slot, cardsById);
+  const top = slot?.cards[slot.cards.length - 1];
+  return (
+    <Box
+      data-testid={`foundation-${index}`}
+      data-empty={!slot}
+      data-category={slot?.categoryTitle ?? ''}
+      data-collected={progress?.collected ?? 0}
+      onClick={onClick}
+      sx={{ cursor: 'pointer', width: 'var(--card-w)' }}
+    >
+      <Typography
+        data-testid={`foundation-progress-${index}`}
+        noWrap
+        sx={{ fontSize: 'clamp(9px, 2.2vw, 12px)', textAlign: 'center', minHeight: '1.5em' }}
+      >
+        {progress ? `${progress.categoryTitle} ${progress.collected}/${progress.total}` : ''}
+      </Typography>
+      {top ? <Card card={cardsById[top.id]} faceUp /> : <EmptySlot />}
     </Box>
   );
 }
 
 const rowSx = { display: 'flex', justifyContent: 'space-between', gap: 'var(--gap)' };
 
-export default function Board({ state, cardsById, onSourceClick }) {
+export default function Board({
+  state,
+  cardsById,
+  selection,
+  rejection,
+  onSourceClick,
+  onDraftClick,
+  onTableauCardClick,
+  onTableauColumnClick,
+  onFoundationClick,
+  onDismissRejection,
+}) {
+  const rejectKey = rejection?.key;
   return (
     <Box
       sx={{
@@ -113,23 +188,50 @@ export default function Board({ state, cardsById, onSourceClick }) {
 
       <Box data-testid="pile-row" sx={rowSx}>
         <SourcePile source={state.source} canRecycle={state.draft.length > 0} onClick={onSourceClick} />
-        <DraftPile draft={state.draft} cardsById={cardsById} />
+        <DraftPile
+          draft={state.draft}
+          cardsById={cardsById}
+          selected={selection?.type === 'draft'}
+          rejectKey={selection?.type === 'draft' ? rejectKey : undefined}
+          onClick={onDraftClick}
+        />
         <Box sx={{ flex: 1 }} />
       </Box>
 
       <Box data-testid="foundations" sx={rowSx}>
         {state.foundations.map((slot, i) => (
-          <Box key={i} data-testid={`foundation-${i}`} data-empty={!slot}>
-            <EmptySlot />
-          </Box>
+          <FoundationSlot key={i} index={i} slot={slot} cardsById={cardsById} onClick={() => onFoundationClick(i)} />
         ))}
       </Box>
 
       <Box data-testid="tableau" sx={{ ...rowSx, alignItems: 'flex-start' }}>
-        {state.tableau.map((column, i) => (
-          <TableauColumn key={i} index={i} column={column} cardsById={cardsById} />
-        ))}
+        {state.tableau.map((column, i) => {
+          const isSelectedCol = selection?.type === 'tableau' && selection.col === i;
+          return (
+            <TableauColumn
+              key={i}
+              index={i}
+              column={column}
+              cardsById={cardsById}
+              selectedIndex={isSelectedCol ? selection.index : null}
+              rejectKey={isSelectedCol ? rejectKey : undefined}
+              onCardClick={(cardIndex) => onTableauCardClick(i, cardIndex)}
+              onColumnClick={() => onTableauColumnClick(i)}
+            />
+          );
+        })}
       </Box>
+
+      <Snackbar
+        open={!!rejection}
+        autoHideDuration={2500}
+        onClose={onDismissRejection}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert data-testid="rejection" severity="warning" variant="filled" onClose={onDismissRejection}>
+          {rejection?.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
