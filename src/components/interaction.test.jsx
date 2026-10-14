@@ -28,6 +28,9 @@ afterAll(() => {
 const point = (to) => (to.f != null ? { x: to.f * 100 + 40, y: 160 } : { x: to.col * 100 + 40, y: 500 });
 const cardEl = (id) => document.querySelector(`[data-card-id="${id}"][data-face-up], [data-testid="draft-top"][data-card-id="${id}"]`);
 
+// dnd-kit swallows clicks for ~50ms after a drag ends; wait it out.
+const settle = () => act(() => new Promise((r) => setTimeout(r, 80)));
+
 async function drag(el, to) {
   const { x, y } = point(to);
   await act(async () => {
@@ -42,6 +45,7 @@ async function drag(el, to) {
   await act(async () => {
     fireEvent.mouseUp(document, { clientX: x, clientY: y });
   });
+  await settle();
 }
 
 async function tap(el, to) {
@@ -144,6 +148,7 @@ describe('drag and tap parity', () => {
     await act(async () => fireEvent.mouseMove(document, { clientX: 30, clientY: 30 }));
     await act(async () => fireEvent.mouseMove(document, { clientX: 900, clientY: 20 }));
     await act(async () => fireEvent.mouseUp(document, { clientX: 900, clientY: 20 }));
+    await settle();
     expect(snapshot()).toEqual(before);
     expect(rejection()).toMatch(/cannot be placed/);
   });
