@@ -1,4 +1,16 @@
+import { useRef, useState } from 'react';
 import { Alert, Box, ButtonBase, IconButton, Snackbar, SvgIcon, Typography, keyframes } from '@mui/material';
+import {
+  DndContext,
+  DragOverlay,
+  MouseSensor,
+  TouchSensor,
+  pointerWithin,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import Card, { CardBack, EmptySlot } from './Card.jsx';
 import { foundationProgress } from '../game/rules.js';
 
@@ -97,6 +109,40 @@ function interactionSx(selected, rejected) {
   };
 }
 
+// Cumulative top offsets (in card widths) for overlapping stacked cards.
+function stackOffsets(entries) {
+  let top = 0;
+  return entries.map((entry) => {
+    const t = top;
+    top += entry.faceUp ? FACE_UP_OFFSET : FACE_DOWN_OFFSET;
+    return t;
+  });
+}
+
+// Is the card at `index` (tableau) part of the move source `from`?
+function inSource(from, type, col, index) {
+  if (!from || from.type !== type) return false;
+  return type === 'draft' || (from.col === col && index >= from.index);
+}
+
+// Wraps a pickable card: tap handler plus drag handle when movable.
+function DraggableCard({ id, from, disabled, onClick, sx, children, ...rest }) {
+  const { setNodeRef, listeners, attributes } = useDraggable({ id, data: { from }, disabled });
+  return (
+    <Box
+      ref={setNodeRef}
+      {...(disabled ? {} : listeners)}
+      {...(disabled ? {} : attributes)}
+      onClick={onClick}
+      data-draggable={!disabled}
+      sx={{ cursor: disabled ? 'default' : 'grab', touchAction: 'manipulation', ...sx }}
+      {...rest}
+    >
+      {children}
+    </Box>
+  );
+}
+
 function SourcePile({ source, canRecycle, onClick }) {
   const label = source.length ? 'Draw a card' : canRecycle ? 'Recycle draft pile' : 'Source empty';
   return (
@@ -113,21 +159,25 @@ function SourcePile({ source, canRecycle, onClick }) {
   );
 }
 
-function DraftPile({ draft, cardsById, selected, rejectKey, onClick }) {
+function DraftPile({ draft, cardsById, selected, rejectKey, dragging, canDrag, onClick }) {
   const top = draft[draft.length - 1];
+  const from = { type: 'draft' };
   return (
     <Box data-testid="draft" data-count={draft.length}>
       {top ? (
-        <Box
+        <DraggableCard
           key={rejectKey}
+          id={`draft:${top.id}`}
+          from={from}
+          disabled={!canDrag(from)}
+          onClick={onClick}
           data-testid="draft-top"
           data-card-id={top.id}
           data-selected={selected}
-          onClick={onClick}
-          sx={{ cursor: 'pointer', ...interactionSx(selected, rejectKey != null) }}
+          sx={{ ...interactionSx(selected, rejectKey != null), opacity: dragging ? 0.35 : 1 }}
         >
           <Card card={cardsById[top.id]} faceUp />
-        </Box>
+        </DraggableCard>
       ) : (
         <EmptySlot testId="draft-empty" label="Draft" />
       )}
@@ -135,22 +185,25 @@ function DraftPile({ draft, cardsById, selected, rejectKey, onClick }) {
   );
 }
 
-function TableauColumn({ column, cardsById, index, selectedIndex, rejectKey, onCardClick, onColumnClick }) {
-  let top = 0;
-  const tops = column.map((entry) => {
-    const t = top;
-    top += entry.faceUp ? FACE_UP_OFFSET : FACE_DOWN_OFFSET;
-    return t;
-  });
+function TableauColumn({ column, cardsById, index, selectedIndex, rejectFrom, rejectKey, draggingFrom, canDrag, onCardClick, onColumnClick }) {
+  const { setNodeRef, isOver } = useDroppable({ id: `col-${index}`, data: { to: { type: 'tableau', col: index } } });
+  const tops = stackOffsets(column);
   const lastTop = tops.length ? tops[tops.length - 1] : 0;
   return (
     <Box
+      ref={setNodeRef}
       data-testid={`tableau-column-${index}`}
       data-count={column.length}
+      data-over={isOver}
       sx={{
         position: 'relative',
         width: 'var(--card-w)',
         height: `calc(var(--card-w) * ${lastTop + CARD_HEIGHT_RATIO})`,
+        // Extra transparent drop area below the stack for easier dropping.
+        pb: `calc(var(--card-w) * 0.6)`,
+        boxSizing: 'content-box',
+        borderRadius: 1,
+        bgcolor: isOver ? 'rgba(255,255,255,0.12)' : 'transparent',
       }}
     >
       {column.length === 0 && (
@@ -160,23 +213,29 @@ function TableauColumn({ column, cardsById, index, selectedIndex, rejectKey, onC
       )}
       {column.map((entry, i) => {
         const selected = selectedIndex != null && i >= selectedIndex;
+        const rejected = rejectKey != null && inSource(rejectFrom, 'tableau', index, i);
+        const from = { type: 'tableau', col: index, index: i };
         return (
-          <Box
-            key={selected && rejectKey != null ? `${entry.id}-${rejectKey}` : entry.id}
+          <DraggableCard
+            key={rejected ? `${entry.id}-${rejectKey}` : entry.id}
+            id={`tableau:${entry.id}`}
+            from={from}
+            disabled={!entry.faceUp || !canDrag(from)}
+            onClick={() => onCardClick(i)}
             data-card-id={entry.id}
             data-face-up={entry.faceUp}
             data-selected={selected}
-            onClick={() => onCardClick(i)}
+            data-top-offset={tops[i]}
             sx={{
               position: 'absolute',
               left: 0,
               top: `calc(var(--card-w) * ${tops[i]})`,
-              cursor: 'pointer',
-              ...interactionSx(selected, selected && rejectKey != null),
+              ...interactionSx(selected, rejected),
+              opacity: inSource(draggingFrom, 'tableau', index, i) ? 0.35 : 1,
             }}
           >
-            <Card card={cardsById[entry.id]} faceUp={entry.faceUp} />
-          </Box>
+            <Card card={cardsById[entry.id]} faceUp={entry.faceUp} covered={entry.faceUp && i < column.length - 1} />
+          </DraggableCard>
         );
       })}
     </Box>
@@ -184,16 +243,25 @@ function TableauColumn({ column, cardsById, index, selectedIndex, rejectKey, onC
 }
 
 function FoundationSlot({ slot, index, cardsById, celebration, onClick }) {
+  const { setNodeRef, isOver } = useDroppable({ id: `f-${index}`, data: { to: { type: 'foundation', slot: index } } });
   const progress = foundationProgress(slot, cardsById);
   const top = slot?.cards[slot.cards.length - 1];
   return (
     <Box
+      ref={setNodeRef}
       data-testid={`foundation-${index}`}
       data-empty={!slot}
       data-category={slot?.categoryTitle ?? ''}
       data-collected={progress?.collected ?? 0}
+      data-over={isOver}
       onClick={onClick}
-      sx={{ cursor: 'pointer', width: 'var(--card-w)', position: 'relative' }}
+      sx={{
+        cursor: 'pointer',
+        width: 'var(--card-w)',
+        position: 'relative',
+        borderRadius: 1,
+        bgcolor: isOver ? 'rgba(255,255,255,0.12)' : 'transparent',
+      }}
     >
       <Typography
         data-testid={`foundation-progress-${index}`}
@@ -208,7 +276,34 @@ function FoundationSlot({ slot, index, cardsById, celebration, onClick }) {
   );
 }
 
+// The card or same-category group following the pointer during a drag.
+function DragPreview({ entries, cardsById }) {
+  const tops = stackOffsets(entries);
+  return (
+    <Box
+      data-testid="drag-preview"
+      sx={{
+        position: 'relative',
+        width: 'var(--card-w)',
+        height: `calc(var(--card-w) * ${tops[tops.length - 1] + CARD_HEIGHT_RATIO})`,
+        filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.4))',
+      }}
+    >
+      {entries.map((entry, i) => (
+        <Box key={entry.id} sx={{ position: 'absolute', left: 0, top: `calc(var(--card-w) * ${tops[i]})` }}>
+          <Card card={cardsById[entry.id]} faceUp covered={i < entries.length - 1} />
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 const rowSx = { display: 'flex', justifyContent: 'space-between', gap: 'var(--gap)' };
+
+const boardVars = {
+  '--card-w': 'min(96px, calc((100vw - 16px - 4 * var(--gap)) / 5))',
+  '--gap': 'clamp(4px, 1.5vw, 12px)',
+};
 
 export default function Board({
   state,
@@ -216,84 +311,131 @@ export default function Board({
   selection,
   rejection,
   celebrations,
+  canDrag,
   onSourceClick,
   onDraftClick,
   onTableauCardClick,
   onTableauColumnClick,
   onFoundationClick,
+  onDrop,
   onDismissRejection,
 }) {
+  const [dragging, setDragging] = useState(null);
+  const lastDragEnd = useRef(0);
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 8 } }),
+  );
   const rejectKey = rejection?.key;
+  const rejectFrom = rejection?.from;
+
+  // Ignore the click some browsers fire right after a drag ends.
+  const guard = (fn) => (...args) => {
+    if (Date.now() - lastDragEnd.current > 250) fn(...args);
+  };
+
+  const dragEntries = !dragging
+    ? []
+    : dragging.type === 'draft'
+      ? state.draft.slice(-1)
+      : state.tableau[dragging.col].slice(dragging.index);
+
+  const finishDrag = (event) => {
+    lastDragEnd.current = Date.now();
+    setDragging(null);
+    onDrop(event.active.data.current.from, event.over?.data.current.to ?? null);
+  };
+
   return (
-    <Box
-      sx={{
-        '--card-w': 'min(96px, calc((100vw - 16px - 4 * var(--gap)) / 5))',
-        '--gap': 'clamp(4px, 1.5vw, 12px)',
-        maxWidth: 560,
-        mx: 'auto',
-        px: 1,
-        py: 1,
-        color: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1.5,
+    <DndContext
+      sensors={sensors}
+      collisionDetection={pointerWithin}
+      onDragStart={(event) => setDragging(event.active.data.current.from)}
+      onDragEnd={finishDrag}
+      onDragCancel={() => {
+        lastDragEnd.current = Date.now();
+        setDragging(null);
       }}
     >
-      <TopBar score={state.score} />
+      <Box
+        sx={{
+          ...boardVars,
+          maxWidth: 560,
+          mx: 'auto',
+          px: 1,
+          py: 1,
+          color: '#fff',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1.5,
+        }}
+      >
+        <TopBar score={state.score} />
 
-      <Box data-testid="pile-row" sx={rowSx}>
-        <SourcePile source={state.source} canRecycle={state.draft.length > 0} onClick={onSourceClick} />
-        <DraftPile
-          draft={state.draft}
-          cardsById={cardsById}
-          selected={selection?.type === 'draft'}
-          rejectKey={selection?.type === 'draft' ? rejectKey : undefined}
-          onClick={onDraftClick}
-        />
-        <Box sx={{ flex: 1 }} />
-      </Box>
-
-      <Box data-testid="foundations" sx={rowSx}>
-        {state.foundations.map((slot, i) => (
-          <FoundationSlot
-            key={i}
-            index={i}
-            slot={slot}
+        <Box data-testid="pile-row" sx={rowSx}>
+          <SourcePile source={state.source} canRecycle={state.draft.length > 0} onClick={guard(onSourceClick)} />
+          <DraftPile
+            draft={state.draft}
             cardsById={cardsById}
-            celebration={celebrations?.find((c) => c.slot === i)}
-            onClick={() => onFoundationClick(i)}
+            selected={selection?.type === 'draft'}
+            rejectKey={rejectFrom?.type === 'draft' ? rejectKey : undefined}
+            dragging={dragging?.type === 'draft'}
+            canDrag={canDrag}
+            onClick={guard(onDraftClick)}
           />
-        ))}
-      </Box>
+          <Box sx={{ flex: 1 }} />
+        </Box>
 
-      <Box data-testid="tableau" sx={{ ...rowSx, alignItems: 'flex-start' }}>
-        {state.tableau.map((column, i) => {
-          const isSelectedCol = selection?.type === 'tableau' && selection.col === i;
-          return (
+        <Box data-testid="foundations" sx={rowSx}>
+          {state.foundations.map((slot, i) => (
+            <FoundationSlot
+              key={i}
+              index={i}
+              slot={slot}
+              cardsById={cardsById}
+              celebration={celebrations?.find((c) => c.slot === i)}
+              onClick={guard(() => onFoundationClick(i))}
+            />
+          ))}
+        </Box>
+
+        <Box data-testid="tableau" sx={{ ...rowSx, alignItems: 'flex-start' }}>
+          {state.tableau.map((column, i) => (
             <TableauColumn
               key={i}
               index={i}
               column={column}
               cardsById={cardsById}
-              selectedIndex={isSelectedCol ? selection.index : null}
-              rejectKey={isSelectedCol ? rejectKey : undefined}
-              onCardClick={(cardIndex) => onTableauCardClick(i, cardIndex)}
-              onColumnClick={() => onTableauColumnClick(i)}
+              selectedIndex={selection?.type === 'tableau' && selection.col === i ? selection.index : null}
+              rejectFrom={rejectFrom}
+              rejectKey={rejectFrom?.type === 'tableau' && rejectFrom.col === i ? rejectKey : undefined}
+              draggingFrom={dragging}
+              canDrag={canDrag}
+              onCardClick={guard((cardIndex) => onTableauCardClick(i, cardIndex))}
+              onColumnClick={guard(() => onTableauColumnClick(i))}
             />
-          );
-        })}
+          ))}
+        </Box>
+
+        <Snackbar
+          open={!!rejection}
+          autoHideDuration={2500}
+          onClose={onDismissRejection}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert data-testid="rejection" severity="warning" variant="filled" onClose={onDismissRejection}>
+            {rejection?.message}
+          </Alert>
+        </Snackbar>
       </Box>
 
-      <Snackbar
-        open={!!rejection}
-        autoHideDuration={2500}
-        onClose={onDismissRejection}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert data-testid="rejection" severity="warning" variant="filled" onClose={onDismissRejection}>
-          {rejection?.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+      <DragOverlay>
+        {dragEntries.length ? (
+          <Box sx={boardVars}>
+            <DragPreview entries={dragEntries} cardsById={cardsById} />
+          </Box>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   );
 }

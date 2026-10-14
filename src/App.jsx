@@ -26,9 +26,10 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
     );
   }, []);
 
-  const reject = useCallback((message) => {
+  // `from` identifies the card/group that bounces back with a shake.
+  const reject = useCallback((message, from) => {
     rejectCount.current += 1;
-    setRejection({ key: rejectCount.current, message });
+    setRejection({ key: rejectCount.current, message, from });
   }, []);
 
   const select = useCallback(
@@ -36,7 +37,7 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
       const moving = getMovingCards(state, cardsById, from);
       if (moving.error) {
         setSelection(null);
-        reject(moving.error);
+        reject(moving.error, from);
       } else {
         setSelection(from);
         setRejection(null);
@@ -45,21 +46,39 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
     [state, cardsById, reject],
   );
 
-  // Attempts to move the current selection; illegal moves leave state unchanged.
-  const tryMove = useCallback(
-    (to) => {
-      if (!selection) return;
-      const result = moveCards(state, cardsById, selection, to);
+  // Shared by tap and drag: illegal moves leave state unchanged and bounce back.
+  const attemptMove = useCallback(
+    (from, to) => {
+      const result = moveCards(state, cardsById, from, to);
       if (result.ok) {
         setState(result.state);
         setSelection(null);
         setRejection(null);
         if (result.completed) celebrate(result.completed);
       } else {
-        reject(result.reason);
+        reject(result.reason, from);
       }
     },
-    [selection, state, cardsById, reject, celebrate],
+    [state, cardsById, reject, celebrate],
+  );
+
+  const tryMove = useCallback(
+    (to) => {
+      if (selection) attemptMove(selection, to);
+    },
+    [selection, attemptMove],
+  );
+
+  const canDrag = useCallback((from) => !getMovingCards(state, cardsById, from).error, [state, cardsById]);
+
+  const handleDrop = useCallback(
+    (from, to) => {
+      setSelection(null);
+      if (!to) reject('Cards cannot be placed there.', from);
+      else if (to.type === 'tableau' && from.type === 'tableau' && to.col === from.col) setRejection(null);
+      else attemptMove(from, to);
+    },
+    [attemptMove, reject],
   );
 
   const handleSourceClick = useCallback(() => {
@@ -93,6 +112,8 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
       selection={selection}
       rejection={rejection}
       celebrations={celebrations}
+      canDrag={canDrag}
+      onDrop={handleDrop}
       onSourceClick={handleSourceClick}
       onDraftClick={handleDraftClick}
       onTableauCardClick={handleTableauCardClick}
