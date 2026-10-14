@@ -24,6 +24,7 @@ export function dealGame(cards, rng = Math.random) {
     tableau,
     source: deck.slice(next),
     draft: [],
+    faceUpCounts: TABLEAU_SIZES.map(() => 1),
     foundations: Array.from({ length: FOUNDATION_COUNT }, () => []),
     score: 0,
   };
