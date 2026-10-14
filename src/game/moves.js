@@ -51,7 +51,10 @@ function placementError(game, from, cards, to) {
   return 'That foundation slot holds a different category.';
 }
 
-// Returns { game, ok: true } or { game: <unchanged>, ok: false, reason }.
+export const CATEGORY_COMPLETE_POINTS = 100;
+
+// Returns { game, ok: true, completed? } (completed: { slot, categoryTitle } when the move
+// finished a category and cleared its slot) or { game: <unchanged>, ok: false, reason }.
 export function moveCards(game, from, to) {
   const moving = getMovingCards(game, from);
   if (moving.error) return { game, ok: false, reason: moving.error };
@@ -78,7 +81,16 @@ export function moveCards(game, from, to) {
     next.tableau[to.col] = [...game.tableau[to.col], ...cards];
     next.faceUpCounts[to.col] = (game.tableau[to.col].length === 0 ? 0 : game.faceUpCounts[to.col]) + cards.length;
   } else {
-    next.foundations[to.slot] = [...game.foundations[to.slot], ...cards];
+    const slotCards = [...game.foundations[to.slot], ...cards];
+    const { collected, total, categoryTitle } = foundationProgress(slotCards);
+    if (collected === total) {
+      // Category complete: free the slot, set the cards aside, award points once.
+      next.foundations[to.slot] = [];
+      next.cleared = [...(game.cleared ?? []), ...slotCards];
+      next.score = game.score + CATEGORY_COMPLETE_POINTS;
+      return { game: next, ok: true, completed: { slot: to.slot, categoryTitle } };
+    }
+    next.foundations[to.slot] = slotCards;
   }
   return { game: next, ok: true };
 }

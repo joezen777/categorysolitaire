@@ -152,3 +152,44 @@ describe('foundation progress', () => {
     expect(foundationProgress([title('Wine', 6), item('Wine', 'a'), item('Wine', 'b')]).collected).toBe(2);
   });
 });
+
+describe('category completion', () => {
+  const full = (cat, names) => [title(cat, names.length), ...names.slice(0, -1).map((n) => item(cat, n))];
+
+  it('awards 100 once, clears the slot and keeps incomplete categories', () => {
+    let g = state([[item('King', 'Throne')], [item('Wine', 'Rose')], [], [], []], [1, 1, 0, 0, 0], {
+      foundations: [full('King', ['Scepter', 'Orb', 'Throne']), [title('Wine', 6)], [], [], []],
+    });
+    const r = moveCards(g, tab(0, { index: 0 }), fnd(0));
+    expect(r.ok).toBe(true);
+    expect(r.completed).toEqual({ slot: 0, categoryTitle: 'King' });
+    expect(r.game.score).toBe(100);
+    expect(r.game.foundations[0]).toEqual([]);
+    expect(r.game.cleared).toHaveLength(4);
+    // incomplete category keeps slot, no score
+    const r2 = moveCards(g, tab(1, { index: 0 }), fnd(1));
+    expect(r2.completed).toBeUndefined();
+    expect(r2.game.score).toBe(0);
+    expect(r2.game.foundations[1]).toHaveLength(2);
+  });
+
+  it('rejected cards never change progress or score; slot reusable; two completions give 200', () => {
+    const g = state([[item('King', 'Throne')], [title('Wine', 1)], [item('Wine', 'Rose')], [], []], [1, 1, 1, 0, 0], {
+      foundations: [full('King', ['Scepter', 'Orb', 'Throne']), [], [], [], []],
+    });
+    const bad = moveCards(g, tab(2, { index: 0 }), fnd(0));
+    expect(bad.ok).toBe(false);
+    expect(bad.game).toBe(g);
+    expect(g.score).toBe(0);
+
+    let r = moveCards(g, tab(0, { index: 0 }), fnd(0));
+    expect(r.game.score).toBe(100);
+    r = moveCards(r.game, tab(1, { index: 0 }), fnd(0)); // slot 0 receives a new title
+    expect(r.ok).toBe(true);
+    expect(r.game.score).toBe(100);
+    r = moveCards(r.game, tab(2, { index: 0 }), fnd(0));
+    expect(r.game.score).toBe(200);
+    expect(r.game.foundations[0]).toEqual([]);
+    expect(r.game.cleared.map((c) => c.id)).toContain('title:Wine');
+  });
+});
