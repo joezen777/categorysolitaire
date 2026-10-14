@@ -12,6 +12,7 @@ const baseSx = {
   position: 'relative',
   overflow: 'hidden',
   userSelect: 'none',
+  color: '#1a1a1a',
 };
 
 export function CardBack() {
