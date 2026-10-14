@@ -78,7 +78,7 @@ function Face({ card, categoryTotal, peek }) {
         gap: '2px',
         height: '100%',
         px: '3px',
-        wordBreak: 'break-word',
+        overflowWrap: 'break-word',
         hyphens: 'auto',
       }}
     >
@@ -90,7 +90,7 @@ function Face({ card, categoryTotal, peek }) {
       <Box
         component="span"
         sx={{
-          fontSize: 'calc(var(--card-w) * 0.19)',
+          fontSize: 'calc(var(--card-w) * 0.165)',
           lineHeight: 1.15,
           fontWeight: isTitle ? 800 : 600,
         }}
