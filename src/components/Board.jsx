@@ -6,6 +6,7 @@ import { foundationProgress } from '../game/rules.js';
 const FACE_DOWN_OFFSET = 0.18;
 const FACE_UP_OFFSET = 0.3;
 const CARD_HEIGHT_RATIO = 7 / 5;
+export const GLITTER_MS = 1200;
 
 function SettingsIcon() {
   return (
@@ -24,6 +25,58 @@ function TopBar({ score }) {
       <IconButton aria-label="menu" data-testid="menu-cog" sx={{ color: 'inherit' }}>
         <SettingsIcon />
       </IconButton>
+    </Box>
+  );
+}
+
+const glitter = keyframes`
+  0% { opacity: 1; transform: scale(1); filter: brightness(1); }
+  25% { filter: brightness(1.6) drop-shadow(0 0 8px #fff59d); }
+  60% { opacity: 1; transform: scale(1.08) rotate(-3deg); filter: brightness(1.8) drop-shadow(0 0 14px #ffd54f); }
+  100% { opacity: 0; transform: scale(0.4) rotate(8deg); filter: brightness(2); }
+`;
+
+const sparkle = keyframes`
+  0%, 100% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.2); }
+`;
+
+const SPARKLES = [
+  [10, 15], [70, 8], [40, 45], [85, 60], [15, 75], [55, 88], [30, 30], [75, 35],
+];
+
+// Completed category: the finished stack glitters, then shrinks and fades away.
+function CompletionGlitter({ celebration, cardsById }) {
+  const top = celebration.cards[celebration.cards.length - 1];
+  return (
+    <Box
+      data-testid={`foundation-glitter-${celebration.slot}`}
+      aria-label={`${celebration.categoryTitle} complete`}
+      sx={{
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        pointerEvents: 'none',
+        animation: `${glitter} ${GLITTER_MS}ms ease-in forwards`,
+        zIndex: 2,
+      }}
+    >
+      <Card card={cardsById[top.id]} faceUp />
+      {SPARKLES.map(([x, y], i) => (
+        <Box
+          key={i}
+          sx={{
+            position: 'absolute',
+            left: `${x}%`,
+            top: `${y}%`,
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, #fff 0%, #ffeb3b 40%, transparent 70%)',
+            animation: `${sparkle} 0.4s ease-in-out ${i * 60}ms infinite`,
+          }}
+        />
+      ))}
     </Box>
   );
 }
@@ -130,7 +183,7 @@ function TableauColumn({ column, cardsById, index, selectedIndex, rejectKey, onC
   );
 }
 
-function FoundationSlot({ slot, index, cardsById, onClick }) {
+function FoundationSlot({ slot, index, cardsById, celebration, onClick }) {
   const progress = foundationProgress(slot, cardsById);
   const top = slot?.cards[slot.cards.length - 1];
   return (
@@ -140,7 +193,7 @@ function FoundationSlot({ slot, index, cardsById, onClick }) {
       data-category={slot?.categoryTitle ?? ''}
       data-collected={progress?.collected ?? 0}
       onClick={onClick}
-      sx={{ cursor: 'pointer', width: 'var(--card-w)' }}
+      sx={{ cursor: 'pointer', width: 'var(--card-w)', position: 'relative' }}
     >
       <Typography
         data-testid={`foundation-progress-${index}`}
@@ -150,6 +203,7 @@ function FoundationSlot({ slot, index, cardsById, onClick }) {
         {progress ? `${progress.categoryTitle} ${progress.collected}/${progress.total}` : ''}
       </Typography>
       {top ? <Card card={cardsById[top.id]} faceUp /> : <EmptySlot />}
+      {celebration && <CompletionGlitter key={celebration.key} celebration={celebration} cardsById={cardsById} />}
     </Box>
   );
 }
@@ -161,6 +215,7 @@ export default function Board({
   cardsById,
   selection,
   rejection,
+  celebrations,
   onSourceClick,
   onDraftClick,
   onTableauCardClick,
@@ -200,7 +255,14 @@ export default function Board({
 
       <Box data-testid="foundations" sx={rowSx}>
         {state.foundations.map((slot, i) => (
-          <FoundationSlot key={i} index={i} slot={slot} cardsById={cardsById} onClick={() => onFoundationClick(i)} />
+          <FoundationSlot
+            key={i}
+            index={i}
+            slot={slot}
+            cardsById={cardsById}
+            celebration={celebrations?.find((c) => c.slot === i)}
+            onClick={() => onFoundationClick(i)}
+          />
         ))}
       </Box>
 

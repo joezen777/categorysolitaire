@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DECKS, DEFAULT_DECK_ID, buildDeck } from './decks/index.js';
 import { createGame, drawCard, recycleDraft } from './game/state.js';
 import { getMovingCards, moveCards } from './game/rules.js';
-import Board from './components/Board.jsx';
+import Board, { GLITTER_MS } from './components/Board.jsx';
 
 export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
   const { cards } = useMemo(() => buildDeck(deckData), [deckData]);
@@ -10,7 +10,21 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
   const [state, setState] = useState(() => createGame(cards, rng));
   const [selection, setSelection] = useState(null);
   const [rejection, setRejection] = useState(null);
+  const [celebrations, setCelebrations] = useState([]);
   const rejectCount = useRef(0);
+  const celebrationCount = useRef(0);
+  const timers = useRef([]);
+
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  const celebrate = useCallback((completed) => {
+    celebrationCount.current += 1;
+    const key = celebrationCount.current;
+    setCelebrations((list) => [...list.filter((c) => c.slot !== completed.slot), { ...completed, key }]);
+    timers.current.push(
+      setTimeout(() => setCelebrations((list) => list.filter((c) => c.key !== key)), GLITTER_MS),
+    );
+  }, []);
 
   const reject = useCallback((message) => {
     rejectCount.current += 1;
@@ -40,11 +54,12 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
         setState(result.state);
         setSelection(null);
         setRejection(null);
+        if (result.completed) celebrate(result.completed);
       } else {
         reject(result.reason);
       }
     },
-    [selection, state, cardsById, reject],
+    [selection, state, cardsById, reject, celebrate],
   );
 
   const handleSourceClick = useCallback(() => {
@@ -77,6 +92,7 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
       cardsById={cardsById}
       selection={selection}
       rejection={rejection}
+      celebrations={celebrations}
       onSourceClick={handleSourceClick}
       onDraftClick={handleDraftClick}
       onTableauCardClick={handleTableauCardClick}
