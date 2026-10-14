@@ -262,7 +262,7 @@ export default function Board({ state, setState }) {
 
       <DragOverlay dropAnimation={{ duration: 220 }}>
         {activeCards ? (
-          <div className="board overlay-stack" style={{ height: `calc(var(--ch) + var(--cw) * ${FACE_UP_STEP * activeCards.length})` }}>
+          <div className="overlay-stack" style={{ height: `calc(var(--ch) + var(--cw) * ${FACE_UP_STEP * activeCards.length})` }}>
             {activeCards.map((c, i) => (
               <div key={c.id} className="stacked" style={{ top: `calc(var(--cw) * ${FACE_UP_STEP * i})`, zIndex: i + 1 }}>
                 <Card card={c} faceUp />
