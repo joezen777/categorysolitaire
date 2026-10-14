@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { CARD_KIND } from '../decks/index.js';
 
-export const CARD_WIDTH = 'clamp(56px, 17vw, 96px)';
+export const CARD_WIDTH = 'var(--card-w, clamp(52px, 17vw, 96px))';
 export const CARD_ASPECT = '5 / 7';
 
 const baseSx = {
@@ -74,6 +74,27 @@ export function ItemCardFace({ card }) {
       <Typography sx={{ fontSize: 'clamp(10px, 2.6vw, 14px)', lineHeight: 1.1, wordBreak: 'break-word' }}>
         {card.itemName}
       </Typography>
+    </Box>
+  );
+}
+
+export function EmptySlot({ label, testId }) {
+  return (
+    <Box
+      data-testid={testId}
+      sx={{
+        ...baseSx,
+        boxShadow: 0,
+        border: '2px dashed rgba(255,255,255,0.5)',
+        color: 'rgba(255,255,255,0.7)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 'clamp(9px, 2.2vw, 12px)',
+        textAlign: 'center',
+      }}
+    >
+      {label}
     </Box>
   );
 }
