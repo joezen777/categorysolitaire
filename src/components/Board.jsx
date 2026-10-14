@@ -19,7 +19,10 @@ function Column({ cards, index }) {
       {cards.map((card, i) => {
         const exposed = i === cards.length - 1;
         return (
-          <Box key={card.id} sx={{ mt: i === 0 ? 0 : exposed ? 0.5 : 'calc(-1 * (100vw - 32px) / 5 * 1.4 * 0.8)' }}>
+          <Box
+            key={card.id}
+            sx={exposed ? { mt: i === 0 ? 0 : 0.5 } : { aspectRatio: '5 / 1.3', overflow: 'hidden', mb: 0.25 }}
+          >
             {exposed ? <Card card={card} /> : <CardBack />}
           </Box>
         );
