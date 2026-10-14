@@ -12,6 +12,7 @@ export default function App() {
   const [game, setGame] = useState(() => dealGame(cards));
   const [selection, setSelection] = useState(null);
   const [error, setError] = useState(null);
+  const [glitter, setGlitter] = useState(null);
 
   const reject = (reason) => {
     setError({ reason, key: Date.now() });
@@ -20,9 +21,14 @@ export default function App() {
 
   const tryMove = (to) => {
     const result = moveCards(game, selection, to);
-    if (result.ok) setGame(result.game);
-    else reject(result.reason);
-    if (result.ok) setSelection(null);
+    if (!result.ok) return reject(result.reason);
+    setGame(result.game);
+    setSelection(null);
+    if (result.completed) {
+      const key = Date.now();
+      setGlitter({ ...result.completed, key });
+      setTimeout(() => setGlitter((g) => (g?.key === key ? null : g)), 1300);
+    }
   };
 
   const select = (from) => {
@@ -62,6 +68,7 @@ export default function App() {
       <Board
         game={game}
         selection={selection}
+        glitter={glitter}
         onDraw={onDraw}
         onRecycle={onRecycle}
         onDraftClick={onDraftClick}

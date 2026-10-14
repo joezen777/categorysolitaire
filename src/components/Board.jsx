@@ -1,4 +1,5 @@
 import { Box, IconButton, Typography } from '@mui/material';
+import { keyframes } from '@mui/material/styles';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Card, { CardBack, EmptySlot } from './Card';
 import { foundationProgress } from '../game/moves';
@@ -33,20 +34,69 @@ function Draft({ cards, selected, onSelect }) {
   );
 }
 
-function Foundation({ cards, slot, onClick }) {
+const sparkle = keyframes`
+  0% { opacity: 0; transform: scale(0.6) rotate(0deg); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.4) rotate(90deg); }
+`;
+const fadeOut = keyframes`
+  0%, 60% { opacity: 1; }
+  100% { opacity: 0; }
+`;
+const SPARKLES = [[10, 15], [70, 10], [40, 40], [15, 70], [75, 65], [50, 85], [85, 35]];
+
+// Shown briefly over a slot whose category was just completed and cleared.
+function Glitter({ categoryTitle }) {
+  return (
+    <Box
+      data-testid="glitter"
+      sx={{
+        position: 'absolute',
+        inset: 0,
+        borderRadius: 1,
+        bgcolor: 'rgba(255, 215, 0, 0.35)',
+        border: '2px solid gold',
+        pointerEvents: 'none',
+        overflow: 'hidden',
+        animation: `${fadeOut} 1.2s ease-out forwards`,
+      }}
+    >
+      {SPARKLES.map(([x, y], i) => (
+        <Box
+          key={i}
+          sx={{
+            position: 'absolute',
+            left: `${x}%`,
+            top: `${y}%`,
+            fontSize: 'clamp(12px, 4vw, 22px)',
+            animation: `${sparkle} 0.9s ease-out ${i * 0.1}s infinite`,
+          }}
+        >
+          ✨
+        </Box>
+      ))}
+      <Typography align="center" fontWeight="bold" sx={{ fontSize: 'clamp(9px, 2.8vw, 14px)', mt: '40%' }}>
+        {categoryTitle} complete!
+      </Typography>
+    </Box>
+  );
+}
+
+function Foundation({ cards, slot, glitter, onClick }) {
   const progress = foundationProgress(cards);
   return (
     <Box data-testid="foundation" data-count={cards.length} onClick={() => onClick(slot)} sx={clickable}>
-      {progress ? <Card card={cards[cards.length - 1]} /> : <EmptySlot label="Foundation" />}
-      {progress && (
-        <Typography
-          data-testid="foundation-progress"
-          align="center"
-          sx={{ fontSize: 'clamp(8px, 2.4vw, 12px)', mt: 0.25 }}
-        >
-          {progress.categoryTitle} {progress.collected}/{progress.total}
-        </Typography>
-      )}
+      <Typography
+        data-testid="foundation-progress"
+        align="center"
+        sx={{ fontSize: 'clamp(8px, 2.4vw, 12px)', minHeight: '1.3em', lineHeight: 1.3, overflowWrap: 'anywhere' }}
+      >
+        {progress ? `${progress.categoryTitle} ${progress.collected}/${progress.total}` : ''}
+      </Typography>
+      <Box sx={{ position: 'relative' }}>
+        {progress ? <Card card={cards[cards.length - 1]} /> : <EmptySlot label="Foundation" />}
+        {glitter && <Glitter categoryTitle={glitter.categoryTitle} />}
+      </Box>
     </Box>
   );
 }
@@ -86,7 +136,7 @@ function Column({ cards, faceUpCount, index, selection, onClick }) {
   );
 }
 
-export default function Board({ game, selection, onDraw, onRecycle, onDraftClick, onColumnClick, onFoundationClick }) {
+export default function Board({ game, selection, glitter, onDraw, onRecycle, onDraftClick, onColumnClick, onFoundationClick }) {
   return (
     <Box sx={{ maxWidth: 640, mx: 'auto', p: 2, boxSizing: 'border-box' }}>
       <Box component="header" data-testid="header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -101,7 +151,7 @@ export default function Board({ game, selection, onDraw, onRecycle, onDraftClick
 
       <Box data-testid="foundations" sx={{ ...row, mb: 1, alignItems: 'start' }}>
         {game.foundations.map((cards, i) => (
-          <Foundation key={i} cards={cards} slot={i} onClick={onFoundationClick} />
+          <Foundation key={i} cards={cards} slot={i} glitter={glitter?.slot === i ? glitter : null} onClick={onFoundationClick} />
         ))}
       </Box>
 
