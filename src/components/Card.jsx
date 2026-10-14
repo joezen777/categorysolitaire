@@ -73,7 +73,7 @@ export function TitleCardFace({ card, covered = false }) {
         {card.categoryTitle}
       </Typography>
       <Typography data-testid="title-count" sx={{ fontSize: 'clamp(9px, 2.2vw, 12px)', color: 'text.secondary' }}>
-        {card.itemCount} cards
+        {card.itemCount} {card.itemCount === 1 ? 'card' : 'cards'}
       </Typography>
       {covered && <CoveredLabel>{`${card.categoryTitle} (${card.itemCount})`}</CoveredLabel>}
     </Box>
