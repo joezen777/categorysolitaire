@@ -123,7 +123,15 @@ export const Card = forwardRef(function Card(
 ) {
   if (!faceUp) {
     return (
-      <Box ref={ref} aria-hidden="true" sx={{ ...baseSx, ...backSx, ...sx }} style={style} {...rest} />
+      <Box
+        ref={ref}
+        component={interactive ? 'button' : 'div'}
+        type={interactive ? 'button' : undefined}
+        aria-hidden={interactive ? undefined : 'true'}
+        sx={{ ...baseSx, ...backSx, cursor: interactive ? 'pointer' : 'default', ...sx }}
+        style={style}
+        {...rest}
+      />
     );
   }
   const label = card.role === 'title' ? `${card.label} category, ${categoryTotal} cards` : card.label;
