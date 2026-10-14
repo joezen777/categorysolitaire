@@ -5,6 +5,8 @@
 
 import { CARD_KIND } from '../decks/deck.js';
 
+export const COMPLETION_POINTS = 100;
+
 const isTitle = (card) => card.kind === CARD_KIND.TITLE;
 const isItem = (card) => card.kind === CARD_KIND.ITEM;
 
@@ -76,7 +78,8 @@ function revealBottom(column) {
   return [...column.slice(0, -1), { ...column[column.length - 1], faceUp: true }];
 }
 
-// Returns { ok: true, state } or { ok: false, state (unchanged), reason }.
+// Returns { ok: true, state, completed? } or { ok: false, state (unchanged), reason }.
+// `completed` ({ slot, categoryTitle, cards }) is set when the move finished a category.
 export function moveCards(state, cardsById, from, to) {
   const reason = checkMove(state, cardsById, from, to);
   if (reason) return { ok: false, state, reason };
@@ -92,13 +95,22 @@ export function moveCards(state, cardsById, from, to) {
 
   if (to.type === 'tableau') {
     next.tableau[to.col] = [...state.tableau[to.col], ...moved];
-  } else {
-    const slot = state.foundations[to.slot];
-    next.foundations[to.slot] = slot
-      ? { ...slot, cards: [...slot.cards, ...moved] }
-      : { categoryTitle: cardsById[moved[0].id].categoryTitle, cards: moved };
+    return { ok: true, state: next };
   }
-  return { ok: true, state: next };
+
+  const slot = state.foundations[to.slot];
+  const filled = slot
+    ? { ...slot, cards: [...slot.cards, ...moved] }
+    : { categoryTitle: cardsById[moved[0].id].categoryTitle, cards: moved };
+  const progress = foundationProgress(filled, cardsById);
+  if (progress.collected < progress.total) {
+    next.foundations[to.slot] = filled;
+    return { ok: true, state: next };
+  }
+  // Category complete: clear the slot and award points once, in this move.
+  next.foundations[to.slot] = null;
+  next.score = state.score + COMPLETION_POINTS;
+  return { ok: true, state: next, completed: { slot: to.slot, ...filled } };
 }
 
 // Collected item cards (title excluded) and the category's item total.
