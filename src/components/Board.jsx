@@ -1,5 +1,5 @@
-import { Box, IconButton, SvgIcon, Typography } from '@mui/material';
-import Card, { EmptySlot } from './Card.jsx';
+import { Box, ButtonBase, IconButton, SvgIcon, Typography } from '@mui/material';
+import Card, { CardBack, EmptySlot } from './Card.jsx';
 
 // Vertical offsets between overlapping tableau cards, as multiples of card width.
 const FACE_DOWN_OFFSET = 0.18;
@@ -27,11 +27,33 @@ function TopBar({ score }) {
   );
 }
 
-function Pile({ pile, cardsById, testId, emptyLabel }) {
-  const top = pile[pile.length - 1];
+function SourcePile({ source, canRecycle, onClick }) {
+  const label = source.length ? 'Draw a card' : canRecycle ? 'Recycle draft pile' : 'Source empty';
   return (
-    <Box data-testid={testId} data-count={pile.length}>
-      {top ? <Card card={cardsById[top.id]} faceUp={top.faceUp} /> : <EmptySlot label={emptyLabel} />}
+    <ButtonBase
+      data-testid="source"
+      data-count={source.length}
+      aria-label={label}
+      onClick={onClick}
+      disabled={!source.length && !canRecycle}
+      sx={{ borderRadius: 1 }}
+    >
+      {source.length ? <CardBack /> : <EmptySlot testId="source-empty" label={canRecycle ? '↻' : 'Empty'} />}
+    </ButtonBase>
+  );
+}
+
+function DraftPile({ draft, cardsById }) {
+  const top = draft[draft.length - 1];
+  return (
+    <Box data-testid="draft" data-count={draft.length}>
+      {top ? (
+        <Box data-testid="draft-top" data-card-id={top.id}>
+          <Card card={cardsById[top.id]} faceUp />
+        </Box>
+      ) : (
+        <EmptySlot testId="draft-empty" label="Draft" />
+      )}
     </Box>
   );
 }
@@ -71,7 +93,7 @@ function TableauColumn({ column, cardsById, index }) {
 
 const rowSx = { display: 'flex', justifyContent: 'space-between', gap: 'var(--gap)' };
 
-export default function Board({ state, cardsById }) {
+export default function Board({ state, cardsById, onSourceClick }) {
   return (
     <Box
       sx={{
@@ -90,8 +112,8 @@ export default function Board({ state, cardsById }) {
       <TopBar score={state.score} />
 
       <Box data-testid="pile-row" sx={rowSx}>
-        <Pile pile={state.source} cardsById={cardsById} testId="source" emptyLabel="Empty" />
-        <Pile pile={state.draft} cardsById={cardsById} testId="draft" emptyLabel="Draft" />
+        <SourcePile source={state.source} canRecycle={state.draft.length > 0} onClick={onSourceClick} />
+        <DraftPile draft={state.draft} cardsById={cardsById} />
         <Box sx={{ flex: 1 }} />
       </Box>
 
