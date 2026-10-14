@@ -1,5 +1,16 @@
 import { useRef, useState } from 'react';
-import { Alert, Box, ButtonBase, IconButton, Snackbar, SvgIcon, Typography, keyframes } from '@mui/material';
+import {
+  Alert,
+  Box,
+  ButtonBase,
+  IconButton,
+  Menu,
+  MenuItem,
+  Snackbar,
+  SvgIcon,
+  Typography,
+  keyframes,
+} from '@mui/material';
 import {
   DndContext,
   DragOverlay,
@@ -29,15 +40,38 @@ function SettingsIcon() {
   );
 }
 
-function TopBar({ score }) {
+function TopBar({ score, soundOn, onRestart, onQuit, onToggleSound }) {
+  const [anchor, setAnchor] = useState(null);
+  const close = () => setAnchor(null);
+  const choose = (fn) => () => {
+    close();
+    fn();
+  };
   return (
     <Box data-testid="top-bar" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Typography data-testid="score" sx={{ fontWeight: 700 }}>
         Score: {score}
       </Typography>
-      <IconButton aria-label="menu" data-testid="menu-cog" sx={{ color: 'inherit' }}>
+      <IconButton
+        aria-label="menu"
+        aria-haspopup="menu"
+        data-testid="menu-cog"
+        onClick={(e) => setAnchor(e.currentTarget)}
+        sx={{ color: 'inherit' }}
+      >
         <SettingsIcon />
       </IconButton>
+      <Menu anchorEl={anchor} open={!!anchor} onClose={close} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MenuItem data-testid="menu-restart" onClick={choose(onRestart)}>
+          Restart
+        </MenuItem>
+        <MenuItem data-testid="menu-sound" onClick={choose(onToggleSound)}>
+          {soundOn ? 'Turn sound off' : 'Turn sound on'}
+        </MenuItem>
+        <MenuItem data-testid="menu-quit" onClick={choose(onQuit)}>
+          Quit
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }
@@ -318,6 +352,10 @@ export default function Board({
   onFoundationClick,
   onDrop,
   onDismissRejection,
+  soundOn,
+  onRestart,
+  onQuit,
+  onToggleSound,
 }) {
   const [dragging, setDragging] = useState(null);
   const lastDragEnd = useRef(0);
@@ -369,7 +407,13 @@ export default function Board({
           gap: 1.5,
         }}
       >
-        <TopBar score={state.score} />
+        <TopBar
+          score={state.score}
+          soundOn={soundOn}
+          onRestart={onRestart}
+          onQuit={onQuit}
+          onToggleSound={onToggleSound}
+        />
 
         <Box data-testid="pile-row" sx={rowSx}>
           <SourcePile source={state.source} canRecycle={state.draft.length > 0} onClick={guard(onSourceClick)} />

@@ -61,6 +61,17 @@ export function draftTop(state) {
   return state.draft.length ? state.draft[state.draft.length - 1] : null;
 }
 
+// Won only when every card has been grouped and cleared: nothing left in the
+// source, draft, tableau, or any foundation slot.
+export function isWon(state) {
+  return (
+    state.source.length === 0 &&
+    state.draft.length === 0 &&
+    state.tableau.every((col) => col.length === 0) &&
+    state.foundations.every((slot) => slot === null)
+  );
+}
+
 // Every card id currently on the board, in a stable region order.
 export function allPlacedIds(state) {
   return [
