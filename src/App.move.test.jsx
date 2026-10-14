@@ -50,7 +50,7 @@ describe('click-to-move', () => {
     expect(screen.getAllByTestId('foundation')[0].dataset.count).toBe('1');
     fireEvent.click(cardIn(screen.getByTestId('draft'), 'Rose'));
     fireEvent.click(screen.getAllByTestId('foundation')[0]);
-    expect(screen.getByTestId('foundation-progress').textContent).toBe('Wine 1/6');
+    expect(screen.getAllByTestId('foundation-progress')[0].textContent).toBe('Wine 1/6');
     // next draft top exposed
     expect(cardIn(screen.getByTestId('draft'), 'Orb')).toBeDefined();
   });
