@@ -15,7 +15,7 @@
  */
 import { FOUNDATION_SLOTS, POINTS_PER_CATEGORY, TABLEAU_SIZES } from './config.js';
 import { shuffle } from './shuffle.js';
-import { getMovableGroup, validateMove } from './rules.js';
+import { validateMove } from './rules.js';
 
 const rejected = (state, reason) => ({ state, ok: false, reason });
 
@@ -126,5 +126,3 @@ export function finishClear(state, slotIndex, categoryName) {
   if (isWon(next)) next.phase = 'won';
   return { ok: true, state: next };
 }
-
-export { getMovableGroup };
