@@ -34,6 +34,33 @@ export function createGame(cards, rng = Math.random) {
   };
 }
 
+// Moves the top source card face up onto the draft. No-op when source is empty.
+export function drawCard(state) {
+  if (!state.source.length) return state;
+  const top = state.source[state.source.length - 1];
+  return {
+    ...state,
+    source: state.source.slice(0, -1),
+    draft: [...state.draft, { id: top.id, faceUp: true }],
+  };
+}
+
+// When the source is empty, flips the draft back face down so the former
+// draft bottom is drawn first and the former draft top last. No-op otherwise.
+export function recycleDraft(state) {
+  if (state.source.length || !state.draft.length) return state;
+  return {
+    ...state,
+    source: [...state.draft].reverse().map(({ id }) => ({ id, faceUp: false })),
+    draft: [],
+  };
+}
+
+// The only draft card available to move interactions.
+export function draftTop(state) {
+  return state.draft.length ? state.draft[state.draft.length - 1] : null;
+}
+
 // Every card id currently on the board, in a stable region order.
 export function allPlacedIds(state) {
   return [
