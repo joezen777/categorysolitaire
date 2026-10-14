@@ -47,11 +47,24 @@ export async function visibleDOM(page){
   if(!foundationRow||boxes.length<5)return base;
   foundationRow.sort((a,b)=>a.x-b.x);const fy=foundationRow[0].y,h=foundationRow[0].h,w=foundationRow[0].w;
   const inside=b=>surfaces.texts.filter(t=>t.x+t.w/2>=b.x&&t.x+t.w/2<=b.x+b.w&&t.y+t.h/2>=b.y&&t.y+t.h/2<=b.y+b.h);
-  const card=b=>{const ts=inside(b),matches=ts.map(t=>({t,id:identify(t.text)})).filter(x=>x.id);const selected=matches.find(x=>x.id.kind==='item')||matches[0];return selected?{label:selected.id.label,point:[selected.t.x+selected.t.w/2,selected.t.y+selected.t.h/2],confidence:1}:null;};
+  const card=(b,limit=Infinity)=>{const ts=inside(b).filter(t=>t.y+t.h/2<limit),matches=ts.map(t=>({t,id:identify(t.text)})).filter(x=>x.id);const selected=matches.find(x=>x.id.kind==='item')||matches[0];if(selected?.id.kind==='title'&&!ts.some(t=>/title card|\d+\s*items/i.test(t.text))&&matches.length<2)return null;return selected?{label:selected.id.label,point:[selected.t.x+selected.t.w/2,selected.t.y+selected.t.h/2],confidence:1}:null;};
   base.boardVisible=true;
-  base.foundations=foundationRow.map(b=>{const top=card(b),identity=identify(top?.label),counter=inside(b).map(t=>t.text).join(' ').match(/(\d+)\s*\/\s*(\d+)/);return {point:[b.x+w/2,b.y+h/2],empty:!top&&inside(b).some(t=>/^(title|empty|category)$/i.test(t.text))?true:top?false:null,category:identity?.category,count:counter?Number(counter[1]):null,total:counter?Number(counter[2]):null,top};});
+  base.foundations=foundationRow.map(b=>{const top=card(b),identity=identify(top?.label)||inside(b).map(t=>identify(t.text)).find(Boolean),counter=inside(b).map(t=>t.text).join(' ').match(/(\d+)\s*\/\s*(\d+)/);return {point:[b.x+w/2,b.y+h/2],empty:!identity&&inside(b).some(t=>/^(title|empty|category)$/i.test(t.text))?true:identity?false:null,category:identity?.category,count:counter?Number(counter[1]):null,total:counter?Number(counter[2]):null,top};});
   const upper=boxes.filter(b=>b.y<fy-h/2).sort((a,b)=>a.x-b.x);
-  if(upper.length===2){base.stock={point:[upper[0].x+w/2,upper[0].y+h/2],empty:inside(upper[0]).some(t=>/recycle|↻|⟳/.test(t.text))?true:inside(upper[0]).some(t=>/♦|♠|♣|♥/.test(t.text))?false:null};const top=card(upper[1]);base.waste={top,empty:top?false:null};}
-  base.columns=foundationRow.map(f=>{const pile=boxes.filter(b=>b.y>fy+h-5&&Math.abs(b.x-f.x)<w/3).sort((a,b)=>a.y-b.y);const cards=pile.map(card).filter(Boolean);return {point:[f.x+w/2,pile[0]?.y+h/2||fy+h*1.7],empty:null,hidden:null,cards};});
+  const knownCount=(b,name)=>{const match=inside(b).map(t=>t.text).join(' ').match(new RegExp(`${name}\\s*:?\\s*(\\d+)`,'i'));return match?Number(match[1]):null;};
+  const emptyBox=b=>inside(b).some(t=>/^(empty|recycle|↻|⟳)$/i.test(t.text));
+  if(upper.length===2){const count=knownCount(upper[0],'stock');base.stock={point:[upper[0].x+w/2,upper[0].y+h/2],count,empty:count!==null?count===0:emptyBox(upper[0])?true:inside(upper[0]).some(t=>/♦|♠|♣|♥/.test(t.text))?false:null};const top=card(upper[1]),empty=!top&&emptyBox(upper[1]);base.waste={top,empty:top?false:empty?true:null,count:empty?0:knownCount(upper[1],'waste')};}
+  base.columns=foundationRow.map(f=>{
+    const pile=boxes.filter(b=>b.y>fy+h-5&&Math.abs(b.x-f.x)<w/3).sort((a,b)=>a.y-b.y);
+    let hidden=0,unknown=false;const cards=[];
+    for(let i=0;i<pile.length;i++){
+      const b=pile[i],limit=pile[i+1]?.y??Infinity,c=card(b,limit);
+      if(c)cards.push(c);
+      else if(inside(b).some(t=>t.y+t.h/2<limit&&/^[♦♠♣♥]$/.test(t.text)))hidden++;
+      else if(!emptyBox(b))unknown=true;
+    }
+    const empty=pile.length===1&&emptyBox(pile[0])&&!cards.length;
+    return {point:[f.x+w/2,(pile[0]?.y??fy+h*1.2)+h/2],empty:empty?true:cards.length||hidden?false:null,hidden:unknown?null:hidden,cards};
+  });
   return base;
 }

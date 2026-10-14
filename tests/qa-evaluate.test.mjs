@@ -25,7 +25,7 @@ describe('independent observation and outcomes',()=>{
        const last=i===DECK[category].length-1;if(last)score+=100;
        a=board({score,foundations:last?undefined:[{empty:false,category,count:i+1,top:card(DECK[category][i])}]});
        // Explicit complete fixture, independent of any application implementation.
-       if(last)a=board({score});l.verify(b,move,a);
+       if(last)a=board({score,winClaim:score===1300});l.verify(b,move,a);
      }
    }
    expect(l.completed.size).toBe(13);expect(l.gaps).toBe(0);

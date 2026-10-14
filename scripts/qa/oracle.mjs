@@ -61,21 +61,37 @@ export function candidates(o){
 export function stateKey(o){return JSON.stringify([o.score,o.stock.empty,o.waste.top?.label,o.columns.map(c=>[c.hidden,c.empty,labels(c.cards)]),o.foundations.map(f=>[f.empty,f.category,f.count,f.top?.label])]);}
 export function actionKey(a){return JSON.stringify([a.kind,a.source,a.dest]);}
 export function chooseAction(o,tried=new Set(),negative=false){
-  const options=candidates(o).filter(a=>a.status===(negative?'ILLEGAL':'LEGAL')&&!tried.has(actionKey(a)));
+  const options=candidates(o).filter(a=>a.status===(negative?'ILLEGAL':'LEGAL')&&!tried.has(actionKey(a))).filter(a=>negative||!(a.kind==='move'&&a.source.zone==='tableau'&&a.dest.zone==='tableau'&&o.columns[a.dest.index].empty===true&&a.source.offset===0&&o.columns[a.source.index].hidden===0));
   const priority=a=>a.kind==='recycle'?0:a.kind==='draw'?1:a.dest.zone==='foundation'?100:sourceCards(o,a).length>1?25:sourceCards(o,a)[0].kind==='item'?30:15;
   options.sort((a,b)=>priority(b)-priority(a));return options[0]||null;
 }
 export class Ledger{
   constructor(){this.deposits={};this.completed=new Set();this.findings=[];this.coverage=Object.fromEntries(RULE_IDS.map(id=>[id,{pass:0,fail:0,unknown:0}]));this.gaps=0;this.started=false;this.drawHistory=[];this.recycleExpected=null;}
-  observeInitial(o){this.started=o.boardVisible&&o.score===0&&o.foundations.every(f=>f.empty===true);if(!this.started)this.gaps++;if(o.warnings.includes('Unrecognized card identity'))this.gaps++;}
+  observeInitial(o){this.started=o.boardVisible&&o.score===0&&o.foundations.every(f=>f.empty===true);if(!this.started)this.gaps++;if(o.warnings.includes('Unrecognized card identity'))this.gaps++;this.audit(o);
+    const known=o.columns.every(c=>c.hidden!==null)&&o.stock.count!==null&&o.waste.empty!==null;
+    if(known){if(o.columns.some((c,i)=>c.hidden!==i+3||c.cards.length!==1)||o.stock.count!==56||!o.waste.empty||!o.foundations.every(f=>f.empty===true)||o.score!==0)this.finding('R01','incorrect_deal','Opening layout/counts differ from 4/5/6/7/8 tableau, 56 stock, empty waste/foundations and zero score',true);else this.coverage.R01.pass++;}else this.coverage.R01.unknown++;
+  }
+  audit(o){
+    if(!o.boardVisible)return;
+    const cards=[...o.columns.flatMap(c=>c.cards),...(o.waste.top?[o.waste.top]:[]),...o.foundations.flatMap(f=>f.top?[f.top]:[])].filter(c=>c.confidence>=.9);
+    const seen=new Set();for(const c of cards){if(seen.has(c.label))this.finding('R22','duplicate_visible_card',`Unique card visible twice: ${c.label}`,true);seen.add(c.label);}
+    for(const f of o.foundations){if(f.category&&f.total!==null&&f.total!==DECK[f.category].length)this.finding('R13','incorrect_total',`${f.category} progress denominator ${f.total}`,true);if(f.category&&f.count!==null&&f.count>DECK[f.category].length)this.finding('R13','incorrect_progress',`${f.category} progress exceeds category size`,true);}
+    if(o.stock.count!==null&&o.waste.count!==null&&o.columns.every(c=>c.hidden!==null)&&o.foundations.every(f=>f.empty===true||f.category&&f.count!==null)){
+      const total=o.stock.count+o.waste.count+o.columns.reduce((n,c)=>n+c.hidden+c.cards.length,0)+o.foundations.reduce((n,f)=>n+(f.empty?0:1+f.count),0)+[...this.completed].reduce((n,c)=>n+1+DECK[c].length,0);
+      if(total!==86)this.finding('R22','card_conservation',`Observable live plus independently completed inventory is ${total}; expected 86`,true);else this.coverage.R22.pass++;
+    }else this.coverage.R22.unknown++;
+  }
   finding(ruleId,type,message,confirmed=false){const f={ruleId,type,message,status:confirmed?'confirmed':'suspected'};this.findings.push(f);if(confirmed)this.coverage[ruleId].fail++;return f;}
   verify(before,a,after,delivery={}){
+    const findingStart=this.findings.length;
     if(after.warnings.includes('Unrecognized card identity'))this.gaps++;
     const v=legality(before,a),result={...v,effect:'UNKNOWN',findings:[]};
     const report=(id,type,msg,confirmed=true)=>result.findings.push(this.finding(id,type,msg,confirmed));
     if(a.kind==='draw'){
       if(after.waste.top&&after.waste.top.label!==before.waste.top?.label){
         result.effect='ACCEPTED';this.coverage.R02.pass++;
+        if(before.stock.count!==null&&after.stock.count!==null&&before.stock.count-after.stock.count!==1)report('R02','incorrect_draw_count',`Stock changed by ${before.stock.count-after.stock.count}, expected one`);
+        if(before.waste.count!==null&&after.waste.count!==null&&after.waste.count-before.waste.count!==1)report('R02','incorrect_draw_count',`Waste changed by ${after.waste.count-before.waste.count}, expected one`);
         if(this.recycleExpected){const expected=this.recycleExpected.shift();if(expected&&expected!==after.waste.top.label)report('R03','incorrect_transition',`Expected recycled ${expected}, observed ${after.waste.top.label}`);if(!this.recycleExpected.length)this.recycleExpected=null;}
         this.drawHistory.push(after.waste.top.label);
       }
@@ -93,6 +109,8 @@ export class Ledger{
         accepted=removed&&(completed||target.top?.label===first.label||(first.kind==='title'&&target.category===first.category&&target.empty===false)||(first.kind==='item'&&old.count!==null&&target.category===old.category&&target.count===old.count+1));
       }
       if(accepted){
+        if(a.source.zone==='tableau'){const old=before.columns[a.source.index],next=after.columns[a.source.index];if(old.cards.length===moved.length&&old.hidden>0&&next.hidden!==null){if(next.hidden!==old.hidden-1||next.cards.length!==1)report('R10','missing_or_incorrect_reveal','Removing all face-up cards must reveal exactly one hidden card');else this.coverage.R10.pass++;}
+        const retained=old.cards.slice(0,a.source.offset);if(retained.some((c,i)=>next.cards[i]?.label!==c.label))report('R11','face_up_card_lost','Previously face-up source cards disappeared or changed order');}
         if(!completed&&before.score!==null&&after.score!==null&&after.score!==before.score)report('R15','incorrect_score',`Score changed by ${after.score-before.score} without category completion`);
         result.effect='ACCEPTED';
         if(v.status==='ILLEGAL')report(v.ruleId,'illegal_action_accepted',`${first.label} accepted at ${a.dest.zone} ${a.dest.index+1}`);
@@ -122,8 +140,11 @@ export class Ledger{
       }else {this.coverage[v.ruleId].unknown++;this.gaps++;}
     }
     if(result.effect==='UNKNOWN'){this.coverage[v.ruleId].unknown++;this.gaps++;}
+    this.audit(after);
+    const empty=after.stock.empty===true&&after.waste.empty===true&&after.columns.every(c=>c.empty===true)&&after.foundations.every(f=>f.empty===true);
+    if(this.completed.size===13&&empty&&!after.winClaim)report('R16','missing_win_display','Complete independent ledger and empty board without a visible victory claim');
     if(after.winClaim&&after.score!==null&&after.score!==CATEGORIES.length*100)report('R16','premature_win',`Win claim with score ${after.score}, expected ${CATEGORIES.length*100}`);
-    return result;
+    result.findings=this.findings.slice(findingStart);return result;
   }
   outcome(o){
     if(!o?.boardVisible&&!o?.winClaim)return this.started?'INCOMPLETE':'NOT_STARTED';
