@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "status": "prepared-not-executed",
+  "branch": "claude.cli.opus-5-5.vibe",
+  "modelLabel": "Opus 5.5",
+  "modelId": "claude-opus-5-5",
+  "tool": "Claude CLI",
+  "method": "Vibe",
+  "effort": "medium",
+  "minimumClaudeCodeVersion": "2.1.284",
+  "productBaselineCommit": "d6a0d1e9fa5f6721ed02222ff8b10397c0e9552e",
+  "originalPromptPath": "prompts/original.md",
+  "originalPromptSha256": "1fa5727d951cf2c7149e00c9f304504ad34436588b9924e3c873e942a464e9b2",
+  "measurementReferenceCommit": "ee5f686a5eea06b3aad53c11a55b536bb226da45",
+  "specCount": 0,
+  "automaticExecution": false,
+  "preparedBy": "Codex documentation preparation; not a measured Claude run"
+}
