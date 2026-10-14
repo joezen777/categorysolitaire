@@ -1,6 +1,6 @@
 # Dynamic visual gameplay harness — implementation tasks
 
-Status: all implementation tasks below are pending. This commit supplies the plan only. The inventory/source review and script syntax checks described in requirements.md are completed discovery work, not completed implementation milestones.
+Status update (2026-10-14): an exploratory implementation now exists in `scripts/qa-evaluate.mjs` and `scripts/qa/`, with usage, live-run evidence summary and limitations in `qa/`. Local browser, Ollama screenshot observation and AWS AgentCore paths have been exercised. The original checkboxes below remain acceptance gates: partial implementation does not certify full calibration or complete rule coverage.
 
 Execution order: P0 → P1 → P2/P3 → P4 → P5 → P6 → P7 → P8. Contracts and the independent oracle can be developed in parallel after P1, but live scoring must wait for calibration. Keep each milestone reviewable with focused commits, tests, and evidence; never rewrite a measured game branch or its experiment history to add evaluator code.
 

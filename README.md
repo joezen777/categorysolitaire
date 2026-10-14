@@ -4,14 +4,14 @@
 
 # Visual QA Agent
 
-**Status: an exploratory visual QA agent is already committed; a validated ten-game harness is planned.** The current agent's self-reported wins and heuristic rewards are not independent proof of game correctness. The next implementation is specified here:
+**Status: an independent ten-game evaluator is implemented and live-tested; full benchmark calibration remains incomplete.** See the [runnable harness guide](qa/README.md) for local vision, visible-DOM observation, AWS AgentCore, reports, and limitations. The older learning agent's self-reported wins are not independent proof of game correctness. The full acceptance target remains specified here:
 
 - [Harness requirements and existing-work audit](.kiro/specs/visual-gameplay-harness/requirements.md)
 - [Architecture, AgentCore Browser / `opensearchprod`, and dynamic branch targeting](.kiro/specs/visual-gameplay-harness/design.md)
 - [Independent rule catalog, win evidence, and ten-game outcome definitions](.kiro/specs/visual-gameplay-harness/rule-catalog.md)
 - [Implementation milestones and validation gates](.kiro/specs/visual-gameplay-harness/tasks.md)
 
-The plan evaluates ten independent normal games per completed branch SHA, runs deliberate rule-breaking probes separately, and reports verified wins, illegal actions accepted, legal actions blocked, observed bugs, and inconclusive/evaluator failures with evidence. It requires no game-specific selectors or access to hidden app state. These documents are a plan; no new AgentCore session, game run, or harness implementation was executed to create them. Commands below describe the existing exploratory agent.
+The plan evaluates ten independent normal games per completed branch SHA, runs deliberate rule-breaking probes separately, and reports verified wins, illegal actions accepted, legal actions blocked, observed bugs, and inconclusive/evaluator failures with evidence. It requires no game-specific selectors or access to hidden app state. The original documents describe the full plan; the [implementation guide](qa/README.md) distinguishes implemented features from pending gates. Commands below describe the older exploratory agent. Use `npm run qa:evaluate -- --url GAME_URL` for the independent evaluator.
 
 This repo includes a local, visual-first QA agent for playing Category Solitaire against any deployed branch or local app URL. It observes browser screenshots, asks a local multimodal model for card/drop-target coordinates, then uses Playwright mouse dragging and pointer/touch taps for tap-to-move. The current implementation does not synthesize touch dragging. The agent does not read app source or hidden game state while playing, which keeps it useful for nondeterministic app implementations and future generated levels.
 

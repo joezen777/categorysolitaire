@@ -8,7 +8,10 @@
     "test:properties": "vitest --run tests/properties/",
     "qa:agent": "node scripts/qa-agent.mjs",
     "qa:agent:gif": "node scripts/make-qa-agent-gif.mjs",
-    "qa:agent:install": "playwright install chromium"
+    "qa:agent:install": "playwright install chromium",
+    "qa:evaluate": "node scripts/qa-evaluate.mjs",
+    "qa:discover": "node scripts/qa-discover.mjs",
+    "qa:test": "vitest --run tests/qa-evaluate.test.mjs tests/qa-browser.test.mjs"
   },
   "devDependencies": {
     "fast-check": "^4.1.1",

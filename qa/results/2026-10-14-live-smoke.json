@@ -1,0 +1,401 @@
+{
+  "date": "2026-10-14",
+  "target": "https://claude-vibe-solitaire.cardbrdbx.com/",
+  "observer": "visible-dom-assisted",
+  "buildIdentity": "unverified",
+  "maxSteps": 15,
+  "maxSeconds": 60,
+  "outcomes": {
+    "VALID_OBSERVED_WIN": 0,
+    "WIN_CLAIM_WITH_VIOLATIONS": 0,
+    "WIN_CLAIM_UNVERIFIED": 0,
+    "INCOMPLETE": 10,
+    "NOT_STARTED": 0
+  },
+  "games": [
+    {
+      "id": "game-01",
+      "profile": {
+        "width": 1440,
+        "height": 900,
+        "mobile": false,
+        "input": "drag"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "ACTION_BUDGET",
+      "actions": 15,
+      "seconds": 18.4,
+      "finalScore": 70,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": []
+    },
+    {
+      "id": "game-02",
+      "profile": {
+        "width": 1440,
+        "height": 900,
+        "mobile": false,
+        "input": "drag"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "ACTION_BUDGET",
+      "actions": 15,
+      "seconds": 17.6,
+      "finalScore": 70,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": []
+    },
+    {
+      "id": "game-03",
+      "profile": {
+        "width": 1440,
+        "height": 900,
+        "mobile": false,
+        "input": "drag"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "ACTION_BUDGET",
+      "actions": 15,
+      "seconds": 15.9,
+      "finalScore": 30,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": []
+    },
+    {
+      "id": "game-04",
+      "profile": {
+        "width": 1440,
+        "height": 900,
+        "mobile": false,
+        "input": "tap"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "BOARD_LOST_WITH_RUNTIME_ERROR",
+      "actions": 3,
+      "seconds": 4.1,
+      "finalScore": null,
+      "findings": [],
+      "runtime": [
+        {
+          "type": "pageerror",
+          "message": "Cannot read properties of undefined (reading 'length')",
+          "time": "2026-10-14T08:50:23.042Z"
+        }
+      ]
+    },
+    {
+      "id": "game-05",
+      "profile": {
+        "width": 1440,
+        "height": 900,
+        "mobile": false,
+        "input": "tap"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "BOARD_LOST_WITH_RUNTIME_ERROR",
+      "actions": 9,
+      "seconds": 10.2,
+      "finalScore": null,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": [
+        {
+          "type": "pageerror",
+          "message": "Cannot read properties of undefined (reading 'length')",
+          "time": "2026-10-14T08:50:33.248Z"
+        }
+      ]
+    },
+    {
+      "id": "game-06",
+      "profile": {
+        "width": 390,
+        "height": 844,
+        "mobile": true,
+        "input": "tap"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "BOARD_LOST_WITH_RUNTIME_ERROR",
+      "actions": 4,
+      "seconds": 5.3,
+      "finalScore": null,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": [
+        {
+          "type": "pageerror",
+          "message": "Cannot read properties of undefined (reading 'length')",
+          "time": "2026-10-14T08:50:38.582Z"
+        }
+      ]
+    },
+    {
+      "id": "game-07",
+      "profile": {
+        "width": 390,
+        "height": 844,
+        "mobile": true,
+        "input": "tap"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "BOARD_LOST_WITH_RUNTIME_ERROR",
+      "actions": 3,
+      "seconds": 4.4,
+      "finalScore": null,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": [
+        {
+          "type": "pageerror",
+          "message": "Cannot read properties of undefined (reading 'length')",
+          "time": "2026-10-14T08:50:42.978Z"
+        }
+      ]
+    },
+    {
+      "id": "game-08",
+      "profile": {
+        "width": 390,
+        "height": 844,
+        "mobile": true,
+        "input": "tap"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "BOARD_LOST_WITH_RUNTIME_ERROR",
+      "actions": 2,
+      "seconds": 3.4,
+      "finalScore": null,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": [
+        {
+          "type": "pageerror",
+          "message": "Cannot read properties of undefined (reading 'length')",
+          "time": "2026-10-14T08:50:46.345Z"
+        }
+      ]
+    },
+    {
+      "id": "game-09",
+      "profile": {
+        "width": 390,
+        "height": 844,
+        "mobile": true,
+        "input": "drag"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "ACTION_BUDGET",
+      "actions": 15,
+      "seconds": 19.1,
+      "finalScore": 20,
+      "findings": [
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R15",
+          "type": "incorrect_score",
+          "message": "Score changed by 10 without category completion",
+          "status": "confirmed"
+        }
+      ],
+      "runtime": []
+    },
+    {
+      "id": "game-10",
+      "profile": {
+        "width": 390,
+        "height": 844,
+        "mobile": true,
+        "input": "drag"
+      },
+      "outcome": "INCOMPLETE",
+      "stop": "ACTION_BUDGET",
+      "actions": 15,
+      "seconds": 18.5,
+      "finalScore": 0,
+      "findings": [],
+      "runtime": []
+    }
+  ]
+}

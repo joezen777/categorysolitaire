@@ -6,3 +6,7 @@ dist/
 .qa-agent-artifacts/
 .qa-agent-reports/
 .qa-agent-policy*.json
+
+qa-results/
+.qa-venv/
+__pycache__/
