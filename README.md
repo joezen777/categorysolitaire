@@ -4,7 +4,16 @@
 
 # Visual QA Agent
 
-This repo includes a local, visual-first QA agent for playing Category Solitaire against any deployed branch or local app URL. It observes browser screenshots, asks a local multimodal model for card/drop-target coordinates, then uses Playwright mouse/touch gestures to drag, tap, and tap-to-move. The agent does not read app source or hidden game state while playing, which keeps it useful for nondeterministic app implementations and future generated levels.
+**Status: an exploratory visual QA agent is already committed; a validated ten-game harness is planned.** The current agent's self-reported wins and heuristic rewards are not independent proof of game correctness. The next implementation is specified here:
+
+- [Harness requirements and existing-work audit](.kiro/specs/visual-gameplay-harness/requirements.md)
+- [Architecture, AgentCore Browser / `opensearchprod`, and dynamic branch targeting](.kiro/specs/visual-gameplay-harness/design.md)
+- [Independent rule catalog, win evidence, and ten-game outcome definitions](.kiro/specs/visual-gameplay-harness/rule-catalog.md)
+- [Implementation milestones and validation gates](.kiro/specs/visual-gameplay-harness/tasks.md)
+
+The plan evaluates ten independent normal games per completed branch SHA, runs deliberate rule-breaking probes separately, and reports verified wins, illegal actions accepted, legal actions blocked, observed bugs, and inconclusive/evaluator failures with evidence. It requires no game-specific selectors or access to hidden app state. These documents are a plan; no new AgentCore session, game run, or harness implementation was executed to create them. Commands below describe the existing exploratory agent.
+
+This repo includes a local, visual-first QA agent for playing Category Solitaire against any deployed branch or local app URL. It observes browser screenshots, asks a local multimodal model for card/drop-target coordinates, then uses Playwright mouse dragging and pointer/touch taps for tap-to-move. The current implementation does not synthesize touch dragging. The agent does not read app source or hidden game state while playing, which keeps it useful for nondeterministic app implementations and future generated levels.
 
 Install browser support once from WSL2 Ubuntu:
 
@@ -26,7 +35,7 @@ npm run qa:agent -- --url http://localhost:5173 --mode solve --max-steps 200
 npm run qa:agent -- --url http://localhost:5173 --mode train --episodes 5 --max-steps 250
 ```
 
-The agent stops when it wins, when the visual planner reports no valid draw/recycle/card-move actions, or when it recycles through the deck twice without a successful card move. `--max-steps` is still available as a safety guard for bad model output or unexpected UI loops.
+The exploratory agent stops when the visual planner reports a win claim, when the planner reports no valid draw/recycle/card-move actions, or when it recycles through the deck twice without a successful card move. `--max-steps` is still available as a safety guard for bad model output or unexpected UI loops.
 
 Use a local multimodal Qwen-style model through Ollama or any OpenAI-compatible server:
 
