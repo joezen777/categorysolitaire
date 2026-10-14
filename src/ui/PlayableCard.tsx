@@ -38,7 +38,10 @@ export function PlayableCard({ card, source, itemCount, canDrag, selected, shake
       role="button"
       aria-pressed={selected}
       aria-label={`${describeCard(card, itemCount)}, ${locationLabel}${selected ? ', selected' : ''}`}
-      onClick={onTap}
+      onClick={(e) => {
+        e.stopPropagation();
+        onTap();
+      }}
       disableRipple
       sx={{
         display: 'block',

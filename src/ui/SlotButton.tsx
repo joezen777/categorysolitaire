@@ -16,7 +16,10 @@ export function SlotButton({ label, onClick, children, disabled }: SlotButtonPro
   return (
     <ButtonBase
       aria-label={label}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
       disabled={disabled}
       sx={{
         width: m.cardW,
