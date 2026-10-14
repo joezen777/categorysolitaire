@@ -5,10 +5,28 @@ import Card, { CardBack, EmptySlot } from './Card';
 const GAP = 0.5;
 const row = { display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: GAP };
 
-function Pile({ cards, label, testId }) {
+function Source({ cards, onDraw, onRecycle }) {
+  const empty = cards.length === 0;
   return (
-    <Box data-testid={testId} data-count={cards.length}>
-      {cards.length ? <CardBack /> : <EmptySlot label={label} />}
+    <Box
+      data-testid="source"
+      data-count={cards.length}
+      role="button"
+      aria-label={empty ? 'Recycle draft into source' : 'Draw a card'}
+      onClick={empty ? onRecycle : onDraw}
+      sx={{ cursor: 'pointer' }}
+    >
+      {empty ? <EmptySlot label="Source" /> : <CardBack />}
+    </Box>
+  );
+}
+
+// Only the top (last) draft card is shown and available for later moves.
+function Draft({ cards }) {
+  const top = cards[cards.length - 1];
+  return (
+    <Box data-testid="draft" data-count={cards.length}>
+      {top ? <Card card={top} /> : <EmptySlot label="Draft" />}
     </Box>
   );
 }
@@ -31,7 +49,7 @@ function Column({ cards, index }) {
   );
 }
 
-export default function Board({ game }) {
+export default function Board({ game, onDraw, onRecycle }) {
   return (
     <Box sx={{ maxWidth: 640, mx: 'auto', p: 2, boxSizing: 'border-box' }}>
       <Box component="header" data-testid="header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -40,8 +58,8 @@ export default function Board({ game }) {
       </Box>
 
       <Box data-testid="piles" sx={{ ...row, mb: 1 }}>
-        <Pile cards={game.source} label="Source" testId="source" />
-        <Pile cards={game.draft} label="Draft" testId="draft" />
+        <Source cards={game.source} onDraw={onDraw} onRecycle={onRecycle} />
+        <Draft cards={game.draft} />
       </Box>
 
       <Box data-testid="foundations" sx={{ ...row, mb: 1 }}>
