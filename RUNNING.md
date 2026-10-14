@@ -1,6 +1,7 @@
 # Running Category Solitaire
 
-Requires Node.js 20+ and npm (developed with Node 24 / npm 11).
+Requires npm and Node.js 20.19+ or 22.12+ to run and build the app; the test
+suite (Vitest + jsdom) needs Node.js 22.22+ or 24.15+. Developed with Node 24 / npm 11.
 
 ```bash
 npm install        # install dependencies (uses package-lock.json)
