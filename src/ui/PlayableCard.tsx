@@ -36,6 +36,8 @@ export function PlayableCard({ card, source, itemCount, canDrag, selected, shake
       {...attributes}
       {...listeners}
       role="button"
+      // Still activatable when not draggable: tapping explains why it cannot move.
+      aria-disabled={undefined}
       aria-pressed={selected}
       aria-label={`${describeCard(card, itemCount)}, ${locationLabel}${selected ? ', selected' : ''}`}
       onClick={(e) => {
