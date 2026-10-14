@@ -1,16 +1,36 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DECKS, DEFAULT_DECK_ID, buildDeck } from './decks/index.js';
-import { createGame, drawCard, recycleDraft } from './game/state.js';
+import { DECKS, DEFAULT_DECK_ID, buildDeck, CARD_KIND } from './decks/index.js';
+import { createGame, drawCard, recycleDraft, isWon } from './game/state.js';
 import { getMovingCards, moveCards } from './game/rules.js';
+import { createSoundPlayer } from './audio/sounds.js';
 import Board, { GLITTER_MS } from './components/Board.jsx';
+import { QuitScreen, WinDialog } from './components/EndScreens.jsx';
 
-export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
+// The card a move source refers to (draft top or the picked tableau card).
+function cardAt(state, from) {
+  if (from?.type === 'draft') return state.draft[state.draft.length - 1];
+  if (from?.type === 'tableau') return state.tableau[from.col]?.[from.index];
+  return undefined;
+}
+
+export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng, soundPlayer }) {
   const { cards } = useMemo(() => buildDeck(deckData), [deckData]);
   const cardsById = useMemo(() => Object.fromEntries(cards.map((c) => [c.id, c])), [cards]);
   const [state, setState] = useState(() => createGame(cards, rng));
   const [selection, setSelection] = useState(null);
   const [rejection, setRejection] = useState(null);
   const [celebrations, setCelebrations] = useState([]);
+  const [quit, setQuit] = useState(false);
+  const [soundOn, setSoundOn] = useState(true);
+  const [player] = useState(() => soundPlayer ?? createSoundPlayer());
+  const won = isWon(state);
+
+  const playSound = useCallback(
+    (name) => {
+      if (soundOn) player.play(name);
+    },
+    [soundOn, player],
+  );
   const rejectCount = useRef(0);
   const celebrationCount = useRef(0);
   const timers = useRef([]);
@@ -18,18 +38,48 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const celebrate = useCallback((completed) => {
+    playSound('success');
     celebrationCount.current += 1;
     const key = celebrationCount.current;
     setCelebrations((list) => [...list.filter((c) => c.slot !== completed.slot), { ...completed, key }]);
     timers.current.push(
       setTimeout(() => setCelebrations((list) => list.filter((c) => c.key !== key)), GLITTER_MS),
     );
-  }, []);
+  }, [playSound]);
 
-  // `from` identifies the card/group that bounces back with a shake.
-  const reject = useCallback((message, from) => {
-    rejectCount.current += 1;
-    setRejection({ key: rejectCount.current, message, from });
+  // `from` identifies the card/group that bounces back with a shake. Illegal
+  // title-card moves play the error sound; illegal item-card moves the warning.
+  const reject = useCallback(
+    (message, from) => {
+      const entry = cardAt(state, from);
+      playSound(entry && cardsById[entry.id]?.kind === CARD_KIND.TITLE ? 'error' : 'warning');
+      rejectCount.current += 1;
+      setRejection({ key: rejectCount.current, message, from });
+    },
+    [state, cardsById, playSound],
+  );
+
+  // Restart, play again, and new game after quitting all deal a fresh game.
+  const newGame = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
+    setState(createGame(cards, rng));
+    setSelection(null);
+    setRejection(null);
+    setCelebrations([]);
+    setQuit(false);
+  }, [cards, rng]);
+
+  const toggleSound = useCallback(() => {
+    player.setEnabled(!soundOn);
+    setSoundOn(!soundOn);
+  }, [player, soundOn]);
+
+  // Quit ends the current game and leaves the board for an end screen.
+  const handleQuit = useCallback(() => {
+    setSelection(null);
+    setRejection(null);
+    setQuit(true);
   }, []);
 
   const select = useCallback(
@@ -105,21 +155,30 @@ export default function App({ deckData = DECKS[DEFAULT_DECK_ID], rng }) {
     [selection, select, tryMove],
   );
 
+  if (quit) return <QuitScreen score={state.score} onNewGame={newGame} />;
+
   return (
-    <Board
-      state={state}
-      cardsById={cardsById}
-      selection={selection}
-      rejection={rejection}
-      celebrations={celebrations}
-      canDrag={canDrag}
-      onDrop={handleDrop}
-      onSourceClick={handleSourceClick}
-      onDraftClick={handleDraftClick}
-      onTableauCardClick={handleTableauCardClick}
-      onTableauColumnClick={(col) => tryMove({ type: 'tableau', col })}
-      onFoundationClick={(slot) => tryMove({ type: 'foundation', slot })}
-      onDismissRejection={() => setRejection(null)}
-    />
+    <>
+      <Board
+        state={state}
+        cardsById={cardsById}
+        selection={selection}
+        rejection={rejection}
+        celebrations={celebrations}
+        canDrag={canDrag}
+        onDrop={handleDrop}
+        onSourceClick={handleSourceClick}
+        onDraftClick={handleDraftClick}
+        onTableauCardClick={handleTableauCardClick}
+        onTableauColumnClick={(col) => tryMove({ type: 'tableau', col })}
+        onFoundationClick={(slot) => tryMove({ type: 'foundation', slot })}
+        onDismissRejection={() => setRejection(null)}
+        soundOn={soundOn}
+        onRestart={newGame}
+        onQuit={handleQuit}
+        onToggleSound={toggleSound}
+      />
+      <WinDialog open={won} score={state.score} onPlayAgain={newGame} />
+    </>
   );
 }
