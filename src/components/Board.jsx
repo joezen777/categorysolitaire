@@ -177,7 +177,7 @@ function Column({ cards, faceUpCount, index, selection, canDrag, onClick }) {
         {cards.map((card, i) => {
           const last = i === cards.length - 1;
           const faceUp = i >= firstFaceUp;
-          const from = { type: 'tableau', col: index, index };
+          const from = { type: 'tableau', col: index, index: i };
           return (
             <Draggable
               key={card.id}
