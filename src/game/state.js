@@ -6,7 +6,7 @@
  * State shape:
  *   deck        immutable deck model (see deck.js)
  *   gameId      increments per new game, lets callers discard stale effects
- *   phase       'playing' | 'won'
+ *   phase       'playing' | 'won' | 'quit'
  *   score       number
  *   stock       card ids, top of the pile is the last element
  *   waste       card ids (draft pile), top is the last element
@@ -125,4 +125,10 @@ export function finishClear(state, slotIndex, categoryName) {
   const next = { ...state, foundations };
   if (isWon(next)) next.phase = 'won';
   return { ok: true, state: next };
+}
+
+/** Leave the game: no further moves are accepted. */
+export function quit(state) {
+  if (state.phase !== 'playing') return rejected(state, 'Game is not in play');
+  return { ok: true, state: { ...state, phase: 'quit' } };
 }
