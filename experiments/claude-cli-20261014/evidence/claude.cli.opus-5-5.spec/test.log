@@ -1,0 +1,36 @@
+
+> category-solitaire@0.1.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.4 [39m[90m/home/joezen777/categorysolitaire-experiments-20261014/claude.cli.opus-5-5.spec[39m
+
+ [32m✓[39m src/game/rules.test.jsx [2m([22m[2m29 tests[22m[2m)[22m[33m 941[2mms[22m[39m
+   [32m✓[39m tap-to-move UI [2m(1)[22m
+     [33m[2m✓[22m[39m selects, moves, rejects visibly, moves groups and reveals[33m 922[2mms[22m[39m
+ [32m✓[39m src/game/draw.test.jsx [2m([22m[2m6 tests[22m[2m)[22m[33m 1708[2mms[22m[39m
+   [32m✓[39m draw and recycle (UI) [2m(1)[22m
+     [33m[2m✓[22m[39m clicks draw one card at a time, then recycle from the empty slot[33m 1691[2mms[22m[39m
+ [32m✓[39m src/game/completion.test.jsx [2m([22m[2m3 tests[22m[2m)[22m[33m 1941[2mms[22m[39m
+   [32m✓[39m completion UI [2m(1)[22m
+     [33m[2m✓[22m[39m shows x/y, glitters on completion, scores 200 for two categories and reuses the slot[33m 1928[2mms[22m[39m
+ [32m✓[39m src/game/endgame.test.jsx [2m([22m[2m7 tests[22m[2m)[22m[33m 2357[2mms[22m[39m
+   [32m✓[39m sounds, menu, win and replay in the app [2m(4)[22m
+     [33m[2m✓[22m[39m plays error, warning and success effects and shows the win modal; play again resets[33m 1455[2mms[22m[39m
+     [33m[2m✓[22m[39m mute suppresses every sound[33m 582[2mms[22m[39m
+ [32m✓[39m src/game/state.test.jsx [2m([22m[2m7 tests[22m[2m)[22m[33m 308[2mms[22m[39m
+ [32m✓[39m src/decks/deck.test.jsx [2m([22m[2m6 tests[22m[2m)[22m[32m 172[2mms[22m[39m
+ [32m✓[39m src/components/interaction.test.jsx [2m([22m[2m6 tests[22m[2m)[22m[33m 4219[2mms[22m[39m
+   [32m✓[39m drag and tap parity [2m(3)[22m
+     [33m[2m✓[22m[39m produces identical outcomes for the same valid and invalid moves[33m 3148[2mms[22m[39m
+   [32m✓[39m draft card drag and tap [2m(2)[22m
+     [33m[2m✓[22m[39m moves the draft top by drag, rejecting an invalid destination first[33m 401[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m      Tests [22m [1m[32m64 passed[39m[22m[90m (64)[39m
+[2m   Start at [22m 05:47:25
+[2m   Duration [22m 7.33s[2m (tests 38%, import 38%, environment 22%, transform 2%)[22m
+
+[2m    Isolate [22m [33m7 workers spawned[39m[2m · ~1.10s startup each (spawn + environment, per file)[22m
+[2m            [22m [2mat least ~439ms faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+

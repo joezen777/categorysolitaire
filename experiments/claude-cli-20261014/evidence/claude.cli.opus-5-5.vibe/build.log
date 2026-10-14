@@ -1,0 +1,14 @@
+
+> category-solitaire@0.1.0 build
+> vite build
+
+[36mvite v8.3.4 [32mbuilding client environment for production...[36m[39m
+transforming...
+✓ 925 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.47 kB │ gzip:   0.30 kB
+dist/assets/index-CiGgibMd.css    6.09 kB │ gzip:   2.05 kB
+dist/assets/index-20kOyfSC.js   466.62 kB │ gzip: 147.26 kB
+
+[32m✓ built in 307ms[39m

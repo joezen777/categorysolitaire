@@ -1,0 +1,23 @@
+import { chromium } from 'playwright-core';
+const b = await chromium.launch({ executablePath: '/usr/bin/chromium-browser', args: ['--no-sandbox'] });
+const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+const errs = []; p.on('console', m => m.type()==='error' && errs.push(m.text())); p.on('pageerror', e => errs.push(e.message));
+await p.goto('http://localhost:4173');
+await p.getByLabel('Game menu').click();
+console.log('mute item:', await p.getByRole('menuitem', { name: /sound/i }).innerText());
+await p.getByRole('menuitem', { name: /sound/i }).click();
+await p.getByLabel('Game menu').click();
+console.log('after toggle:', await p.getByRole('menuitem', { name: /sound/i }).innerText());
+await p.keyboard.press('Escape');
+await p.getByLabel('Game menu').click();
+await p.getByRole('menuitem', { name: 'Quit' }).click();
+console.log('quit screen:', await p.getByText('You quit the game').count(), 'board gone:', await p.locator('section[aria-label=Foundations]').count());
+await p.getByRole('button', { name: 'New game' }).click();
+console.log('new game board:', await p.locator('section[aria-label=Foundations]').count());
+// keyboard route: focus waste after draw, select with Enter, status text
+await p.locator('section[aria-label^="Source"] button').first().click();
+const w = p.locator('section[aria-label^="Source"] > div:nth-child(2) button');
+await w.focus(); await p.keyboard.press('Enter');
+console.log('kbd select status:', await p.locator('[role=status]').innerText());
+console.log('errors', errs);
+await b.close();

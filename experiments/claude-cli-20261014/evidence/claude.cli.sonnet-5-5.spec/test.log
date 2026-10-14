@@ -1,0 +1,40 @@
+
+> category-solitaire@0.1.0 test
+> vitest run --run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.4 [39m[90m/home/joezen777/categorysolitaire-experiments-20261014/claude.cli.sonnet-5-5.spec[39m
+
+ [32m✓[39m src/game/integration.test.js [2m([22m[2m5 tests[22m[2m)[22m[33m 1506[2mms[22m[39m
+   [32m✓[39m randomized play keeps the game consistent [2m(5)[22m
+     [33m[2m✓[22m[39m seed 1: random legal moves, draws and recycles[33m 362[2mms[22m[39m
+     [33m[2m✓[22m[39m seed 2: random legal moves, draws and recycles[33m 331[2mms[22m[39m
+     [33m[2m✓[22m[39m seed 5: random legal moves, draws and recycles[32m 300[2mms[22m[39m
+ [32m✓[39m src/game/moves.test.js [2m([22m[2m13 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/game/draw.test.js [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/game/status.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/game/deal.test.js [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/deck/deck.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/App.drag.test.jsx [2m([22m[2m2 tests[22m[2m)[22m[33m 555[2mms[22m[39m
+   [32m✓[39m drag and drop uses the same rules as tapping [2m(2)[22m
+     [33m[2m✓[22m[39m moves a stack as a unit, and rejects invalid drops leaving state unchanged[33m 486[2mms[22m[39m
+ [32m✓[39m src/App.move.test.jsx [2m([22m[2m3 tests[22m[2m)[22m[33m 761[2mms[22m[39m
+   [32m✓[39m click-to-move [2m(2)[22m
+     [33m[2m✓[22m[39m moves a valid card, reveals the vacated bottom, and rejects illegal moves without change[33m 446[2mms[22m[39m
+ [32m✓[39m src/App.test.jsx [2m([22m[2m1 test[22m[2m)[22m[33m 1176[2mms[22m[39m
+   [32m✓[39m source/draft UI [2m(1)[22m
+     [33m[2m✓[22m[39m draws one card per click, shows empty source slot, and recycles[33m 1174[2mms[22m[39m
+ [32m✓[39m src/App.menu.test.jsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1308[2mms[22m[39m
+   [32m✓[39m sound [2m(1)[22m
+     [33m[2m✓[22m[39m plays on illegal moves and on completion, and mute suppresses everything[33m 732[2mms[22m[39m
+   [32m✓[39m win modal [2m(1)[22m
+     [33m[2m✓[22m[39m appears only when everything is cleared, shows the score, and Play Again resets[33m 325[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m      Tests [22m [1m[32m40 passed[39m[22m[90m (40)[39m
+[2m   Start at [22m 05:27:43
+[2m   Duration [22m 4.52s[2m (import 42%, tests 30%, environment 26%, transform 1%)[22m
+
+[2m    Isolate [22m [33m10 workers spawned[39m[2m · ~611ms startup each (spawn + environment, per file)[22m
+[2m            [22m [2mat least ~611ms faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+

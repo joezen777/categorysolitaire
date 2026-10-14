@@ -1,0 +1,14 @@
+
+> category-solitaire@0.1.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.4 [39m[90m/home/joezen777/categorysolitaire-experiments-20261014/claude.cli.sonnet-5-5.steering[39m
+
+ [32m✓[39m src/game/game.test.js [2m([22m[2m19 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m19 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 11:42:39
+[2m   Duration [22m 260ms[2m (transform 70%, import 15%, tests 11%, worker 3%)[22m
+

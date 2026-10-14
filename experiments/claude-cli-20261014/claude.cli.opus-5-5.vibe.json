@@ -1,0 +1,545 @@
+{
+  "branch": "claude.cli.opus-5-5.vibe",
+  "resultSha": "bb12a9284674922a807bf64bb5ba143f3be859de",
+  "checks": {
+    "test": {
+      "status": "passed",
+      "exitCode": 0,
+      "seconds": 0.7166685009997309
+    },
+    "build": {
+      "status": "passed",
+      "exitCode": 0,
+      "seconds": 0.6400781000002098
+    },
+    "independentDeck": {
+      "status": "passed",
+      "file": "src/decks/starterDeck.json",
+      "items": 73,
+      "categories": 13,
+      "expectedItems": 73,
+      "uniqueIds": true
+    }
+  },
+  "metrics": {
+    "sloc": null,
+    "fileCount": 15,
+    "avgFileSize": null,
+    "bundleSize": 462.1044921875,
+    "maintainability": null,
+    "maxComplexity": null,
+    "duplication": 0,
+    "securityIssues": 0,
+    "tsErrors": null,
+    "unusedExports": null,
+    "commits": 9,
+    "churn": 3807,
+    "coverage": null,
+    "lighthouseA11y": null,
+    "depCount": 10,
+    "bundleWeight": 455.6875
+  },
+  "metricReasons": {
+    "sloc": "Not collected by a validated independent analyzer; N/A, not zero.",
+    "avgFileSize": "Not collected by a validated independent analyzer; N/A, not zero.",
+    "maintainability": "Not collected by a validated independent analyzer; N/A, not zero.",
+    "maxComplexity": "Not collected by a validated independent analyzer; N/A, not zero.",
+    "tsErrors": "Not collected by a validated independent analyzer; N/A, not zero.",
+    "unusedExports": "Not collected by a validated independent analyzer; N/A, not zero.",
+    "coverage": "Not collected by a validated independent analyzer; N/A, not zero.",
+    "lighthouseA11y": "Not collected by a validated independent analyzer; N/A, not zero."
+  },
+  "sourceScope": [
+    "src/App.jsx",
+    "src/audio/sounds.js",
+    "src/components/DraggableCard.jsx",
+    "src/components/EndDialogs.jsx",
+    "src/components/Foundation.jsx",
+    "src/components/PlayingCard.jsx",
+    "src/components/SourcePiles.jsx",
+    "src/components/Tableau.jsx",
+    "src/components/TopBar.jsx",
+    "src/decks/index.js",
+    "src/game/deck.js",
+    "src/game/engine.js",
+    "src/main.jsx",
+    "src/styles.css",
+    "src/theme.js"
+  ],
+  "commits": [
+    {
+      "sha": "f9bca14ebaef6fe91f4449da692dae71a20e47c8",
+      "date": "2026-10-14T05:49:45-04:00",
+      "subject": "[tokens-est:9000] [kind:implementation] [step:zero-shot] add package.json and dependencies",
+      "parents": [
+        "04cefe1e07a12b4610c0744a229e061de774f068"
+      ],
+      "authorDate": "2026-10-14T05:49:45-04:00",
+      "committerDate": "2026-10-14T05:49:45-04:00",
+      "changedFiles": [
+        {
+          "path": "package-lock.json",
+          "added": 2195,
+          "deleted": 0,
+          "scope": "otherTrackedFiles"
+        },
+        {
+          "path": "package.json",
+          "added": 26,
+          "deleted": 0,
+          "scope": "otherTrackedFiles"
+        }
+      ]
+    },
+    {
+      "sha": "c1ca9ff03ec70dcc8340e971c1b43bd13d764510",
+      "date": "2026-10-14T05:49:56-04:00",
+      "subject": "[tokens-est:6500] [kind:implementation] [step:zero-shot] add vite entry, html shell, and MUI theme",
+      "parents": [
+        "f9bca14ebaef6fe91f4449da692dae71a20e47c8"
+      ],
+      "authorDate": "2026-10-14T05:49:56-04:00",
+      "committerDate": "2026-10-14T05:49:56-04:00",
+      "changedFiles": [
+        {
+          "path": "index.html",
+          "added": 13,
+          "deleted": 0,
+          "scope": "otherTrackedFiles"
+        },
+        {
+          "path": "src/main.jsx",
+          "added": 15,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/theme.js",
+          "added": 16,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "vite.config.js",
+          "added": 9,
+          "deleted": 0,
+          "scope": "otherTrackedFiles"
+        }
+      ]
+    },
+    {
+      "sha": "ede3e30fbe98baf686bf2f9eb18122b5486cc6d3",
+      "date": "2026-10-14T05:50:15-04:00",
+      "subject": "[tokens-est:7000] [kind:implementation] [step:zero-shot] add swappable JSON starter deck and card builder",
+      "parents": [
+        "c1ca9ff03ec70dcc8340e971c1b43bd13d764510"
+      ],
+      "authorDate": "2026-10-14T05:50:15-04:00",
+      "committerDate": "2026-10-14T05:50:15-04:00",
+      "changedFiles": [
+        {
+          "path": "src/decks/index.js",
+          "added": 11,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/decks/starterDeck.json",
+          "added": 75,
+          "deleted": 0,
+          "scope": "otherTrackedFiles"
+        },
+        {
+          "path": "src/game/deck.js",
+          "added": 57,
+          "deleted": 0,
+          "scope": "applicationSource"
+        }
+      ]
+    },
+    {
+      "sha": "9301aa8bdf93218dc8542190223677be5f91f58b",
+      "date": "2026-10-14T05:50:37-04:00",
+      "subject": "[tokens-est:5500] [kind:implementation] [step:zero-shot] add pure game engine with move rules and reducer",
+      "parents": [
+        "ede3e30fbe98baf686bf2f9eb18122b5486cc6d3"
+      ],
+      "authorDate": "2026-10-14T05:50:37-04:00",
+      "committerDate": "2026-10-14T05:50:37-04:00",
+      "changedFiles": [
+        {
+          "path": "src/game/engine.js",
+          "added": 169,
+          "deleted": 0,
+          "scope": "applicationSource"
+        }
+      ]
+    },
+    {
+      "sha": "38976a981000307f27b02b40ea1375bdaa520edc",
+      "date": "2026-10-14T05:50:48-04:00",
+      "subject": "[tokens-est:2500] [kind:implementation] [step:zero-shot] add procedural Web Audio sound effects",
+      "parents": [
+        "9301aa8bdf93218dc8542190223677be5f91f58b"
+      ],
+      "authorDate": "2026-10-14T05:50:48-04:00",
+      "committerDate": "2026-10-14T05:50:48-04:00",
+      "changedFiles": [
+        {
+          "path": "src/audio/sounds.js",
+          "added": 72,
+          "deleted": 0,
+          "scope": "applicationSource"
+        }
+      ]
+    },
+    {
+      "sha": "01701601b8ba93a5dad213be2c51147c717ee5fb",
+      "date": "2026-10-14T05:53:19-04:00",
+      "subject": "[tokens-est:22000] [kind:implementation] [step:zero-shot] add board UI with drag-and-drop, tap-to-move, menu, and win dialog",
+      "parents": [
+        "38976a981000307f27b02b40ea1375bdaa520edc"
+      ],
+      "authorDate": "2026-10-14T05:53:19-04:00",
+      "committerDate": "2026-10-14T05:53:19-04:00",
+      "changedFiles": [
+        {
+          "path": "src/App.jsx",
+          "added": 230,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/components/DraggableCard.jsx",
+          "added": 22,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/components/EndDialogs.jsx",
+          "added": 36,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/components/Foundation.jsx",
+          "added": 60,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/components/PlayingCard.jsx",
+          "added": 57,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/components/SourcePiles.jsx",
+          "added": 55,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/components/Tableau.jsx",
+          "added": 71,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/components/TopBar.jsx",
+          "added": 48,
+          "deleted": 0,
+          "scope": "applicationSource"
+        },
+        {
+          "path": "src/styles.css",
+          "added": 404,
+          "deleted": 0,
+          "scope": "applicationSource"
+        }
+      ]
+    },
+    {
+      "sha": "e30b6445a50b482b0c54095fecbb2509e096383e",
+      "date": "2026-10-14T05:53:40-04:00",
+      "subject": "[tokens-est:3500] [kind:test] [step:zero-shot] add engine unit tests",
+      "parents": [
+        "01701601b8ba93a5dad213be2c51147c717ee5fb"
+      ],
+      "authorDate": "2026-10-14T05:53:40-04:00",
+      "committerDate": "2026-10-14T05:53:40-04:00",
+      "changedFiles": [
+        {
+          "path": "src/game/engine.test.js",
+          "added": 122,
+          "deleted": 0,
+          "scope": "tests"
+        }
+      ]
+    },
+    {
+      "sha": "0dce506f9a4df381853826d2cb3306dff4f94b7f",
+      "date": "2026-10-14T05:55:19-04:00",
+      "subject": "[tokens-est:9000] [kind:fix] [step:zero-shot] fix draft pile cards not overlaying their slot (CSS specificity)",
+      "parents": [
+        "e30b6445a50b482b0c54095fecbb2509e096383e"
+      ],
+      "authorDate": "2026-10-14T05:55:19-04:00",
+      "committerDate": "2026-10-14T05:55:19-04:00",
+      "changedFiles": [
+        {
+          "path": "src/styles.css",
+          "added": 1,
+          "deleted": 1,
+          "scope": "applicationSource"
+        }
+      ]
+    },
+    {
+      "sha": "bb12a9284674922a807bf64bb5ba143f3be859de",
+      "date": "2026-10-14T05:55:37-04:00",
+      "subject": "[tokens-est:9500] [kind:docs] [step:zero-shot] add RUNNING.md with run, play, and deck-swap instructions",
+      "parents": [
+        "0dce506f9a4df381853826d2cb3306dff4f94b7f"
+      ],
+      "authorDate": "2026-10-14T05:55:37-04:00",
+      "committerDate": "2026-10-14T05:55:37-04:00",
+      "changedFiles": [
+        {
+          "path": "RUNNING.md",
+          "added": 42,
+          "deleted": 0,
+          "scope": "otherTrackedFiles"
+        }
+      ]
+    }
+  ],
+  "estimatedCommitTokens": 74500,
+  "usage": [
+    {
+      "step": "zero-shot",
+      "initialization": {
+        "model": "claude-opus-5-5",
+        "claude_code_version": "2.1.296",
+        "permissionMode": "acceptEdits",
+        "mcp_servers": [],
+        "skills": [],
+        "plugins": [
+          {
+            "name": "cc-plugin-agents-md",
+            "path": "builtin",
+            "source": "cc-plugin-agents-md@builtin"
+          },
+          {
+            "name": "cc-plugin-telemetry",
+            "path": "builtin",
+            "source": "cc-plugin-telemetry@builtin"
+          },
+          {
+            "name": "cc-plugin-plugin-authoring",
+            "path": "builtin",
+            "source": "cc-plugin-plugin-authoring@builtin"
+          }
+        ]
+      },
+      "usage": {
+        "input_tokens": 58,
+        "cache_creation_input_tokens": 59183,
+        "cache_read_input_tokens": 1243366,
+        "output_tokens": 46316,
+        "output_tokens_details": {
+          "thinking_tokens": 13203
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 59183,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 1469,
+            "cache_read_input_tokens": 68396,
+            "cache_creation_input_tokens": 176,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 176
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "modelUsage": {
+        "claude-opus-5-5": {
+          "inputTokens": 58,
+          "outputTokens": 46316,
+          "cacheReadInputTokens": 1243366,
+          "cacheCreationInputTokens": 59183,
+          "webSearchRequests": 0,
+          "costUSD": 1.6486891999999997,
+          "contextWindow": 1000000,
+          "maxOutputTokens": 128000,
+          "thinkingTokens": 13203,
+          "canonicalModel": "claude-opus-5-5",
+          "provider": "firstParty",
+          "costBasis": "list"
+        }
+      },
+      "costUSD": 1.6486891999999997,
+      "report": "The first pass of the Category Solitaire app is done and committed. The working tree is clean and HEAD is `bb12a92`. Unit tests and the production build pass, and I tested taps and drags in a headless browser. One drag bug turned up there and is fixed. I haven't tried it on a real touch device yet.\n\n**What works:**\n- **Swappable decks:** a deck is a JSON array of `{id, categoryTitle, itemName}` in `src/decks/starterDeck.json`. The category title cards, with their card counts, are built automatically from the unique `categoryTitle` values. To use a new deck, register it in `src/decks/index.js`.\n- **Code layout:** all the game rules are in plain functions in `src/game/engine.js`, kept separate from the React/MUI screens.\n- **Source deck and draft pile:** tap the deck to deal one card. When it's empty, an empty slot appears; tapping it flips the draft pile back over in reverse order.\n- **Five foundation slots:** each filled slot shows the category name and an \"x/y\" counter above it. A finished category glitters, plays the success sound, adds 100 points and frees the slot.\n- **Play area:** five columns of 4\u20138 cards, with only the bottom card face up. The new bottom card flips automatically when a card is moved off it. Stacked cards overlap using absolute `top` offsets, so a small label shows at the top of each covered card.\n- **Move rules:**\n  - Title cards can go to an empty column, onto an item of their own category, or into an empty slot.\n  - Item cards can go onto items of their own category, into an empty column, or onto their category's slot once the title card is there.\n  - A run of same-category items moves as one unit.\n- **Drag and tap:** cards can be dragged (`@dnd-kit/core`, mouse and touch). An illegal drop animates back to where it started. Tap-to-move also works: tap a card, then tap a destination. An illegal tap makes the card shake.\n- **Sounds:** generated with Web Audio. Illegal moves in the play area give an error buzz, illegal moves onto a slot give a warning beep, and completing a category plays a chime.\n- **Screen:** score at the top left. The cog menu has restart, sound on/off and quit. A \"Game Over - You Win!\" dialog shows the final score with a play-again button.\n\n**Checks run:**\n- `npx vitest run`: 9 of 9 tests pass. They cover dealing, flipping the pile back, the move rules, moving a run, revealing the next card, and clearing a category to win.\n- `npx vite build`: succeeds.\n- Headless Chromium screenshots at 390px and 1280px wide: layout looks right.\n- Scripted browser tests:\n  - **Taps:** drawing, tapping to select, the illegal-tap shake, flipping the pile back, and the menu items all worked with no console errors.\n  - **Drags:** the first run showed a successful drag wasn't landing. A CSS rule was positioning the draft-pile cards below their slot. I fixed it in its own commit (`0dce506`). After that, an illegal drag bounced back and dragging a title card onto a slot showed \"Ceramic 0/5\".\n\n**Not tested:** a full game played through to the win dialog in the browser (the win logic is unit-tested), dragging a stack of cards in the browser, real touch devices, and whether the sounds actually play.\n\n**Choices I made where the prompt didn't say:**\n- Nothing can be placed on a title card in the play area, so it is always the last card of a stack.\n- Cards can't be taken back out of a slot.\n- A stack of matching items can be dropped onto its category's slot in one move.\n- Dropping a card somewhere that isn't a target bounces it back without a sound.\n- Quit shows a \"Thanks for playing\" screen with a button to start a new game.\n- Valid destinations aren't highlighted while you drag or select, because that would give away which items belong to which category.\n\n**Token estimates:** each commit's `[tokens-est:N]` is a rough guess at input plus output tokens. Reasoning tokens are only partly included, since I can't see their exact count. About 4,000 tokens of uncommitted work came after the last commit (checking status, writing this report). RUNNING.md has the run commands (`npm install`, `npm run dev`, `npm test`).",
+      "permissionDenials": [],
+      "subagentStats": null
+    }
+  ],
+  "gameplayStatus": "9/9 smoke checks; full games untested",
+  "evaluatedUtc": "2026-10-14T09:56:18.521686+00:00",
+  "churnBreakdown": {
+    "applicationSource": 1325,
+    "tests": 122,
+    "otherTrackedFiles": 2360
+  },
+  "dependencyCounts": {
+    "dependencies": 7,
+    "devDependencies": 3
+  },
+  "browser": {
+    "errors": [],
+    "browserVersion": "149.0.7827.55",
+    "randomSeed": 20261014,
+    "text": "Score: 0\n\nCategories 0/13\n\n56\nSofa bed\nSofa bed\nDen\nDen\nAviation\nCATEGORY\nAVIATION\n8 cards\nPegleg\nPegleg\nSmell\nCATEGORY\nSMELL\n6 cards",
+    "overflow": false,
+    "checks": [
+      {
+        "name": "56 draws exhaust source",
+        "status": "passed"
+      },
+      {
+        "name": "recycle restores 56 source and empty draft",
+        "status": "passed"
+      },
+      {
+        "name": "recycle preserves required draw order",
+        "status": "passed"
+      },
+      {
+        "name": "title admitted to empty foundation by tap",
+        "status": "passed"
+      },
+      {
+        "name": "item rejected from empty foundation",
+        "status": "passed"
+      },
+      {
+        "name": "mute toggles menu label",
+        "status": "passed"
+      },
+      {
+        "name": "quit screen appears",
+        "status": "passed"
+      },
+      {
+        "name": "new game resets source and score",
+        "status": "passed"
+      },
+      {
+        "name": "pointer drag admits title to foundation",
+        "status": "passed"
+      }
+    ]
+  },
+  "independentRules": [
+    {
+      "id": "R01",
+      "name": "item group to foundation must be rejected",
+      "expectedAllowed": false,
+      "actualAllowed": true,
+      "stateChanged": true,
+      "status": "failed"
+    },
+    {
+      "id": "R02",
+      "name": "group containing a title must be rejected",
+      "expectedAllowed": false,
+      "actualAllowed": true,
+      "stateChanged": true,
+      "status": "failed"
+    },
+    {
+      "id": "P01",
+      "name": "matching item group to empty column is allowed",
+      "expectedAllowed": true,
+      "actualAllowed": true,
+      "stateChanged": true,
+      "status": "passed"
+    },
+    {
+      "id": "P02",
+      "name": "single matching item to foundation is allowed",
+      "expectedAllowed": true,
+      "actualAllowed": true,
+      "stateChanged": true,
+      "status": "passed"
+    }
+  ],
+  "state": {
+    "sessionId": "a66a48c1-2d7b-4dd7-84f0-a7a26885edbe",
+    "activeSeconds": 465.8572641540004,
+    "steps": [
+      {
+        "step": "zero-shot",
+        "startUtc": "2026-10-14T09:48:08.024822+00:00",
+        "command": [
+          "/home/joezen777/.local/bin/claude",
+          "-p",
+          "--model",
+          "claude-opus-5-5",
+          "--effort",
+          "medium",
+          "--setting-sources",
+          "project",
+          "--strict-mcp-config",
+          "--disable-slash-commands",
+          "--no-chrome",
+          "--permission-mode",
+          "acceptEdits",
+          "--allowedTools",
+          "Bash,Read,Edit,Write,Glob,Grep",
+          "--disallowedTools",
+          "Agent,Task",
+          "--output-format",
+          "stream-json",
+          "--verbose",
+          "--session-id",
+          "a66a48c1-2d7b-4dd7-84f0-a7a26885edbe"
+        ],
+        "exitCode": 0,
+        "stopUtc": "2026-10-14T09:55:53.882088+00:00",
+        "activeSeconds": 465.8572641540004,
+        "head": "bb12a9284674922a807bf64bb5ba143f3be859de",
+        "dirty": "",
+        "resolvedModels": [
+          "claude-opus-5-5"
+        ],
+        "modelMismatch": false
+      }
+    ],
+    "preparedSha": "39f60b1bc80bb663cfa616f73eeae99e92ff8d98",
+    "firstPassSha": "bb12a9284674922a807bf64bb5ba143f3be859de",
+    "stopUtc": "2026-10-14T09:55:53.882088+00:00"
+  },
+  "protectedFilesUnchanged": {
+    "README.md": true,
+    "AGENTS.md": true,
+    "CLAUDE.md": true,
+    "prompts/original.md": true,
+    "experiment.json": true,
+    "EVALUATION.md": true
+  }
+}

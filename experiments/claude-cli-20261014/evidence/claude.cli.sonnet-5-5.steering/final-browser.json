@@ -1,0 +1,45 @@
+{
+  "errors": [],
+  "browserVersion": "149.0.7827.55",
+  "randomSeed": 20261014,
+  "text": "Score: 0\n\n56\n \n1\n \n2\n \n3\n \n4\n \n5\nSofa bed\nDen\nCATEGORY\nAviation\n8 cards\nPegleg\nCATEGORY\nSmell\n6 cards",
+  "overflow": false,
+  "checks": [
+    {
+      "name": "56 draws exhaust source",
+      "status": "passed"
+    },
+    {
+      "name": "recycle restores 56 source and empty draft",
+      "status": "passed"
+    },
+    {
+      "name": "recycle preserves required draw order",
+      "status": "passed"
+    },
+    {
+      "name": "title admitted to empty foundation by tap",
+      "status": "passed"
+    },
+    {
+      "name": "item rejected from empty foundation",
+      "status": "passed"
+    },
+    {
+      "name": "mute toggles menu label",
+      "status": "passed"
+    },
+    {
+      "name": "quit screen appears",
+      "status": "passed"
+    },
+    {
+      "name": "new game resets source and score",
+      "status": "passed"
+    },
+    {
+      "name": "pointer drag admits title to foundation",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,3 +1,7 @@
+# Claude CLI experiments
+
+[Opus 5.5 and Sonnet 5.5 results](experiments/claude-cli-20261014/README.md) compare Vibe, Steering, and Spec Driven Development using pinned models at medium effort. Each card links to its frozen first-pass commit, test/build evidence, browser checks, and timing/token measurements. Missing measurements remain N/A; these pilot runs do not establish a model ranking.
+
 # Live Demo
 
 [Click for Online Demo](https://solitaire.cardbrdbx.com/)

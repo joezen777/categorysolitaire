@@ -1,0 +1,34 @@
+[
+  {
+    "id": "R01",
+    "name": "item group to foundation must be rejected",
+    "expectedAllowed": false,
+    "actualAllowed": false,
+    "stateChanged": false,
+    "status": "passed"
+  },
+  {
+    "id": "R02",
+    "name": "group containing a title must be rejected",
+    "expectedAllowed": false,
+    "actualAllowed": true,
+    "stateChanged": true,
+    "status": "failed"
+  },
+  {
+    "id": "P01",
+    "name": "matching item group to empty column is allowed",
+    "expectedAllowed": true,
+    "actualAllowed": true,
+    "stateChanged": true,
+    "status": "passed"
+  },
+  {
+    "id": "P02",
+    "name": "single matching item to foundation is allowed",
+    "expectedAllowed": true,
+    "actualAllowed": true,
+    "stateChanged": true,
+    "status": "passed"
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "errors": [],
+  "browserVersion": "149.0.7827.55",
+  "randomSeed": 20261014,
+  "text": "Score\n\n0\n\nCategory Solitaire\nℹ\nTap a face-up card, then tap where it should go — or drag it.\nDeck 56\nDraft 0\nCategory slot\nCategory slot\nCategory slot\nCategory slot\nCategory slot\nSofa bed\nSofa bed\nDen\nDen\n★\nAviation\nCATEGORY\nAviation\n8 cards\nPegleg\nPegleg\n★\nSmell\nCATEGORY\nSmell\n6 cards",
+  "overflow": false,
+  "checks": [
+    {
+      "name": "56 draws exhaust source",
+      "status": "passed"
+    },
+    {
+      "name": "recycle restores 56 source and empty draft",
+      "status": "passed"
+    },
+    {
+      "name": "recycle preserves required draw order",
+      "status": "passed"
+    },
+    {
+      "name": "title admitted to empty foundation by tap",
+      "status": "passed"
+    },
+    {
+      "name": "item rejected from empty foundation",
+      "status": "passed"
+    },
+    {
+      "name": "mute toggles menu label",
+      "status": "passed"
+    },
+    {
+      "name": "quit screen appears",
+      "status": "passed"
+    },
+    {
+      "name": "new game resets source and score",
+      "status": "passed"
+    },
+    {
+      "name": "pointer drag admits title to foundation",
+      "status": "passed"
+    }
+  ]
+}

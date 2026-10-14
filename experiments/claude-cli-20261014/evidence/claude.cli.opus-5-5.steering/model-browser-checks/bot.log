@@ -1,0 +1,9 @@
+run 0: steps 238 score 0 won 0 completions 0 glitterSeen 0 []
+errors []
+run 1: steps 170 score 1300 won 1 completions 37 glitterSeen 16 [
+  '✓ Wine complete! +100 points.',
+  '✓ Think complete! +100 points.',
+  '✓ Smell complete! +100 points.'
+]
+after play again score 0
+errors []

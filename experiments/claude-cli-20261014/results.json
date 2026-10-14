@@ -1,0 +1,370 @@
+[
+  {
+    "branch": "claude.cli.opus-5-5.vibe",
+    "modelLabel": "Opus 5.5",
+    "method": "Vibe",
+    "preparedSha": "39f60b1bc80bb663cfa616f73eeae99e92ff8d98",
+    "resultSha": "bb12a9284674922a807bf64bb5ba143f3be859de",
+    "status": "Completed",
+    "deployable": true,
+    "buildStatus": "passed",
+    "testStatus": "passed",
+    "activeSeconds": 465.8572641540004,
+    "wallSeconds": 465.857266,
+    "estimatedTokens": 78500,
+    "estimatedCommitTokens": 74500,
+    "actualTokens": 1348923,
+    "metrics": {
+      "sloc": null,
+      "fileCount": 15,
+      "avgFileSize": null,
+      "bundleSize": 462.1044921875,
+      "maintainability": null,
+      "maxComplexity": null,
+      "duplication": 0,
+      "securityIssues": 0,
+      "tsErrors": null,
+      "unusedExports": null,
+      "commits": 9,
+      "churn": 3807,
+      "coverage": null,
+      "lighthouseA11y": null,
+      "depCount": 10,
+      "bundleWeight": 455.6875
+    },
+    "gameplayStatus": "9/9 smoke checks; full games untested",
+    "language": "JavaScript",
+    "evidenceUrl": "https://github.com/joezen777/categorysolitaire/blob/main/experiments/claude-cli-20261014/claude.cli.opus-5-5.vibe.md",
+    "summary": "First-pass build passed; model-authored tests passed. Independent gameplay coverage and UX ratings are reported separately. One pilot run; no overall model ranking. Independent rule probes: 2/4 passed; 2 confirmed rule deviations.",
+    "ruleChecks": {
+      "passed": 2,
+      "total": 4
+    },
+    "defects": [
+      {
+        "id": "R01",
+        "name": "item group to foundation must be rejected",
+        "expectedAllowed": false,
+        "actualAllowed": true,
+        "stateChanged": true,
+        "status": "failed",
+        "severity": "major",
+        "firstObservedSha": "bb12a9284674922a807bf64bb5ba143f3be859de"
+      },
+      {
+        "id": "R02",
+        "name": "group containing a title must be rejected",
+        "expectedAllowed": false,
+        "actualAllowed": true,
+        "stateChanged": true,
+        "status": "failed",
+        "severity": "major",
+        "firstObservedSha": "bb12a9284674922a807bf64bb5ba143f3be859de"
+      }
+    ],
+    "thumbnail": "screenshots/claude.cli.opus-5-5.vibe.png",
+    "usageBreakdown": {
+      "input_tokens": 58,
+      "output_tokens": 46316,
+      "cache_creation_input_tokens": 59183,
+      "cache_read_input_tokens": 1243366
+    }
+  },
+  {
+    "branch": "claude.cli.opus-5-5.spec",
+    "modelLabel": "Opus 5.5",
+    "method": "Spec Driven Development",
+    "preparedSha": "efd00ed43b5effba6f267d6f6735a52082cb5d19",
+    "resultSha": "78bb4f998d42fb07c4865fc375d613a01da461d2",
+    "status": "Completed",
+    "deployable": true,
+    "buildStatus": "passed",
+    "testStatus": "passed",
+    "activeSeconds": 1501.9176965239992,
+    "wallSeconds": 2493.454957,
+    "estimatedTokens": 162800,
+    "estimatedCommitTokens": 150800,
+    "actualTokens": 11049698,
+    "metrics": {
+      "sloc": null,
+      "fileCount": 10,
+      "avgFileSize": null,
+      "bundleSize": 465.76171875,
+      "maintainability": null,
+      "maxComplexity": null,
+      "duplication": 0,
+      "securityIssues": 0,
+      "tsErrors": null,
+      "unusedExports": null,
+      "commits": 33,
+      "churn": 5675,
+      "coverage": null,
+      "lighthouseA11y": null,
+      "depCount": 11,
+      "bundleWeight": 465.4404296875
+    },
+    "gameplayStatus": "9/9 smoke checks; full games untested",
+    "language": "JavaScript",
+    "evidenceUrl": "https://github.com/joezen777/categorysolitaire/blob/main/experiments/claude-cli-20261014/claude.cli.opus-5-5.spec.md",
+    "summary": "First-pass build passed; model-authored tests passed. Independent gameplay coverage and UX ratings are reported separately. One pilot run; no overall model ranking. Independent rule probes: 4/4 passed; 0 confirmed rule deviations.",
+    "ruleChecks": {
+      "passed": 4,
+      "total": 4
+    },
+    "defects": [],
+    "thumbnail": "screenshots/claude.cli.opus-5-5.spec.png",
+    "usageBreakdown": {
+      "input_tokens": 222,
+      "output_tokens": 130193,
+      "cache_creation_input_tokens": 208271,
+      "cache_read_input_tokens": 10711012
+    }
+  },
+  {
+    "branch": "claude.cli.opus-5-5.steering",
+    "modelLabel": "Opus 5.5",
+    "method": "Steering",
+    "preparedSha": "b29e7a1e16ccdc126087ca88df38b687c9d428e9",
+    "resultSha": "d35402f3a954678ec205c5eb55dde49d15ec4142",
+    "status": "Completed",
+    "deployable": true,
+    "buildStatus": "passed",
+    "testStatus": "passed",
+    "activeSeconds": 3849.8544814729994,
+    "wallSeconds": 3849.854485,
+    "estimatedTokens": 104000,
+    "estimatedCommitTokens": 89000,
+    "actualTokens": 5045932,
+    "metrics": {
+      "sloc": null,
+      "fileCount": 22,
+      "avgFileSize": null,
+      "bundleSize": 465.921875,
+      "maintainability": null,
+      "maxComplexity": null,
+      "duplication": 0,
+      "securityIssues": 0,
+      "tsErrors": 0,
+      "unusedExports": null,
+      "commits": 16,
+      "churn": 4759,
+      "coverage": null,
+      "lighthouseA11y": null,
+      "depCount": 12,
+      "bundleWeight": 465.267578125
+    },
+    "gameplayStatus": "9/9 smoke checks; full games untested",
+    "language": "TypeScript",
+    "evidenceUrl": "https://github.com/joezen777/categorysolitaire/blob/main/experiments/claude-cli-20261014/claude.cli.opus-5-5.steering.md",
+    "summary": "First-pass build passed; model-authored tests passed. Independent gameplay coverage and UX ratings are reported separately. One pilot run; no overall model ranking. Independent rule probes: 3/4 passed; 1 confirmed rule deviations.",
+    "ruleChecks": {
+      "passed": 3,
+      "total": 4
+    },
+    "defects": [
+      {
+        "id": "R01",
+        "name": "item group to foundation must be rejected",
+        "expectedAllowed": false,
+        "actualAllowed": true,
+        "stateChanged": true,
+        "status": "failed",
+        "severity": "major",
+        "firstObservedSha": "d35402f3a954678ec205c5eb55dde49d15ec4142"
+      }
+    ],
+    "thumbnail": "screenshots/claude.cli.opus-5-5.steering.png",
+    "usageBreakdown": {
+      "input_tokens": 130,
+      "output_tokens": 78979,
+      "cache_creation_input_tokens": 109631,
+      "cache_read_input_tokens": 4857192
+    }
+  },
+  {
+    "branch": "claude.cli.sonnet-5-5.vibe",
+    "modelLabel": "Sonnet 5.5",
+    "method": "Vibe",
+    "preparedSha": "c96cd0227e4fb94a04a2db795184d3ad545cc11d",
+    "resultSha": "f3176514dd0df6e5ee36ae319df8e359f15aa5c1",
+    "status": "Completed",
+    "deployable": true,
+    "buildStatus": "passed",
+    "testStatus": "unavailable",
+    "activeSeconds": 183.60625684300248,
+    "wallSeconds": 183.606262,
+    "estimatedTokens": 30400,
+    "estimatedCommitTokens": 26400,
+    "actualTokens": 291846,
+    "metrics": {
+      "sloc": null,
+      "fileCount": 9,
+      "avgFileSize": null,
+      "bundleSize": 369.6572265625,
+      "maintainability": null,
+      "maxComplexity": null,
+      "duplication": 0,
+      "securityIssues": 2,
+      "tsErrors": null,
+      "unusedExports": null,
+      "commits": 9,
+      "churn": 3472,
+      "coverage": null,
+      "lighthouseA11y": null,
+      "depCount": 9,
+      "bundleWeight": 366.3603515625
+    },
+    "gameplayStatus": "9/9 smoke checks; full games untested",
+    "language": "JavaScript",
+    "evidenceUrl": "https://github.com/joezen777/categorysolitaire/blob/main/experiments/claude-cli-20261014/claude.cli.sonnet-5-5.vibe.md",
+    "summary": "First-pass build passed; model-authored tests unavailable. Independent gameplay coverage and UX ratings are reported separately. One pilot run; no overall model ranking. Independent rule probes: 3/4 passed; 1 confirmed rule deviations.",
+    "ruleChecks": {
+      "passed": 3,
+      "total": 4
+    },
+    "defects": [
+      {
+        "id": "R02",
+        "name": "group containing a title must be rejected",
+        "expectedAllowed": false,
+        "actualAllowed": true,
+        "stateChanged": true,
+        "status": "failed",
+        "severity": "major",
+        "firstObservedSha": "f3176514dd0df6e5ee36ae319df8e359f15aa5c1"
+      }
+    ],
+    "thumbnail": "screenshots/claude.cli.sonnet-5-5.vibe.png",
+    "usageBreakdown": {
+      "input_tokens": 22,
+      "output_tokens": 21686,
+      "cache_creation_input_tokens": 26134,
+      "cache_read_input_tokens": 244004
+    }
+  },
+  {
+    "branch": "claude.cli.sonnet-5-5.spec",
+    "modelLabel": "Sonnet 5.5",
+    "method": "Spec Driven Development",
+    "preparedSha": "67efebffec38f1d4c9eecef68b23ecde7fbb2304",
+    "resultSha": "7ad76dfb54e69b90db5ef63e92fe278d90565c11",
+    "status": "Completed",
+    "deployable": true,
+    "buildStatus": "passed",
+    "testStatus": "passed",
+    "activeSeconds": 946.2468959770003,
+    "wallSeconds": 1168.83619,
+    "estimatedTokens": 96800,
+    "estimatedCommitTokens": 95300,
+    "actualTokens": 5297043,
+    "metrics": {
+      "sloc": null,
+      "fileCount": 10,
+      "avgFileSize": null,
+      "bundleSize": 448.013671875,
+      "maintainability": null,
+      "maxComplexity": null,
+      "duplication": 0,
+      "securityIssues": 0,
+      "tsErrors": null,
+      "unusedExports": null,
+      "commits": 26,
+      "churn": 5083,
+      "coverage": null,
+      "lighthouseA11y": null,
+      "depCount": 12,
+      "bundleWeight": 447.6552734375
+    },
+    "gameplayStatus": "9/9 smoke checks; full games untested",
+    "language": "JavaScript",
+    "evidenceUrl": "https://github.com/joezen777/categorysolitaire/blob/main/experiments/claude-cli-20261014/claude.cli.sonnet-5-5.spec.md",
+    "summary": "First-pass build passed; model-authored tests passed. Independent gameplay coverage and UX ratings are reported separately. One pilot run; no overall model ranking. Independent rule probes: 4/4 passed; 0 confirmed rule deviations.",
+    "ruleChecks": {
+      "passed": 4,
+      "total": 4
+    },
+    "defects": [],
+    "thumbnail": "screenshots/claude.cli.sonnet-5-5.spec.png",
+    "usageBreakdown": {
+      "input_tokens": 162,
+      "output_tokens": 79589,
+      "cache_creation_input_tokens": 114593,
+      "cache_read_input_tokens": 5102699
+    }
+  },
+  {
+    "branch": "claude.cli.sonnet-5-5.steering",
+    "modelLabel": "Sonnet 5.5",
+    "method": "Steering",
+    "preparedSha": "5483a77e99c0de077e03c2446b25659cde870259",
+    "resultSha": "649c5f574537c32547defc16c5dcdc61b2c72283",
+    "status": "Completed",
+    "deployable": true,
+    "buildStatus": "passed",
+    "testStatus": "passed",
+    "activeSeconds": 766.6242413449982,
+    "wallSeconds": 766.62424,
+    "estimatedTokens": null,
+    "estimatedCommitTokens": 62000,
+    "actualTokens": 3428487,
+    "metrics": {
+      "sloc": null,
+      "fileCount": 20,
+      "avgFileSize": null,
+      "bundleSize": 463.0068359375,
+      "maintainability": null,
+      "maxComplexity": null,
+      "duplication": 0,
+      "securityIssues": 0,
+      "tsErrors": null,
+      "unusedExports": null,
+      "commits": 24,
+      "churn": 4497,
+      "coverage": null,
+      "lighthouseA11y": null,
+      "depCount": 10,
+      "bundleWeight": 462.58203125
+    },
+    "gameplayStatus": "9/9 smoke checks; full games untested",
+    "language": "JavaScript",
+    "evidenceUrl": "https://github.com/joezen777/categorysolitaire/blob/main/experiments/claude-cli-20261014/claude.cli.sonnet-5-5.steering.md",
+    "summary": "First-pass build passed; model-authored tests passed. Independent gameplay coverage and UX ratings are reported separately. One pilot run; no overall model ranking. Independent rule probes: 2/4 passed; 2 confirmed rule deviations.",
+    "ruleChecks": {
+      "passed": 2,
+      "total": 4
+    },
+    "defects": [
+      {
+        "id": "R01",
+        "name": "item group to foundation must be rejected",
+        "expectedAllowed": false,
+        "actualAllowed": true,
+        "stateChanged": true,
+        "status": "failed",
+        "severity": "major",
+        "firstObservedSha": "649c5f574537c32547defc16c5dcdc61b2c72283"
+      },
+      {
+        "id": "R02",
+        "name": "group containing a title must be rejected",
+        "expectedAllowed": false,
+        "actualAllowed": true,
+        "stateChanged": true,
+        "status": "failed",
+        "severity": "major",
+        "firstObservedSha": "649c5f574537c32547defc16c5dcdc61b2c72283"
+      }
+    ],
+    "thumbnail": "screenshots/claude.cli.sonnet-5-5.steering.png",
+    "usageBreakdown": {
+      "input_tokens": 106,
+      "output_tokens": 65006,
+      "cache_creation_input_tokens": 93489,
+      "cache_read_input_tokens": 3269886
+    },
+    "estimatedTokensRange": [
+      77000,
+      82000
+    ]
+  }
+]

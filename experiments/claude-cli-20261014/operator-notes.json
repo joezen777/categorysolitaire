@@ -1,0 +1,34 @@
+{
+  "operator": "Codex operating Claude CLI; no human design coaching",
+  "protocolDeviations": [
+    "CLI print mode used instead of interactive /status and /context; model verified through init and provider modelUsage, instructions checked on disk.",
+    "Built-in CLI plugins remain present: cc-plugin-agents-md, cc-plugin-telemetry, cc-plugin-plugin-authoring; no external MCP servers or skills loaded.",
+    "First S01 launch had an operator stdin encoding error before product submission; timing starts at the successful submission, not the earlier marker. No implementation prompt was processed in the failed launch.",
+    "Dashboard tests and evaluator/publication tooling occasionally shared machine resources with implementation runs; the six implementation runs themselves were sequential. This pilot did not isolate CPU/network resources completely.",
+    "Some model changes were tested before committing, contrary to the immediate-commit rule; checkpoint reports identify these instrumentation deviations."
+  ],
+  "timing": "Active time sums CLI subprocess durations; total wall includes operator checkpoint pauses.",
+  "browserEvaluation": {
+    "randomSeed": 20261014,
+    "rng": "LCG: seed=(1664525*seed+1013904223) modulo 2^32",
+    "viewports": [
+      [
+        360,
+        800
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        1440,
+        900
+      ]
+    ],
+    "note": "Final evaluation only; intermediate checkpoint screenshots used unseeded app randomness. A 500 ms page-settle delay was added after reload after Sonnet Steering ignored taps during its initial 250 ms guard; the corrected smoke run passed. Sonnet Vibe has no visible source/draft counters, so draw counts are established by 56 UI actions and matching full recycle sequences."
+  }
+}

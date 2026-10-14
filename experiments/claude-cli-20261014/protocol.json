@@ -1,0 +1,142 @@
+{
+  "createdUtc": "2026-10-14T08:44:38.890498+00:00",
+  "order": [
+    "claude.cli.sonnet-5-5.spec",
+    "claude.cli.opus-5-5.spec",
+    "claude.cli.opus-5-5.vibe",
+    "claude.cli.opus-5-5.steering",
+    "claude.cli.sonnet-5-5.steering",
+    "claude.cli.sonnet-5-5.vibe"
+  ],
+  "activeCapSeconds": 5400,
+  "node": "v24.18.0",
+  "npm": "11.16.0",
+  "claude": "2.1.296 (Claude Code)",
+  "os": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "permissionPolicy": "acceptEdits with explicit Bash allowance; no subagent tools, skills or MCP",
+  "cachePolicy": "fresh separate npm cache per cell",
+  "provider": "firstParty claude.ai Pro",
+  "effort": "medium",
+  "evaluation": "EVALUATION.md fixed scenarios; unavailable checks null, no independent gameplay claims without evidence",
+  "execution": "CLI print stream-json; spec checkpoints manually reviewed by Codex operator, never auto-advanced",
+  "cells": [
+    {
+      "branch": "claude.cli.sonnet-5-5.spec",
+      "preparedSha": "67efebffec38f1d4c9eecef68b23ecde7fbb2304",
+      "hashes": {
+        "README.md": "acb4935dba77483362a3fe164238cf0db5a9ffa8feb9eb4948bdd96dfc5eda05",
+        "AGENTS.md": "1a95b81910627946598564f6c0573281770a257cfb70799b29d06b747f5a868f",
+        "CLAUDE.md": "d60c29f48325403aef4a14117acc6c3c3002a44d6d8e6d15fea2158f733295d4",
+        "prompts/original.md": "1fa5727d951cf2c7149e00c9f304504ad34436588b9924e3c873e942a464e9b2",
+        "experiment.json": "23bfc2d980025172b0736ac161f688db0b3e4ca9ce3de2ead67d6bc505b3c4ca",
+        "EVALUATION.md": "9695af75f4f90e1a8cbe177998ae40209cead104f5de722e6616916abdb1d275"
+      }
+    },
+    {
+      "branch": "claude.cli.opus-5-5.spec",
+      "preparedSha": "efd00ed43b5effba6f267d6f6735a52082cb5d19",
+      "hashes": {
+        "README.md": "4458c76f662a0f388335329e369528a01be871071aaa8551fe195393c0d26c71",
+        "AGENTS.md": "1a95b81910627946598564f6c0573281770a257cfb70799b29d06b747f5a868f",
+        "CLAUDE.md": "d60c29f48325403aef4a14117acc6c3c3002a44d6d8e6d15fea2158f733295d4",
+        "prompts/original.md": "1fa5727d951cf2c7149e00c9f304504ad34436588b9924e3c873e942a464e9b2",
+        "experiment.json": "549511cb685b6dec9e83dd19eee2cf141e2fe2229c19bd505fbc91a1020d370f",
+        "EVALUATION.md": "9695af75f4f90e1a8cbe177998ae40209cead104f5de722e6616916abdb1d275"
+      }
+    },
+    {
+      "branch": "claude.cli.opus-5-5.vibe",
+      "preparedSha": "39f60b1bc80bb663cfa616f73eeae99e92ff8d98",
+      "hashes": {
+        "README.md": "93b6214181b90b595095a7f8e9fe6a9c2671a5c8fd8b4637851026fe8775daa3",
+        "AGENTS.md": "2df1681e7294160a3237e6421aaf9f7fe22c19ffa9c6b84238e44a431842d338",
+        "CLAUDE.md": "d60c29f48325403aef4a14117acc6c3c3002a44d6d8e6d15fea2158f733295d4",
+        "prompts/original.md": "1fa5727d951cf2c7149e00c9f304504ad34436588b9924e3c873e942a464e9b2",
+        "experiment.json": "f36dc500b9a8e2bec8b64510ae3f2e279a8ceb7a6d0778522f4596b02c132a1b",
+        "EVALUATION.md": "9695af75f4f90e1a8cbe177998ae40209cead104f5de722e6616916abdb1d275"
+      }
+    },
+    {
+      "branch": "claude.cli.opus-5-5.steering",
+      "preparedSha": "b29e7a1e16ccdc126087ca88df38b687c9d428e9",
+      "hashes": {
+        "README.md": "edbe89a9fdcfcf6c7c4ab4ce522f9ce4850c43680068f12fd57245f08df04075",
+        "AGENTS.md": "cea74c362e5f2a8a778bc853a063153fc7f7a25be56f9e42fcc142175f84686c",
+        "CLAUDE.md": "d60c29f48325403aef4a14117acc6c3c3002a44d6d8e6d15fea2158f733295d4",
+        "prompts/original.md": "1fa5727d951cf2c7149e00c9f304504ad34436588b9924e3c873e942a464e9b2",
+        "experiment.json": "dbc2cef52091c60d24fb345dc75494b5ffafbb349f0f75cfec83f47ca6681975",
+        "EVALUATION.md": "9695af75f4f90e1a8cbe177998ae40209cead104f5de722e6616916abdb1d275"
+      }
+    },
+    {
+      "branch": "claude.cli.sonnet-5-5.steering",
+      "preparedSha": "5483a77e99c0de077e03c2446b25659cde870259",
+      "hashes": {
+        "README.md": "682298ed9afeb02a8695bd8b5a56709881159ae5fda6d8fefe8cab49a20e110f",
+        "AGENTS.md": "cea74c362e5f2a8a778bc853a063153fc7f7a25be56f9e42fcc142175f84686c",
+        "CLAUDE.md": "d60c29f48325403aef4a14117acc6c3c3002a44d6d8e6d15fea2158f733295d4",
+        "prompts/original.md": "1fa5727d951cf2c7149e00c9f304504ad34436588b9924e3c873e942a464e9b2",
+        "experiment.json": "2bd8eba52008447193ec9b9c0d538544b722246568f570ecf1c05717c7f258a5",
+        "EVALUATION.md": "9695af75f4f90e1a8cbe177998ae40209cead104f5de722e6616916abdb1d275"
+      }
+    },
+    {
+      "branch": "claude.cli.sonnet-5-5.vibe",
+      "preparedSha": "c96cd0227e4fb94a04a2db795184d3ad545cc11d",
+      "hashes": {
+        "README.md": "5bed7adb96a08740a29a79886179450b5655527ea43aff7c9430434619b23506",
+        "AGENTS.md": "2df1681e7294160a3237e6421aaf9f7fe22c19ffa9c6b84238e44a431842d338",
+        "CLAUDE.md": "d60c29f48325403aef4a14117acc6c3c3002a44d6d8e6d15fea2158f733295d4",
+        "prompts/original.md": "1fa5727d951cf2c7149e00c9f304504ad34436588b9924e3c873e942a464e9b2",
+        "experiment.json": "7c2760affec5187ce680354c1786a18115270cc62f402496f59d0571dfde45e2",
+        "EVALUATION.md": "9695af75f4f90e1a8cbe177998ae40209cead104f5de722e6616916abdb1d275"
+      }
+    }
+  ],
+  "environmentAudit": {
+    "capturedUtc": "2026-10-14T09:49:52.340404+00:00",
+    "cpu": "Intel(R) Core(TM) i5-9400F CPU @ 2.90GHz",
+    "logicalCpuCount": 6,
+    "memoryKiB": 32834268,
+    "gitAuthorName": "Joseph Nielsen",
+    "evaluationBrowser": "Chromium 149.0.7827.55",
+    "playwright": "1.61.0",
+    "jscpd": "4.2.5",
+    "note": "Hardware and evaluator versions recorded after measured runs began; CLI/Node/npm versions and primary controls recorded before first product submission."
+  },
+  "submittedPromptBlockHashes": {
+    "claude.cli.sonnet-5-5.spec": [
+      "06cfb7cc72c0c2d0d40dca0498b5348407459e1ec196b45caacc8e71aff6ed2c",
+      "7e72ec50a2d56a4c591bb95bce71be88ade009e3ad20e3d30dac7bb818eb527b",
+      "8f09fce9c76f8e41fba5bef434fd98f298b76585c0dd734f1d1d55d161b8b456",
+      "bed93d1ca206d403790676d4a3cc58dd850b6a81eb7f6d6003f378990f497fb8",
+      "90b89a8f89197d3dfd18066a2fa840753c8b3de58e43716ffcc53ada500f9692",
+      "a20aa9df3c3a63cd933eb3935012412b710a67c04142096cd3f8814b1b6aebce",
+      "a1dd63febdb48a1e078818df63b7728bee0a36eee508f64883e49100e4bb5b1c",
+      "845c88984e89c319e86862f4ffd948607a46b1b88cda434a238fbc3869c812e9"
+    ],
+    "claude.cli.opus-5-5.spec": [
+      "06cfb7cc72c0c2d0d40dca0498b5348407459e1ec196b45caacc8e71aff6ed2c",
+      "7e72ec50a2d56a4c591bb95bce71be88ade009e3ad20e3d30dac7bb818eb527b",
+      "8f09fce9c76f8e41fba5bef434fd98f298b76585c0dd734f1d1d55d161b8b456",
+      "bed93d1ca206d403790676d4a3cc58dd850b6a81eb7f6d6003f378990f497fb8",
+      "90b89a8f89197d3dfd18066a2fa840753c8b3de58e43716ffcc53ada500f9692",
+      "a20aa9df3c3a63cd933eb3935012412b710a67c04142096cd3f8814b1b6aebce",
+      "a1dd63febdb48a1e078818df63b7728bee0a36eee508f64883e49100e4bb5b1c",
+      "845c88984e89c319e86862f4ffd948607a46b1b88cda434a238fbc3869c812e9"
+    ],
+    "claude.cli.opus-5-5.vibe": [
+      "e86114513cc8a7727cf8a7ff627dcc332c2b1283aded74983bbda3d33024174f"
+    ],
+    "claude.cli.opus-5-5.steering": [
+      "e86114513cc8a7727cf8a7ff627dcc332c2b1283aded74983bbda3d33024174f"
+    ],
+    "claude.cli.sonnet-5-5.steering": [
+      "e86114513cc8a7727cf8a7ff627dcc332c2b1283aded74983bbda3d33024174f"
+    ],
+    "claude.cli.sonnet-5-5.vibe": [
+      "e86114513cc8a7727cf8a7ff627dcc332c2b1283aded74983bbda3d33024174f"
+    ]
+  },
+  "promptNote": "README fenced product prompt omits the # Starting prompt heading included in prompts/original.md. All four zero-shot blocks are identical; all eight spec blocks match between models."
+}

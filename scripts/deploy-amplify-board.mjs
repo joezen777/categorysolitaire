@@ -1,8 +1,12 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync, readFileSync, cpSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { collectMetrics, createNullMetrics } from './collect-metrics.mjs';
+
+// Frozen experiment evidence is collected outside implementation checkouts.
+const experimentPath = new URL('../experiments/claude-cli-20261014/results.json', import.meta.url);
+const experimentResults = existsSync(experimentPath) ? JSON.parse(readFileSync(experimentPath, 'utf8')) : [];
 
 const config = {
   appName: process.env.AMPLIFY_APP_NAME || 'categorysolitaire-vibe-board',
@@ -11,6 +15,10 @@ const config = {
   dashboardBranch: 'dashboard',
   region: process.env.AWS_REGION,
   branches: [
+    ...experimentResults.map(result => ({
+      sourceRef: result.resultSha, deployBranch: result.branch.replaceAll('.', '-'),
+      label: `${result.modelLabel} ${result.method}`, experiment: result,
+    })),
     { sourceRef: 'origin/claude.vibe', deployBranch: 'claude-vibe', label: 'Claude Vibe' },
     { sourceRef: 'origin/codex.vibe', deployBranch: 'codex-vibe', label: 'Codex Vibe' },
     { sourceRef: 'origin/cerebras.vibe', deployBranch: 'cerebras-vibe', label: 'Cerebras Vibe' },
@@ -201,6 +209,12 @@ function ensureBranch(appId, branchName, displayName = branchName, stage = 'EXPE
   console.log(`Created branch ${branchName}`);
 }
 
+export function mergeDomainSettings(existing, desired) {
+  const settings = new Map(existing.map(setting => [setting.prefix, setting]));
+  for (const setting of desired) settings.set(setting.prefix, setting);
+  return [...settings.values()];
+}
+
 function ensureDomainAssociation(appId, deployedBranches) {
   // Build sub-domain settings: root → dashboard, each branch → its prefix
   const subDomainSettings = [
@@ -208,7 +222,11 @@ function ensureDomainAssociation(appId, deployedBranches) {
     ...deployedBranches.map(b => ({ prefix: `${b.deployBranch}-${config.subdomainPrefix}`, branchName: b.deployBranch })),
   ];
 
-  const subDomainArg = JSON.stringify(subDomainSettings);
+  // Preserve mappings owned by other sites on this shared domain.
+  const associations = awsJson(['list-domain-associations', '--app-id', appId]).domainAssociations || [];
+  const existing = associations.find(association => association.domainName === config.customDomain);
+  const previous = (existing?.subDomains || []).map(domain => domain.subDomainSetting);
+  const subDomainArg = JSON.stringify(mergeDomainSettings(previous, subDomainSettings));
 
   // Try update first (domain already associated), fall back to create
   const updateResult = spawnSync(
@@ -325,7 +343,12 @@ function removeWorktree(path) {
   run('git', ['worktree', 'remove', '--force', path]);
 }
 
-function runBranchBuild(worktree) {
+function runBranchBuild(worktree, measured = false) {
+  if (measured) {
+    run('npm', ['ci', '--no-audit', '--no-fund'], { cwd: worktree });
+    run('npm', ['run', 'build'], { cwd: worktree });
+    return;
+  }
   try {
     run('npm', ['run', 'build'], { cwd: worktree });
   } catch (error) {
@@ -345,7 +368,7 @@ function runBranchBuild(worktree) {
 function buildBranch(branch) {
   const worktree = addWorktree(branch.sourceRef, branch.deployBranch);
   console.log(`Building ${branch.sourceRef}`);
-  runBranchBuild(worktree);
+  runBranchBuild(worktree, Boolean(branch.experiment));
   const distDir = join(worktree, 'dist');
   if (!existsSync(join(distDir, 'index.html'))) {
     removeWorktree(worktree);
@@ -374,7 +397,7 @@ const STAT_GROUPS = {
     { key: 'sloc', abbr: 'Source Lines of Code', label: 'Source Lines of Code', desc: 'Total non-blank, non-comment lines of source code.' },
     { key: 'fileCount', abbr: 'Source File Count', label: 'File Count', desc: 'Number of source files in the project.' },
     { key: 'avgFileSize', abbr: 'Avg Lines per File', label: 'Average File Size', desc: 'Mean number of lines per source file.' },
-    { key: 'bundleSize', abbr: 'Bundle Size (KB)', label: 'Bundle Size (KB)', desc: 'Total size of the production build output.' },
+    { key: 'bundleSize', abbr: 'Bundle Size (KiB)', label: 'Bundle Size (KiB)', desc: 'Total size of the production build output.' },
   ],
   Quality: [
     { key: 'maintainability', abbr: 'Maintainability Index', label: 'Maintainability Index', desc: 'Composite score (0-100) indicating how maintainable the code is.' },
@@ -396,7 +419,7 @@ const STAT_GROUPS = {
   ],
   Dependencies: [
     { key: 'depCount', abbr: 'Dependency Count', label: 'Dependency Count', desc: 'Total number of runtime and dev dependencies.' },
-    { key: 'bundleWeight', abbr: 'JS Bundle Weight (KB)', label: 'Bundle Weight (KB)', desc: 'Total JavaScript bundle size shipped to browser.' },
+    { key: 'bundleWeight', abbr: 'JS Bundle Weight (KiB)', label: 'Bundle Weight (KiB)', desc: 'Total JavaScript bundle size shipped to browser.' },
   ],
 };
 
@@ -464,6 +487,23 @@ function renderStatGroups(metrics, cardIndex) {
   }).join('')}</div>`;
 }
 
+function renderExperimentEvidence(result) {
+  const minutes = value => Number.isFinite(value) ? `${(value / 60).toFixed(1)} min` : 'N/A';
+  const tokens = value => Number.isFinite(value) ? value.toLocaleString('en-US') : 'N/A';
+  return `<section class="experiment-evidence" aria-label="Experiment evidence">
+    <p><strong>${htmlEscape(result.status)}</strong> · medium effort · first pass</p>
+    <p>Active: ${minutes(result.activeSeconds)} · Wall: ${minutes(result.wallSeconds)}</p>
+    <p>Tokens estimated: ${result.estimatedTokensRange ? result.estimatedTokensRange.map(tokens).join("–") : tokens(result.estimatedTokens)} · Provider total: ${tokens(result.actualTokens)}</p>
+    ${result.usageBreakdown ? `<p>Input: ${tokens(result.usageBreakdown.input_tokens)} · Cache write: ${tokens(result.usageBreakdown.cache_creation_input_tokens)} · Cache read: ${tokens(result.usageBreakdown.cache_read_input_tokens)} · Output: ${tokens(result.usageBreakdown.output_tokens)}</p>` : ''}
+    <p>Prepared: ${htmlEscape(result.preparedSha.slice(0, 7))} · Result: ${htmlEscape(result.resultSha.slice(0, 7))}</p>
+    <p>— = N/A; see evidence for unavailable metrics.</p>
+    ${result.ruleChecks ? `<p>Targeted rule probes: ${result.ruleChecks.passed}/${result.ruleChecks.total} passed · Confirmed deviations: ${result.defects?.length || 0}</p>` : ''}
+    <p>Independent gameplay: ${htmlEscape(result.gameplayStatus || 'Not evaluated')} · UX rating: N/A</p>
+    ${result.thumbnail ? `<img src="${htmlEscape(result.thumbnail)}" alt="Initial game board at phone width" loading="lazy" width="195"/>` : ''}
+    <a href="${htmlEscape(result.evidenceUrl)}" target="_blank" rel="noreferrer">Results, limitations and evidence</a>
+  </section>`;
+}
+
 function renderTraitFooter(traits) {
   return Object.entries(traits).map(([key, value]) => `<span><b>${htmlEscape(key)}:</b> ${htmlEscape(value)}</span>`).join('');
 }
@@ -474,7 +514,11 @@ function renderTraitFooter(traits) {
  */
 function renderDashboard(app, deployedBranches) {
   const cards = deployedBranches.map((branch, index) => {
-    const branchConfig = BRANCH_CONFIG[branch.deployBranch] || {
+    const branchConfig = branch.experiment ? {
+      llm: branch.experiment.modelLabel, paradigm: branch.experiment.method === 'Spec Driven Development' ? 'Spec' : branch.experiment.method, ide: 'Claude CLI',
+      language: branch.experiment.language || 'N/A', logo: CLAUDE_SVG,
+      report: branch.experiment.summary, traits: { build: branch.experiment.buildStatus, tests: branch.experiment.testStatus, evaluation: 'First pass' },
+    } : BRANCH_CONFIG[branch.deployBranch] || {
       llm: branch.label || branch.deployBranch,
       shortName: branch.label || branch.deployBranch,
       paradigm: 'Vibe Mode',
@@ -485,9 +529,12 @@ function renderDashboard(app, deployedBranches) {
       traits: { built: 'Unknown', tests: 'Pending', lint: 'Unknown', security: 'Unknown', vibe: 'Odd' },
     };
 
-    const statGroupsHtml = renderStatGroups(branch.metrics, index);
+    const displayMetrics = branch.experiment && branch.metrics
+      ? Object.fromEntries(Object.entries(branch.metrics).map(([key, value]) => [key, typeof value === 'number' ? Math.round(value * 10) / 10 : value]))
+      : branch.metrics;
+    const statGroupsHtml = renderStatGroups(displayMetrics, index);
     const shortCommit = (branch.commit || 'local-preview').slice(0, 7);
-    const repoName = (branch.sourceRef || '').replace(/^origin\//, '') || branch.deployBranch;
+    const repoName = (branch.experiment?.branch || branch.sourceRef || '').replace(/^origin\//, '') || branch.deployBranch;
     const displayUrl = branch.url || `https://${branch.deployBranch}-${config.subdomainPrefix}.${config.customDomain}/`;
 
     return `
@@ -503,10 +550,11 @@ function renderDashboard(app, deployedBranches) {
           </div>
           <div class="micro-meta" aria-label="Branch metadata">
             <span>ide: ${htmlEscape(branchConfig.ide)}</span>
-            <span>url: ${htmlEscape(displayUrl.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</span>
+            <span>url: ${htmlEscape(branch.experiment && !branch.experiment.deployable ? 'not deployed' : displayUrl.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</span>
             <span>branch: ${htmlEscape(repoName)}</span>
             <span>lang: ${htmlEscape(branchConfig.language)}</span>
           </div>
+          ${branch.experiment ? renderExperimentEvidence(branch.experiment) : '<p class="experiment-evidence">Legacy collector: some quality and UX values are heuristics and are not directly comparable with the new experiment measurements.</p>'}
           ${statGroupsHtml}
           <section class="scouting-report">
             <div class="mascot-wrap">${branchConfig.logo}</div>
@@ -520,7 +568,7 @@ function renderDashboard(app, deployedBranches) {
             <div class="domain-mark" aria-label="cardbrdbx.com"><span class="globe"></span><strong>CARDBRDBX</strong><em>.com</em></div>
           </footer>
         </article>
-        <a class="open-app-button" href="${htmlEscape(displayUrl)}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>
+        ${branch.experiment && !branch.experiment.deployable ? '<p class="open-app-button">Not deployable — see evidence</p>' : `<a class="open-app-button" href="${htmlEscape(displayUrl)}" target="_blank" rel="noreferrer">OPEN APP &#x2192;</a>`}
       </div>`;
   }).join('\n');
 
@@ -537,13 +585,13 @@ function renderDashboard(app, deployedBranches) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Category Solitaire - Branch Variants</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+.experiment-evidence{font-size:10px;line-height:1.5;padding:8px 0;overflow-wrap:anywhere}.experiment-evidence img{display:block;max-width:100%;height:auto;margin:8px auto;max-height:300px;object-fit:contain}.micro-meta span{overflow-wrap:anywhere}*{box-sizing:border-box;margin:0;padding:0}
 :root{--paper:#efe7cf;--navy:#092b47;--navy2:#061d31;--gold:#d6ad38;--gold2:#e7c85d;--ink:#120f0a;--cream:#f7e8b8;--rust:#b9482c;--shadow:#453014;--pixel-font:"Courier New",Courier,monospace;--pixel:var(--pixel-font);--header-text:#fff;--card-bg-claude:#f3df9e;--card-bg-codex:#d8c46b;--card-bg-cerebras:#dfbf6d;--card-bg-kiro:#e2b852;--condensed:Impact,"Arial Narrow",var(--pixel)}
 body{font-family:var(--pixel);background:radial-gradient(circle at 25% 8%,#fff8dc,transparent 28%),linear-gradient(180deg,#f4efd9,#e7dcc0);min-height:100vh;padding:20px 12px;color:var(--ink)}
-main{max-width:1220px;margin:0 auto}header{text-align:center;margin-bottom:14px}h1{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#5d4930}header p{display:none}.board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:start}.card-slide{display:flex;flex-direction:column;gap:10px;min-width:0}.baseball-card{position:relative;overflow:visible;min-height:0;border:3px solid var(--navy);color:var(--ink);padding:8px 10px;background:radial-gradient(circle at 14% 22%,rgba(69,48,20,.2) 0 1px,transparent 1px 8px),radial-gradient(circle at 82% 16%,rgba(255,255,255,.22) 0 1px,transparent 1px 7px),repeating-linear-gradient(0deg,rgba(9,43,71,.045) 0 1px,transparent 1px 5px),linear-gradient(135deg,#f3df9e,#d5b657 20%,#efd690 56%,#c99f2e);box-shadow:inset 0 0 0 4px var(--gold),inset 0 0 0 7px #f7e8b8,4px 5px 0 rgba(6,29,49,.38)}
+main{max-width:1220px;margin:0 auto}header{text-align:center;margin-bottom:14px}h1{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#5d4930}header p{display:none}.board{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}.card-slide{display:flex;flex-direction:column;gap:10px;min-width:0}.baseball-card{position:relative;overflow:visible;min-height:0;border:3px solid var(--navy);color:var(--ink);padding:8px 10px;background:radial-gradient(circle at 14% 22%,rgba(69,48,20,.2) 0 1px,transparent 1px 8px),radial-gradient(circle at 82% 16%,rgba(255,255,255,.22) 0 1px,transparent 1px 7px),repeating-linear-gradient(0deg,rgba(9,43,71,.045) 0 1px,transparent 1px 5px),linear-gradient(135deg,#f3df9e,#d5b657 20%,#efd690 56%,#c99f2e);box-shadow:inset 0 0 0 4px var(--gold),inset 0 0 0 7px #f7e8b8,4px 5px 0 rgba(6,29,49,.38)}
 .baseball-card:before{content:"";position:absolute;inset:9px;border:2px solid var(--navy);clip-path:polygon(4% 0,96% 0,100% 4%,100% 96%,96% 100%,4% 100%,0 96%,0 4%);pointer-events:none}.baseball-card:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,247,206,.24),transparent 20% 75%,rgba(20,39,70,.2));mix-blend-mode:multiply;pointer-events:none}.baseball-card>*{position:relative;z-index:1}.banner-outline{clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);background:var(--ink);padding:3px;margin-bottom:10px}.banner-outline .top-banner{margin-bottom:0;clip-path:none;border:3px solid #fff}.top-banner{display:grid;grid-template-columns:58px 1fr;align-items:stretch;background:var(--navy);clip-path:polygon(4% 0,96% 0,100% 50%,96% 100%,4% 100%,0 50%);border:3px solid var(--navy2);min-height:50px;margin-bottom:8px}.commit-tag{display:flex;align-items:center;justify-content:center;background:var(--gold);color:#050505;font-family:var(--condensed);font-size:11px;letter-spacing:.5px;font-weight:900;clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%);text-transform:lowercase}.title-stack{display:flex;align-items:center;min-width:0;padding:4px 8px 4px 14px}.card-title{font-family:var(--condensed);font-size:clamp(16px,2vw,26px);line-height:.95;text-transform:uppercase;letter-spacing:1px;color:#f3e2b0;text-shadow:1px 1px 0 rgba(0,0,0,.28);white-space:normal}.card-title i{font-style:normal;color:var(--gold);margin:0 5px}.card-title b{color:var(--gold);font-weight:900}.micro-meta{display:grid;grid-template-columns:1fr 1fr;gap:4px 6px;border-top:2px solid var(--navy);border-bottom:2px solid var(--navy);padding:5px 6px;margin-bottom:8px;font-size:8px;font-weight:900;text-transform:lowercase;color:#111;background:rgba(232,198,89,.45)}.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat-box{border:2px solid var(--navy);background:rgba(247,232,184,.42);min-height:0}.stat-head{display:flex;justify-content:space-between;align-items:center;background:var(--navy);color:var(--gold2);padding:3px 5px;font-family:var(--condensed);font-size:13px;text-transform:uppercase;letter-spacing:1px}.stat-head span{font-family:var(--pixel);font-size:7px;color:#f7e8b8}.stat-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px;align-items:center;padding:3px 5px}.stat-abbr{display:flex;align-items:flex-end;min-width:0;font-weight:900;font-size:8px;line-height:1.1;cursor:help;position:relative;white-space:normal}.leader-line{height:1px;flex:1;border-bottom:1px dotted var(--ink);margin:0 2px 2px;opacity:.8}.stat-value{display:inline-flex;min-width:32px;min-height:20px;align-items:center;justify-content:center;border:2px solid var(--navy);background:linear-gradient(#f3d365,var(--gold));box-shadow:inset 0 0 0 1px #fff2b8,1px 1px 0 var(--shadow);font-size:10px;font-weight:900;color:var(--navy)}.stat-tooltip{display:none;position:absolute;left:0;bottom:100%;background:#111;color:#fff;padding:5px 7px;font-size:9px;min-width:150px;max-width:220px;z-index:100;line-height:1.3}.stat-tooltip.visible{display:block}.stat-tooltip strong{display:block;color:var(--gold2);margin-bottom:2px}.scouting-report{display:grid;grid-template-columns:60px 1fr;gap:8px;margin-top:8px;border:2px solid var(--navy);border-radius:10px;padding:7px;background:rgba(247,232,184,.42)}.mascot-wrap{align-self:center;width:25%}.scouting-report .mascot-wrap{width:auto}.card-logo{display:block;width:100%;height:auto;filter:drop-shadow(2px 3px 0 rgba(9,43,71,.25))}.report-copy h2{display:inline-block;background:var(--navy);color:var(--gold2);font-family:var(--condensed);font-size:14px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;margin-bottom:4px}.report-copy p{font-size:9px;font-weight:900;line-height:1.3;font-style:italic}.bottom-panel{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:8px}.trait-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 6px;background:rgba(214,173,56,.7);border:2px solid var(--navy);padding:5px;font-size:8px;text-transform:uppercase;font-weight:900}.trait-strip b{color:var(--navy)}.domain-mark{display:grid;justify-items:center;color:#f3e2b0;text-shadow:2px 2px 0 var(--navy);font-family:var(--condensed);font-size:14px;letter-spacing:1px;min-width:80px}.domain-mark em{font-family:var(--pixel);font-size:8px;color:var(--gold2);font-style:normal}.globe{width:58px;height:28px;border:2px solid #f3e2b0;border-radius:50%;display:block;margin-bottom:-18px;background:repeating-radial-gradient(circle,transparent 0 7px,rgba(243,226,176,.55) 8px 9px),linear-gradient(90deg,transparent 48%,#f3e2b0 49% 51%,transparent 52%)}.open-app-button{display:block;align-self:center;width:70%;border:2px solid var(--ink);background:#c7472e;color:var(--header-text);text-align:center;text-decoration:none;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:6px 8px;box-shadow:2px 2px 0 rgba(0,0,0,.2)}.open-app-button:visited{color:#fff}.open-app-button:hover,.open-app-button:focus{background:var(--navy);outline:2px solid var(--gold);outline-offset:2px}.carousel-dots{display:none;justify-content:center;gap:8px;margin:12px 0}.dot{width:12px;height:12px;border:2px solid var(--navy);background:#d7c9a4;transform:rotate(45deg)}.dot.active{background:var(--gold)}footer.page-footer{text-align:center;margin-top:12px;color:#5d4930;font-size:9px;letter-spacing:.5px}
 @media(max-width:1120px){.board{grid-template-columns:repeat(2,minmax(280px,1fr));gap:20px}}
-@media(max-width:700px){body{padding:8px}h1{font-size:11px}.board{display:flex;overflow-x:auto;overflow-y:visible;gap:0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}.board::-webkit-scrollbar{display:none}.card-slide{flex:0 0 calc(100vw - 16px);max-width:calc(100vw - 16px);margin:0 8px 0 0;scroll-snap-align:start}.baseball-card{min-height:auto;padding:10px}.top-banner{grid-template-columns:86px 1fr;min-height:70px}.commit-tag{font-size:14px}.title-stack{padding:6px 12px 6px 18px}.card-title{font-size:30px;letter-spacing:2px}.card-title i{margin:0 10px}.micro-meta{grid-template-columns:1fr;font-size:10px;padding:7px 8px;gap:8px;border-width:3px}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat-box{min-height:0}.stat-head{font-size:19px;padding:5px 7px;letter-spacing:1.3px}.stat-head span{font-size:9px}.stat-row{padding:6px 7px;gap:6px}.stat-abbr{font-size:10px}.leader-line{border-bottom-width:2px;margin:0 3px 2px}.stat-value{min-width:42px;min-height:28px;font-size:13px}.scouting-report{grid-template-columns:78px 1fr;gap:12px;padding:10px;border-radius:14px}.report-copy h2{font-size:20px}.report-copy p{font-size:12px}.bottom-panel{grid-template-columns:1fr;gap:10px}.trait-strip{font-size:10px;padding:7px;gap:3px 10px}.domain-mark{justify-self:end;font-size:20px;min-width:106px}.domain-mark em{font-size:9px}.globe{width:78px;height:36px;margin-bottom:-24px}.carousel-dots{display:flex}.open-app-button{width:78%;font-size:10px;padding:9px 10px;border-width:3px}}
+@media(max-width:700px){body{padding:8px}h1{font-size:11px}.board{display:flex;overflow-x:auto;overflow-y:visible;gap:0;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}.board::-webkit-scrollbar{display:none}.card-slide{flex:0 0 calc(100vw - 16px);max-width:calc(100vw - 16px);margin:0 8px 0 0;scroll-snap-align:start}.baseball-card{min-height:auto;padding:10px}.top-banner{grid-template-columns:86px 1fr;min-height:70px}.commit-tag{font-size:14px}.title-stack{padding:6px 12px 6px 18px}.card-title{font-size:30px;letter-spacing:2px}.card-title i{margin:0 10px}.micro-meta{grid-template-columns:1fr;font-size:10px;padding:7px 8px;gap:8px;border-width:3px}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat-box{min-height:0}.stat-head{font-size:16px;padding:5px 7px;letter-spacing:.5px}.stat-head span{display:none}.stat-row{padding:6px 7px;gap:6px}.stat-abbr{font-size:10px}.leader-line{border-bottom-width:2px;margin:0 3px 2px}.stat-value{min-width:42px;min-height:28px;font-size:13px}.scouting-report{grid-template-columns:78px 1fr;gap:12px;padding:10px;border-radius:14px}.report-copy h2{font-size:20px}.report-copy p{font-size:12px}.bottom-panel{grid-template-columns:1fr;gap:10px}.trait-strip{font-size:10px;padding:7px;gap:3px 10px}.domain-mark{justify-self:end;font-size:20px;min-width:106px}.domain-mark em{font-size:9px}.globe{width:78px;height:36px;margin-bottom:-24px}.carousel-dots{display:flex}.open-app-button{width:78%;font-size:10px;padding:9px 10px;border-width:3px}}
 
 </style>
 </head>
@@ -592,6 +640,8 @@ function buildDashboard(app, deployedBranches) {
   const dashboardDir = join(artifactDir, 'dashboard');
   cleanDir(dashboardDir);
   writeFileSync(join(dashboardDir, 'index.html'), renderDashboard(app, deployedBranches));
+  const evidenceAssets = join(rootDir, 'experiments', 'claude-cli-20261014', 'screenshots');
+  if (existsSync(evidenceAssets)) cpSync(evidenceAssets, join(dashboardDir, 'screenshots'), { recursive: true });
   const zipPath = join(artifactDir, 'dashboard.zip');
   zipDirectory(dashboardDir, zipPath);
   return zipPath;
@@ -617,6 +667,10 @@ async function main() {
 
   const deployedBranches = [];
   for (const branch of metadata) {
+    if (branch.experiment && !branch.experiment.deployable) {
+      deployedBranches.push({ ...branch, metrics: branch.experiment.metrics, url: null });
+      continue;
+    }
     let zipPath;
     let metrics = null;
 
@@ -632,7 +686,7 @@ async function main() {
       // Wrap in try/catch with 120s Promise.race timeout for resilience.
       try {
         const METRICS_TIMEOUT_MS = 120_000;
-        metrics = await Promise.race([
+        metrics = branch.experiment ? branch.experiment.metrics : await Promise.race([
           collectMetrics(buildResult.worktreePath, branch),
           new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Metrics collection timed out (120s)')), METRICS_TIMEOUT_MS)
@@ -660,7 +714,7 @@ async function main() {
   if (!skipAws) {
     ensureBranch(app.appId, config.dashboardBranch, config.dashboardBranch, 'PRODUCTION');
     await deployZip(app.appId, config.dashboardBranch, dashboardZip);
-    ensureDomainAssociation(app.appId, deployedBranches);
+    ensureDomainAssociation(app.appId, deployedBranches.filter(branch => branch.url));
   }
 
   console.log('\nDeployment board');
