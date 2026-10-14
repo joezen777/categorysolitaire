@@ -91,7 +91,7 @@ body {
 }
 
 .pile__button > .card,
-.pile__layer {
+.pile > .pile__layer {
   position: absolute;
   top: 0;
   left: 0;
