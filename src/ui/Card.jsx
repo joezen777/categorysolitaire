@@ -39,6 +39,10 @@ const frontSx = (role) => ({
   color: role === 'title' ? '#fff' : '#1b1b1d',
   textAlign: 'center',
   cursor: 'pointer',
+  // <button> centres content vertically by default; peeking labels must sit at the top.
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
 });
 
 function Face({ card, categoryTotal, peek }) {
