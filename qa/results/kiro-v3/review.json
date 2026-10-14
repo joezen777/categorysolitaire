@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "Codex visual review of both saved frames; not independent human adjudication",
+  "originalTraceSHA256": "7e82adb8888072414e812a20415fd2e1c379fe4786b467a9046e5122efbcadae",
+  "transformation": "Only evidence-file paths reduced to basenames for portability; observations and actions unchanged.",
+  "traceSHA256": "6aa1a8fcc724baf806972f5e0e549f3a59ce31cd89eeda0ec7f7d329913487ac",
+  "corrections": [
+    {
+      "actionNumber": 345,
+      "field": "foundations.0.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.1.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.2.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.3.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.4.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    }
+  ]
+}

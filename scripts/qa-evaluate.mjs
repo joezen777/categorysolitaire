@@ -8,13 +8,17 @@ import {openBrowser,perform} from './qa/browser.mjs';
 import {observe} from './qa/observer.mjs';
 import {Ledger,OUTCOMES,chooseAction,stateKey,actionKey} from './qa/oracle.mjs';
 
+// Freeze loaded-code hashes once; later runs in this process must not hash edited files.
+const MODULE_HASHES=Object.fromEntries(['deck.mjs','oracle.mjs','observer.mjs','browser.mjs'].map(f=>[f,createHash('sha256').update(readFileSync(new URL(`./qa/${f}`,import.meta.url))).digest('hex')]));
+
 export function parseArgs(args){
-  const c={backend:'local',observer:'vision',model:'qwen3.6:latest',visionUrl:'http://localhost:11434',inferenceMs:120000,awsProfile:'opensearchprod',region:'us-east-1',browserId:'aws.browser.v1',settleMs:600,maxSteps:1500,maxSeconds:1200,games:10,probe:false,output:`qa-results/${new Date().toISOString().replace(/[:.]/g,'-')}`};
-  const keys={'settle-ms':'settleMs','url':'url','output':'output','backend':'backend','observer':'observer','model':'model','vision-url':'visionUrl','python':'python','aws-profile':'awsProfile','region':'region','browser-id':'browserId','max-steps':'maxSteps','max-seconds':'maxSeconds','games':'games','inference-ms':'inferenceMs'};
+  const c={backend:'local',observer:'vision',model:'qwen3.6:latest',visionUrl:'http://localhost:11434',inferenceMs:120000,awsProfile:'opensearchprod',region:'us-east-1',browserId:'aws.browser.v1',profileSlot:0,settleMs:600,maxSteps:1500,maxSeconds:1200,games:10,probe:false,output:`qa-results/${new Date().toISOString().replace(/[:.]/g,'-')}`};
+  const keys={'profile-slot':'profileSlot','settle-ms':'settleMs','url':'url','output':'output','backend':'backend','observer':'observer','model':'model','vision-url':'visionUrl','python':'python','aws-profile':'awsProfile','region':'region','browser-id':'browserId','max-steps':'maxSteps','max-seconds':'maxSeconds','games':'games','inference-ms':'inferenceMs'};
   for(let i=0;i<args.length;i++){const k=args[i].replace(/^--/,'');if(['probe','headed','video','validate-only','calibration'].includes(k)){c[k.replace('-only','Only')]=true;continue;}if(!keys[k]||!args[i+1])throw new Error(`Unknown/missing option ${args[i]}`);const key=keys[k],v=args[++i];c[key]=typeof c[key]==='number'?Number(v):v;}
   if(!c.url||!['http:','https:'].includes(new URL(c.url).protocol))throw new Error('--url must be an HTTP(S) game URL');
   if(!['local','agentcore'].includes(c.backend)||!['vision','dom'].includes(c.observer))throw new Error('Unsupported backend/observer');
   for(const k of ['maxSteps','maxSeconds','games','inferenceMs','settleMs'])if(!Number.isInteger(c[k])||c[k]<1)throw new Error(`${k} must be a positive integer`);
+  if(!Number.isInteger(c.profileSlot)||c.profileSlot<0||c.profileSlot>10||c.profileSlot&&c.games!==1)throw new Error('--profile-slot requires one game and a slot from 1 to 10');
   if(c.games>10)throw new Error('Use separate batches for more than ten slots');
   c.output=resolve(c.output);return c;
 }
@@ -33,13 +37,13 @@ export async function report(config,rows){
 }
 export async function run(config){
   await mkdir(config.output,{recursive:true});
-  const hashes=Object.fromEntries(['deck.mjs','oracle.mjs','observer.mjs','browser.mjs'].map(f=>[f,createHash('sha256').update(readFileSync(new URL(`./qa/${f}`,import.meta.url))).digest('hex')]));
+  const hashes=MODULE_HASHES;
   await atomic(join(config.output,'manifest.json'),{config,hashes,startedAt:new Date().toISOString(),buildIdentity:'unverified',learning:false,gameSeed:'unavailable',node:process.version});
   if(config.validateOnly)return {validated:true,config};
-  const rows=Array.from({length:config.games},(_,i)=>({id:`${config.probe?'probe':'game'}-${String(i+1).padStart(2,'0')}`,profile:profiles[i],actions:0,seconds:0,started:false,outcome:'NOT_STARTED',stop:'PENDING'}));
+  const rows=Array.from({length:config.games},(_,i)=>({id:`${config.probe?'probe':'game'}-${String(i+1).padStart(2,'0')}`,profile:profiles[config.profileSlot?config.profileSlot-1:i],actions:0,seconds:0,started:false,outcome:'NOT_STARTED',stop:'PENDING'}));
   await report(config,rows);
   for(let i=0;i<config.games;i++){
-    const id=`${config.probe?'probe':'game'}-${String(i+1).padStart(2,'0')}`,dir=join(config.output,id),profile=profiles[i];await mkdir(dir,{recursive:true});
+    const id=`${config.probe?'probe':'game'}-${String(i+1).padStart(2,'0')}`,dir=join(config.output,id),profile=profiles[config.profileSlot?config.profileSlot-1:i];await mkdir(dir,{recursive:true});
     const row={id,profile,actions:0,started:false,outcome:'NOT_STARTED',stop:'STARTUP',trace:join(dir,'events.jsonl'),solvability:'UNKNOWN'},ledger=new Ledger(),begin=Date.now();let session,o;
     const event=async e=>appendFile(row.trace,JSON.stringify({at:new Date().toISOString(),elapsedMs:Date.now()-begin,...e})+'\n');
     try{
@@ -48,8 +52,8 @@ export async function run(config){
       const get=async n=>{if(config.observer==='vision'&&row.modelCalls>=1600)throw new Error('MODEL_CALL_BUDGET');if(Date.now()-begin>config.maxSeconds*1000)throw new Error('WALL_TIME_BUDGET');const file=join(dir,`${String(n).padStart(4,'0')}.png`);row.final=file;const t=Date.now();if(config.observer==='vision')row.modelCalls++;try{return await observe(session.page,{...config,inferenceMs:Math.min(config.inferenceMs,Math.max(1,config.maxSeconds*1000-(Date.now()-begin)))},profile,file);}finally{row.observationMs+=Date.now()-t;}};
       o=await get(0);row.opening=row.final;
       if(!o.boardVisible&&o.controls.find(c=>c.name==='start')){await perform(session.page,o,{kind:'control',...o.controls.find(c=>c.name==='start')},profile);await session.page.waitForTimeout(config.settleMs??600);o=await get('start');}
-      ledger.observeInitial(o);row.started=o.boardVisible;await event({type:'initial',observation:o});
-      const triedByState=new Map();
+      ledger.observeInitial(o);row.started=o.boardVisible;if(row.started)row.outcome='INCOMPLETE';await event({type:'initial',observation:o});
+      const triedByState=new Map(),retried=new Set();
       row.stop=o.boardVisible?'ACTION_BUDGET':'BOARD_NOT_RECOGNIZED';
       for(let step=0;o.boardVisible&&!o.winClaim&&step<config.maxSteps;step++){
         if(Date.now()-begin>=config.maxSeconds*1000){row.stop='WALL_TIME_BUDGET';break;}
@@ -61,6 +65,7 @@ export async function run(config){
         // Two independently read settled observations must agree before adjudication.
         await session.page.waitForTimeout(Math.min(250,config.settleMs??600));const settled=await get(`${row.actions}-settled`);
         let verdict;if(stateKey(o)!==stateKey(settled)||o.winClaim!==settled.winClaim){ledger.gaps++;verdict={effect:'UNKNOWN',reason:'UNSETTLED'};}else verdict=ledger.verify(before,a,settled,delivery);
+        if(verdict.effect==='UNCHANGED'&&a.status==='LEGAL'&&delivery.confirmed&&!retried.has(key+actionKey(a))){retried.add(key+actionKey(a));tried.delete(actionKey(a));}
         o=settled;await event({type:'action',action:a,delivery,verdict,before,after:o,evidence:{before:pre,during,after:row.final}});
         row.ledger=ledger.json();row.seconds=(Date.now()-begin)/1000;await atomic(join(dir,'checkpoint.json'),row);
         if(config.probe&&verdict.effect==='ACCEPTED'){row.stop='PROBE_CHANGED_STATE';break;}

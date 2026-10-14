@@ -11,7 +11,12 @@
     "qa:agent:install": "playwright install chromium",
     "qa:evaluate": "node scripts/qa-evaluate.mjs",
     "qa:discover": "node scripts/qa-discover.mjs",
-    "qa:test": "vitest --run tests/qa-evaluate.test.mjs tests/qa-browser.test.mjs"
+    "qa:test": "vitest --run tests/qa-evaluate.test.mjs tests/qa-browser.test.mjs tests/qa-calibration.test.mjs tests/qa-replay.test.mjs",
+    "qa:calibrate": "node scripts/qa-calibrate.mjs",
+    "qa:calibrate:sequences": "node scripts/qa-calibrate-sequences.mjs",
+    "qa:calibrate:vision": "node scripts/qa-calibrate-vision.mjs",
+    "qa:fixture": "node scripts/qa/fixture-server.mjs",
+    "qa:replay": "node scripts/qa-replay.mjs"
   },
   "devDependencies": {
     "fast-check": "^4.1.1",

@@ -1,0 +1,433 @@
+{
+  "scope": "Supplemental perception-assisted review; original automatic report unchanged",
+  "assisted": true,
+  "reviewer": "Codex visual review of both saved frames; not independent human adjudication",
+  "outcome": "VALID_OBSERVED_WIN",
+  "actions": 205,
+  "finalScore": 1300,
+  "traceSHA256": "0a6b375cd769f820bfe4e5acadb697923a80c8b13f703c1d373a26ac3d058140",
+  "oracleSHA256": "8d4ce665b137145ffd71234c79a9c333dc3ecdb7d2637ff449c3d2f9efda93fb",
+  "corrections": [
+    {
+      "actionNumber": 205,
+      "field": "foundations.0.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0205.png",
+          "sha256": "6fdb3a74d7d9a52858acc691634b39e176c1eea05c6e4c020cb71fa7bca3fb0d"
+        },
+        {
+          "file": "205-settled.png",
+          "sha256": "67bede81a14b95812bed644057977573bd375477a5655445a9f297848e733f3a"
+        }
+      ]
+    },
+    {
+      "actionNumber": 205,
+      "field": "foundations.1.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0205.png",
+          "sha256": "6fdb3a74d7d9a52858acc691634b39e176c1eea05c6e4c020cb71fa7bca3fb0d"
+        },
+        {
+          "file": "205-settled.png",
+          "sha256": "67bede81a14b95812bed644057977573bd375477a5655445a9f297848e733f3a"
+        }
+      ]
+    },
+    {
+      "actionNumber": 205,
+      "field": "foundations.2.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0205.png",
+          "sha256": "6fdb3a74d7d9a52858acc691634b39e176c1eea05c6e4c020cb71fa7bca3fb0d"
+        },
+        {
+          "file": "205-settled.png",
+          "sha256": "67bede81a14b95812bed644057977573bd375477a5655445a9f297848e733f3a"
+        }
+      ]
+    },
+    {
+      "actionNumber": 205,
+      "field": "foundations.3.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0205.png",
+          "sha256": "6fdb3a74d7d9a52858acc691634b39e176c1eea05c6e4c020cb71fa7bca3fb0d"
+        },
+        {
+          "file": "205-settled.png",
+          "sha256": "67bede81a14b95812bed644057977573bd375477a5655445a9f297848e733f3a"
+        }
+      ]
+    },
+    {
+      "actionNumber": 205,
+      "field": "foundations.4.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0205.png",
+          "sha256": "6fdb3a74d7d9a52858acc691634b39e176c1eea05c6e4c020cb71fa7bca3fb0d"
+        },
+        {
+          "file": "205-settled.png",
+          "sha256": "67bede81a14b95812bed644057977573bd375477a5655445a9f297848e733f3a"
+        }
+      ]
+    }
+  ],
+  "ledger": {
+    "started": true,
+    "gaps": 0,
+    "completed": [
+      "Chimera",
+      "Smell",
+      "Pirate",
+      "Beds",
+      "Aviation",
+      "Wine",
+      "Think",
+      "Refuge",
+      "Winds",
+      "King",
+      "Ceramic",
+      "Neck",
+      "Jupiter"
+    ],
+    "deposits": {
+      "Beds": [
+        "Hammock",
+        "Futon",
+        "Sofa bed",
+        "Cot",
+        "Bunk",
+        "Crib",
+        "Cradle",
+        "Berth"
+      ],
+      "Chimera": [
+        "Goat",
+        "Snake",
+        "Lion"
+      ],
+      "Pirate": [
+        "Treasure",
+        "Cutlass",
+        "Cannon",
+        "Pegleg",
+        "Rum",
+        "Parrot"
+      ],
+      "Wine": [
+        "Merlot",
+        "Prosecco",
+        "Cabernet",
+        "Rose",
+        "Riesling",
+        "Cava"
+      ],
+      "King": [
+        "Scepter",
+        "Throne",
+        "Orb"
+      ],
+      "Smell": [
+        "Bouquet",
+        "Scent",
+        "Perfume",
+        "Aroma",
+        "Nose",
+        "Odor"
+      ],
+      "Winds": [
+        "Chinook",
+        "Zephyr",
+        "Bora",
+        "Mistral",
+        "Vendavel",
+        "Sirocco",
+        "Breeze",
+        "Piteraq"
+      ],
+      "Neck": [
+        "Dress Shirt",
+        "Scarf",
+        "Bowtie",
+        "Tie"
+      ],
+      "Aviation": [
+        "Jet",
+        "Runway",
+        "Airline",
+        "Airship",
+        "Pilot",
+        "Flight",
+        "Airport",
+        "Fuselage"
+      ],
+      "Think": [
+        "Imagine",
+        "Ponder",
+        "Suggestion",
+        "Consider",
+        "Suppose"
+      ],
+      "Refuge": [
+        "Security",
+        "Lair",
+        "Safety",
+        "Hideout",
+        "Hideaway",
+        "Shelter",
+        "Den"
+      ],
+      "Jupiter": [
+        "Europa",
+        "Callisto",
+        "Ganymedes",
+        "Io"
+      ],
+      "Ceramic": [
+        "Tile",
+        "Plate",
+        "Bowl",
+        "Mug",
+        "Vase"
+      ]
+    },
+    "findings": [
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Airship; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Airline; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Runway; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Pilot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Flight; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Airship; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Airline; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Runway; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Pilot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Airship; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Airline; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Runway; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Suppose; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Suppose; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Consider; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Consider; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Suppose; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      }
+    ],
+    "coverage": {
+      "R01": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 1
+      },
+      "R02": {
+        "pass": 66,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R03": {
+        "pass": 1,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R04": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R05": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R06": {
+        "pass": 13,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R07": {
+        "pass": 31,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R08": {
+        "pass": 73,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R09": {
+        "pass": 4,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R10": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R11": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R12": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R13": {
+        "pass": 73,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R14": {
+        "pass": 13,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R15": {
+        "pass": 13,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R16": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R17": {
+        "pass": 121,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R18": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R19": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R20": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R21": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R22": {
+        "pass": 1,
+        "fail": 0,
+        "unknown": 205
+      },
+      "R90": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      }
+    }
+  }
+}

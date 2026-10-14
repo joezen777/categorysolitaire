@@ -1,0 +1,1106 @@
+{
+  "scope": "Controlled calibration and exploratory live trials; not a ten-game model/style comparison",
+  "browserCalibration": {
+    "scope": "Controlled fixtures only; not live-game evidence",
+    "cases": [
+      {
+        "case": "reference-slot-1",
+        "passed": true,
+        "expected": "VALID_OBSERVED_WIN",
+        "outcome": "VALID_OBSERVED_WIN",
+        "actions": 142,
+        "gaps": 0,
+        "completed": 13,
+        "findings": []
+      },
+      {
+        "case": "reference-slot-4",
+        "passed": true,
+        "expected": "VALID_OBSERVED_WIN",
+        "outcome": "VALID_OBSERVED_WIN",
+        "actions": 142,
+        "gaps": 0,
+        "completed": 13,
+        "findings": []
+      },
+      {
+        "case": "reference-slot-6",
+        "passed": true,
+        "expected": "VALID_OBSERVED_WIN",
+        "outcome": "VALID_OBSERVED_WIN",
+        "actions": 142,
+        "gaps": 0,
+        "completed": 13,
+        "findings": []
+      },
+      {
+        "case": "reference-slot-9",
+        "passed": true,
+        "expected": "VALID_OBSERVED_WIN",
+        "outcome": "VALID_OBSERVED_WIN",
+        "actions": 142,
+        "gaps": 0,
+        "completed": 13,
+        "findings": []
+      },
+      {
+        "case": "reference-negative",
+        "passed": true,
+        "expected": "INCOMPLETE",
+        "outcome": "INCOMPLETE",
+        "actions": 3,
+        "gaps": 0,
+        "completed": 0,
+        "findings": []
+      },
+      {
+        "case": "wrong-score",
+        "passed": true,
+        "expected": "WIN_CLAIM_WITH_VIOLATIONS",
+        "outcome": "WIN_CLAIM_WITH_VIOLATIONS",
+        "actions": 142,
+        "gaps": 0,
+        "completed": 13,
+        "findings": [
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R15",
+            "type": "incorrect_score",
+            "message": "Completion score delta 10, expected 100",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R16",
+            "type": "premature_win",
+            "message": "Win claim with score 130, expected 1300",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "missing-modal",
+        "passed": true,
+        "expected": "INCOMPLETE",
+        "outcome": "INCOMPLETE",
+        "actions": 142,
+        "gaps": 0,
+        "completed": 13,
+        "findings": [
+          {
+            "ruleId": "R16",
+            "type": "missing_win_display",
+            "message": "Complete independent ledger and empty board without a visible victory claim",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "premature-win",
+        "passed": true,
+        "expected": "WIN_CLAIM_WITH_VIOLATIONS",
+        "outcome": "WIN_CLAIM_WITH_VIOLATIONS",
+        "actions": 0,
+        "gaps": 0,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R16",
+            "type": "premature_win",
+            "message": "Win claim with score 0, expected 1300",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "no-reveal",
+        "passed": true,
+        "expected": "Detect R10",
+        "outcome": "INCOMPLETE",
+        "actions": 2,
+        "gaps": 0,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R10",
+            "type": "missing_or_incorrect_reveal",
+            "message": "Removing all face-up cards must reveal exactly one hidden card",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R10",
+            "type": "missing_or_incorrect_reveal",
+            "message": "Removing all face-up cards must reveal exactly one hidden card",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "double-draw",
+        "passed": true,
+        "expected": "Detect R02",
+        "outcome": "INCOMPLETE",
+        "actions": 32,
+        "gaps": 0,
+        "completed": 5,
+        "findings": [
+          {
+            "ruleId": "R02",
+            "type": "incorrect_draw_count",
+            "message": "Stock changed by 2, expected one",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R02",
+            "type": "incorrect_draw_count",
+            "message": "Waste changed by 2, expected one",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "reject-legal",
+        "passed": true,
+        "expected": "Detect R06",
+        "outcome": "INCOMPLETE",
+        "actions": 2,
+        "gaps": 0,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R06",
+            "type": "legal_action_blocked",
+            "message": "No visible effect for King; 2 independently observed selection-and-delivery attempts",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "duplicate-card",
+        "passed": true,
+        "expected": "Detect R22",
+        "outcome": "INCOMPLETE",
+        "actions": 1,
+        "gaps": 2,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R22",
+            "type": "duplicate_visible_card",
+            "message": "Unique card visible twice: King",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "lose-card",
+        "passed": true,
+        "expected": "Detect R22",
+        "outcome": "INCOMPLETE",
+        "actions": 1,
+        "gaps": 0,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R10",
+            "type": "missing_or_incorrect_reveal",
+            "message": "Removing all face-up cards must reveal exactly one hidden card",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R22",
+            "type": "card_conservation",
+            "message": "Observable live plus independently completed inventory is 85; expected 86",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "wrong-progress",
+        "passed": true,
+        "expected": "Detect R13",
+        "outcome": "INCOMPLETE",
+        "actions": 1,
+        "gaps": 0,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R13",
+            "type": "incorrect_progress",
+            "message": "Observed 1 items, expected 0",
+            "status": "confirmed"
+          },
+          {
+            "ruleId": "R22",
+            "type": "card_conservation",
+            "message": "Observable live plus independently completed inventory is 87; expected 86",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "wrong-denominator",
+        "passed": true,
+        "expected": "Detect R13",
+        "outcome": "INCOMPLETE",
+        "actions": 1,
+        "gaps": 0,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R13",
+            "type": "incorrect_total",
+            "message": "King progress denominator 2",
+            "status": "confirmed"
+          }
+        ]
+      },
+      {
+        "case": "accept-illegal",
+        "passed": true,
+        "expected": "Detect R08",
+        "outcome": "INCOMPLETE",
+        "actions": 1,
+        "gaps": 0,
+        "completed": 0,
+        "findings": [
+          {
+            "ruleId": "R08",
+            "type": "illegal_action_accepted",
+            "message": "Vase accepted at foundation 1",
+            "status": "confirmed"
+          }
+        ]
+      }
+    ]
+  },
+  "recycleCalibration": [
+    {
+      "case": "none",
+      "passed": true,
+      "findings": [],
+      "coverage": {
+        "R01": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R02": {
+          "pass": 112,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R03": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R04": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R05": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R06": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R07": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R08": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R09": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R10": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R11": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R12": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R13": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R14": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R15": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R16": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R17": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R18": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R19": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R20": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R21": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R22": {
+          "pass": 112,
+          "fail": 0,
+          "unknown": 2
+        },
+        "R90": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        }
+      },
+      "gaps": 0
+    },
+    {
+      "case": "unicode-recycle",
+      "passed": true,
+      "findings": [],
+      "coverage": {
+        "R01": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R02": {
+          "pass": 112,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R03": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R04": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R05": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R06": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R07": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R08": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R09": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R10": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R11": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R12": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R13": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R14": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R15": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R16": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R17": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R18": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R19": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R20": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R21": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R22": {
+          "pass": 112,
+          "fail": 0,
+          "unknown": 2
+        },
+        "R90": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        }
+      },
+      "gaps": 0
+    },
+    {
+      "case": "reverse-recycle",
+      "passed": true,
+      "findings": [
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Aroma, observed Airship",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Scent, observed Airline",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Winds, observed Fuselage",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Vendavel, observed Pilot",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Mistral, observed Airport",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Bora, observed Flight",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Breeze, observed Runway",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Piteraq, observed Jet",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Chinook, observed Aviation",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Zephyr, observed Parrot",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Sirocco, observed Cutlass",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Refuge, observed Cannon",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Den, observed Treasure",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Hideout, observed Pegleg",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Hideaway, observed Rum",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Safety, observed Pirate",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Lair, observed Tie",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Security, observed Scarf",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Shelter, observed Dress Shirt",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Beds, observed Bowtie",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Bunk, observed Neck",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Crib, observed Cava",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Cradle, observed Rose",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Berth, observed Cabernet",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Sofa bed, observed Merlot",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Futon, observed Prosecco",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Cot, observed Riesling",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Hammock, observed Wine",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Wine, observed Hammock",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Riesling, observed Cot",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Prosecco, observed Futon",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Merlot, observed Sofa bed",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Cabernet, observed Berth",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Rose, observed Cradle",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Cava, observed Crib",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Neck, observed Bunk",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Bowtie, observed Beds",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Dress Shirt, observed Shelter",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Scarf, observed Security",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Tie, observed Lair",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Pirate, observed Safety",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Rum, observed Hideaway",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Pegleg, observed Hideout",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Treasure, observed Den",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Cannon, observed Refuge",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Cutlass, observed Sirocco",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Parrot, observed Zephyr",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Aviation, observed Chinook",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Jet, observed Piteraq",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Runway, observed Breeze",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Flight, observed Bora",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Airport, observed Mistral",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Pilot, observed Vendavel",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Fuselage, observed Winds",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Airline, observed Scent",
+          "status": "confirmed"
+        },
+        {
+          "ruleId": "R03",
+          "type": "incorrect_transition",
+          "message": "Expected recycled Airship, observed Aroma",
+          "status": "confirmed"
+        }
+      ],
+      "coverage": {
+        "R01": {
+          "pass": 1,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R02": {
+          "pass": 112,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R03": {
+          "pass": 1,
+          "fail": 56,
+          "unknown": 0
+        },
+        "R04": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R05": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R06": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R07": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R08": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R09": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R10": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R11": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R12": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R13": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R14": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R15": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R16": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R17": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R18": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R19": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R20": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R21": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        },
+        "R22": {
+          "pass": 112,
+          "fail": 0,
+          "unknown": 2
+        },
+        "R90": {
+          "pass": 0,
+          "fail": 0,
+          "unknown": 0
+        }
+      },
+      "gaps": 0
+    }
+  ],
+  "liveRuns": [
+    {
+      "run": "v1",
+      "actions": 108,
+      "seconds": 87.8,
+      "automaticOutcome": "INCOMPLETE",
+      "stop": "POLICY_EXHAUSTED",
+      "finalScore": 100,
+      "ledgerGaps": 4,
+      "categoriesCompleted": 0
+    },
+    {
+      "run": "v2",
+      "actions": 105,
+      "seconds": 145.2,
+      "automaticOutcome": "INCOMPLETE",
+      "stop": "POLICY_EXHAUSTED",
+      "finalScore": 0,
+      "ledgerGaps": 0,
+      "categoriesCompleted": 0
+    },
+    {
+      "run": "v3",
+      "actions": 345,
+      "seconds": 510,
+      "automaticOutcome": "WIN_CLAIM_UNVERIFIED",
+      "stop": "WIN_CLAIM",
+      "finalScore": 1300,
+      "ledgerGaps": 2,
+      "categoriesCompleted": 12,
+      "reviewedOutcome": "VALID_OBSERVED_WIN",
+      "assisted": true,
+      "reviewedGaps": 0,
+      "reviewedCompleted": 13
+    },
+    {
+      "run": "v4",
+      "actions": 205,
+      "seconds": 295.6,
+      "automaticOutcome": "WIN_CLAIM_UNVERIFIED",
+      "stop": "WIN_CLAIM",
+      "finalScore": 1300,
+      "ledgerGaps": 2,
+      "categoriesCompleted": 12,
+      "reviewedOutcome": "VALID_OBSERVED_WIN",
+      "assisted": true,
+      "reviewedGaps": 0,
+      "reviewedCompleted": 13
+    }
+  ],
+  "visionLimitation": "Local Qwen failed placeholder, exposed-card identity and coordinate golden checks; no screenshot-only calibration pass is claimed."
+}

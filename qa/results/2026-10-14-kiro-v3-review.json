@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "Codex visual review of both saved frames; not independent human adjudication",
+  "traceSHA256": "7e82adb8888072414e812a20415fd2e1c379fe4786b467a9046e5122efbcadae",
+  "corrections": [
+    {
+      "actionNumber": 345,
+      "field": "foundations.0.empty",
+      "value": true,
+      "reason": "Both saved post-action screenshots visibly show the dashed empty Foundation placeholder at this slot above the victory dialog. The translucent backdrop blocks DOM hit testing but does not conceal these five slots. This corrects only the observed emptiness; score, win claim, action legality and deposits are not overridden.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.1.empty",
+      "value": true,
+      "reason": "Both saved post-action screenshots visibly show the dashed empty Foundation placeholder at this slot above the victory dialog. The translucent backdrop blocks DOM hit testing but does not conceal these five slots. This corrects only the observed emptiness; score, win claim, action legality and deposits are not overridden.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.2.empty",
+      "value": true,
+      "reason": "Both saved post-action screenshots visibly show the dashed empty Foundation placeholder at this slot above the victory dialog. The translucent backdrop blocks DOM hit testing but does not conceal these five slots. This corrects only the observed emptiness; score, win claim, action legality and deposits are not overridden.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.3.empty",
+      "value": true,
+      "reason": "Both saved post-action screenshots visibly show the dashed empty Foundation placeholder at this slot above the victory dialog. The translucent backdrop blocks DOM hit testing but does not conceal these five slots. This corrects only the observed emptiness; score, win claim, action legality and deposits are not overridden.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.4.empty",
+      "value": true,
+      "reason": "Both saved post-action screenshots visibly show the dashed empty Foundation placeholder at this slot above the victory dialog. The translucent backdrop blocks DOM hit testing but does not conceal these five slots. This corrects only the observed emptiness; score, win claim, action legality and deposits are not overridden.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    }
+  ]
+}

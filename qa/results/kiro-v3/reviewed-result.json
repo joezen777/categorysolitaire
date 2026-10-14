@@ -1,0 +1,487 @@
+{
+  "scope": "Supplemental perception-assisted review; original automatic report unchanged",
+  "assisted": true,
+  "reviewer": "Codex visual review of both saved frames; not independent human adjudication",
+  "outcome": "VALID_OBSERVED_WIN",
+  "actions": 345,
+  "finalScore": 1300,
+  "traceSHA256": "6aa1a8fcc724baf806972f5e0e549f3a59ce31cd89eeda0ec7f7d329913487ac",
+  "oracleSHA256": "8d4ce665b137145ffd71234c79a9c333dc3ecdb7d2637ff449c3d2f9efda93fb",
+  "corrections": [
+    {
+      "actionNumber": 345,
+      "field": "foundations.0.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.1.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.2.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.3.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    },
+    {
+      "actionNumber": 345,
+      "field": "foundations.4.empty",
+      "value": true,
+      "reason": "Both post-action frames visibly show this dashed empty Foundation placeholder above the victory dialog. The translucent backdrop obstructs DOM hit testing. Only final foundation emptiness is corrected; score, win claim, action legality and deposits are unchanged.",
+      "evidence": [
+        {
+          "file": "0345.png",
+          "sha256": "9fdb91f5ac6b3328543070c2cb180bc6499ccec9272e6b79c7fda8f6fadb4a79"
+        },
+        {
+          "file": "345-settled.png",
+          "sha256": "ed469003dfa1d39d67109bf81f8cac1f836966020a858fae8f07fc430d5cdf72"
+        }
+      ]
+    }
+  ],
+  "ledger": {
+    "started": true,
+    "gaps": 0,
+    "completed": [
+      "Wine",
+      "Ceramic",
+      "Jupiter",
+      "Winds",
+      "Think",
+      "Neck",
+      "Smell",
+      "Beds",
+      "Chimera",
+      "Pirate",
+      "Refuge",
+      "King",
+      "Aviation"
+    ],
+    "deposits": {
+      "Smell": [
+        "Perfume",
+        "Odor",
+        "Nose",
+        "Bouquet",
+        "Aroma",
+        "Scent"
+      ],
+      "Ceramic": [
+        "Tile",
+        "Plate",
+        "Vase",
+        "Bowl",
+        "Mug"
+      ],
+      "Wine": [
+        "Rose",
+        "Prosecco",
+        "Cava",
+        "Cabernet",
+        "Merlot",
+        "Riesling"
+      ],
+      "Think": [
+        "Ponder",
+        "Consider",
+        "Suggestion",
+        "Imagine",
+        "Suppose"
+      ],
+      "Winds": [
+        "Sirocco",
+        "Chinook",
+        "Mistral",
+        "Bora",
+        "Zephyr",
+        "Piteraq",
+        "Vendavel",
+        "Breeze"
+      ],
+      "Beds": [
+        "Cradle",
+        "Bunk",
+        "Sofa bed",
+        "Crib",
+        "Hammock",
+        "Futon",
+        "Cot",
+        "Berth"
+      ],
+      "Jupiter": [
+        "Io",
+        "Ganymedes",
+        "Europa",
+        "Callisto"
+      ],
+      "Refuge": [
+        "Security",
+        "Den",
+        "Safety",
+        "Shelter",
+        "Lair",
+        "Hideaway",
+        "Hideout"
+      ],
+      "Neck": [
+        "Scarf",
+        "Bowtie",
+        "Tie",
+        "Dress Shirt"
+      ],
+      "Aviation": [
+        "Airport",
+        "Fuselage",
+        "Airship",
+        "Airline",
+        "Runway",
+        "Pilot",
+        "Flight",
+        "Jet"
+      ],
+      "Chimera": [
+        "Lion",
+        "Goat",
+        "Snake"
+      ],
+      "Pirate": [
+        "Cutlass",
+        "Cannon",
+        "Parrot",
+        "Pegleg",
+        "Rum",
+        "Treasure"
+      ],
+      "King": [
+        "Throne",
+        "Orb",
+        "Scepter"
+      ]
+    },
+    "findings": [
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cannon; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Parrot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Pegleg; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cannon; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Parrot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cannon; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cutlass; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Treasure; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Scarf; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Scarf; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Parrot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Parrot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cannon; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cannon; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cutlass; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Cutlass; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Treasure; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Rum; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Pegleg; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Parrot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Rum; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Pegleg; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Parrot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Rum; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Pegleg; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      },
+      {
+        "ruleId": "R09",
+        "type": "legal_action_blocked",
+        "message": "No visible effect for Parrot; 0 independently observed selection-and-delivery attempts",
+        "status": "suspected"
+      }
+    ],
+    "coverage": {
+      "R01": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 1
+      },
+      "R02": {
+        "pass": 84,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R03": {
+        "pass": 1,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R04": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R05": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R06": {
+        "pass": 13,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R07": {
+        "pass": 51,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R08": {
+        "pass": 73,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R09": {
+        "pass": 97,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R10": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R11": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R12": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R13": {
+        "pass": 73,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R14": {
+        "pass": 13,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R15": {
+        "pass": 13,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R16": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R17": {
+        "pass": 234,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R18": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R19": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R20": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R21": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      },
+      "R22": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 346
+      },
+      "R90": {
+        "pass": 0,
+        "fail": 0,
+        "unknown": 0
+      }
+    }
+  }
+}

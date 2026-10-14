@@ -4,7 +4,7 @@
 
 # Visual QA Agent
 
-**Status: an independent ten-game evaluator is implemented and live-tested; full benchmark calibration remains incomplete.** See the [runnable harness guide](qa/README.md) for local vision, visible-DOM observation, AWS AgentCore, reports, and limitations. The older learning agent's self-reported wins are not independent proof of game correctness. The full acceptance target remains specified here:
+**Status: an independent ten-game evaluator is implemented and live-tested; full benchmark calibration remains incomplete.** See [expanded calibration and reviewed live wins](qa/results/2026-10-14-calibration.md), the [resume checkpoint](qa/RESUME.md), and the [runnable harness guide](qa/README.md) for local vision, visible-DOM observation, AWS AgentCore, reports, and limitations. The older learning agent's self-reported wins are not independent proof of game correctness. The full acceptance target remains specified here:
 
 - [Harness requirements and existing-work audit](.kiro/specs/visual-gameplay-harness/requirements.md)
 - [Architecture, AgentCore Browser / `opensearchprod`, and dynamic branch targeting](.kiro/specs/visual-gameplay-harness/design.md)

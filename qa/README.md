@@ -39,7 +39,7 @@ Requires AWS permission to start/list/stop AgentCore Browser sessions and connec
 
 Open `<output>/index.html`. JSON and CSV include all scheduled rows, outcomes, actions, duration, runtime errors, findings and rule coverage. Each game folder has opening/final and intermediate screenshots, gesture screenshots, observation JSON, append-only `events.jsonl`, checkpoint, and optional local video (`--video`). Manifest hashes identify the evaluator modules and frozen deck. A live URL is labeled **unverified build**; the runner does not infer its deployed commit from a branch name. Record deployment receipts externally before using these results for controlled comparisons.
 
-Five exclusive outcomes: VALID_OBSERVED_WIN, WIN_CLAIM_WITH_VIOLATIONS, WIN_CLAIM_UNVERIFIED, INCOMPLETE, NOT_STARTED. Wins require observed deposits of every expected item, all 13 category completions, score 1300, empty piles and a visible victory claim, with no material ledger gaps. A banner, model assertion, or high score alone is insufficient. No winning live game has yet been validated with this harness. Incomplete games are **not evidence of unsolvability**.
+Five exclusive outcomes: VALID_OBSERVED_WIN, WIN_CLAIM_WITH_VIOLATIONS, WIN_CLAIM_UNVERIFIED, INCOMPLETE, NOT_STARTED. Wins require observed deposits of every expected item, all 13 category completions, score 1300, empty piles and a visible victory claim, with no material ledger gaps. A banner, model assertion, or high score alone is insufficient. Two live Kiro wins have now passed supplemental perception-assisted ledger review; their original automatic outcomes remain WIN_CLAIM_UNVERIFIED because of the victory overlay. See results/2026-10-14-calibration.md. Incomplete games are **not evidence of unsolvability**.
 
 Rule counters represent the specific observed transition checks, not blanket certification of a whole requirement. Zero pass/fail/unknown means NOT_EXERCISED. R21 audio and R90 source requirements are NOT_OBSERVABLE. Several rules currently have no automatic verifier; the catalog remains the full acceptance target. Confirmed findings mean deterministic oracle conclusions *conditional on the recorded observations*; review screenshots before treating them as adjudicated product defects. Legal moves with no visible effect remain suspected because selection alone does not establish a valid completed gesture. Unknown transitions prevent win certification. Repeated settled observations reduce animation uncertainty but do not eliminate correlated perception errors.
 
@@ -54,6 +54,20 @@ Probes start fresh sessions, select known illegal moves, and stop on an accepted
 
 ## Calibration and remaining work
 
-Unit tests cover exact deck, strict booleans/unknown counters, legal/illegal destinations, uncertain groups, score inflation, illegal acceptance, premature/unverified wins, and a full synthetic 86-card deposit trace. Browser fixtures verify actual pointer/touch event delivery for four modalities and empty-page observation. The synthetic trace is an oracle fixture, **not a won live game**.
+Unit tests cover deck fidelity, destination matrices, uncertainty, conservation, reveal, score/progress, terminal outcomes and review integrity. Full 142-action browser fixture wins cover all four modalities; mutation and full recycle-order suites are also implemented. Synthetic traces remain separate from browser fixture games and live games. See CALIBRATION.md for precise coverage.
 
 Still needed before claiming a calibrated benchmark: independently adjudicated screenshot fixtures; duplicate/lost-card checks across all transitions; complete reveal/setup/deck and UI rule coverage; exposed-strip/scroll recovery; reliable pickup and bounded retry evidence for confirmed legal blocks; stronger strategy and matched deal controls; full negative-state construction; audio capture; immutable deployment receipts; interruption/resumption; token/cost accounting and consolidated multi-branch comparison UI. Ten games are descriptive evidence, not a causal estimate of model/style quality. Development speed, token estimates and rework KPIs belong to branch commit/usage records, separate from these gameplay timings.
+
+## Expanded calibration and continuation
+
+See [calibration coverage](CALIBRATION.md) for the rule-by-rule matrix, mutation suite, and screenshot-model limitations. [RESUME.md](RESUME.md) records milestones, exact commands, development failures and next steps.
+
+```sh
+npm run qa:calibrate -- qa-results/calibration
+npm run qa:calibrate:sequences -- qa-results/recycle
+npm run qa:calibrate:vision -- qa/fixtures/golden qa-results/vision
+```
+
+`--calibration` marks controlled-fixture runs prominently. `--settle-ms` changes post-action settling (default 600 ms; short 20 ms settings are intended for the synchronous calibration fixture). `--profile-slot 1|4|6|9 --games 1` selects a supplemental desktop-drag/desktop-tap/phone-tap/phone-drag case. A changed policy or settling budget creates a different evaluation configuration.
+
+Full browser-driven fixture wins now cover all 86 cards and all four input modalities. Unlike the earlier synthetic ledger test, these execute rendered UI actions and independent observations throughout. This does not validate arbitrary live deployments or all screenshot-only perception. Check the continuation document for current live-game results.
