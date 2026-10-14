@@ -201,12 +201,12 @@ function Column({ cards, faceUpCount, index, selection, canDrag, onClick }) {
   );
 }
 
-export default function Board({ game, selection, glitter, canDrag, onDraw, onRecycle, onDraftClick, onColumnClick, onFoundationClick }) {
+export default function Board({ game, selection, glitter, canDrag, onMenuClick, onDraw, onRecycle, onDraftClick, onColumnClick, onFoundationClick }) {
   return (
     <Box sx={{ maxWidth: 640, mx: 'auto', p: 2, boxSizing: 'border-box' }}>
       <Box component="header" data-testid="header" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Typography data-testid="score" variant="h6">Score: {game.score}</Typography>
-        <IconButton aria-label="Menu" data-testid="menu-button"><SettingsIcon /></IconButton>
+        <IconButton aria-label="Menu" data-testid="menu-button" onClick={onMenuClick}><SettingsIcon /></IconButton>
       </Box>
 
       <Box data-testid="piles" sx={{ ...row, mb: 1 }}>
