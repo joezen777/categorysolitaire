@@ -72,6 +72,25 @@ export function GameBoard({ store, dispatch, shakingIds, bursts, reducedMotion }
     else ui.cancelDrag();
   };
 
+  const cardName = (id: string | number) => deck.byId[String(id).replace(/^card:/, '')]?.label ?? 'card';
+  const placeName = (id: string | number) => {
+    const [kind, n] = String(id).split(':');
+    return kind === 'foundation' ? `category slot ${Number(n) + 1}` : `column ${Number(n) + 1}`;
+  };
+  const accessibility = {
+    screenReaderInstructions: {
+      draggable: 'Press Enter or Space to select this card, then activate a destination column or category slot.',
+    },
+    announcements: {
+      onDragStart: ({ active }: DragStartEvent) => `Picked up ${cardName(active.id)}.`,
+      onDragOver: ({ active, over }: { active: { id: string | number }; over: { id: string | number } | null }) =>
+        over ? `${cardName(active.id)} is over ${placeName(over.id)}.` : `${cardName(active.id)} is no longer over a destination.`,
+      onDragEnd: ({ active, over }: DragEndEvent) =>
+        over ? `${cardName(active.id)} dropped on ${placeName(over.id)}.` : `${cardName(active.id)} returned.`,
+      onDragCancel: ({ active }: { active: { id: string | number } }) => `Dragging ${cardName(active.id)} cancelled.`,
+    },
+  };
+
   const overlayIds = useMemo(() => {
     if (!ui.dragSource) return [];
     const moving = getMovingCards(game, ui.dragSource);
@@ -91,6 +110,7 @@ export function GameBoard({ store, dispatch, shakingIds, bursts, reducedMotion }
       <Box ref={boardRef} sx={{ width: '100%', maxWidth: BOARD_MAX_WIDTH, mx: 'auto' }}>
         <DndContext
           sensors={sensors}
+          accessibility={accessibility}
           collisionDetection={collisionDetection}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
