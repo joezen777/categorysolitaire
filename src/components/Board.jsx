@@ -19,6 +19,7 @@ const FACE_DOWN_OFFSET = 0.18;
 const FACE_UP_OFFSET = 0.3;
 const CARD_HEIGHT_RATIO = 7 / 5;
 export const GLITTER_MS = 1200;
+const DROP_MARGIN = 0.6;
 
 function SettingsIcon() {
   return (
@@ -198,10 +199,8 @@ function TableauColumn({ column, cardsById, index, selectedIndex, rejectFrom, re
       sx={{
         position: 'relative',
         width: 'var(--card-w)',
-        height: `calc(var(--card-w) * ${lastTop + CARD_HEIGHT_RATIO})`,
-        // Extra transparent drop area below the stack for easier dropping.
-        pb: `calc(var(--card-w) * 0.6)`,
-        boxSizing: 'content-box',
+        // Includes an extra transparent drop area below the stack for easier dropping.
+        height: `calc(var(--card-w) * ${lastTop + CARD_HEIGHT_RATIO + DROP_MARGIN})`,
         borderRadius: 1,
         bgcolor: isOver ? 'rgba(255,255,255,0.12)' : 'transparent',
       }}
