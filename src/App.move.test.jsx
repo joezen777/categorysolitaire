@@ -66,3 +66,46 @@ describe('click-to-move', () => {
     expect(column(0).dataset.count).toBe('0');
   });
 });
+
+describe('category completion in the UI', () => {
+  it('clears a finished category with glitter, scores 100 each, and reuses the slot', () => {
+    setup({
+      tableau: [[item('King', 'Throne')], [title('Wine', 1)], [title('King', 1)], [item('Wine', 'Rose')], []],
+      faceUpCounts: [1, 1, 1, 1, 0],
+      source: [],
+      draft: [],
+      foundations: [[], [], [], [], []],
+      score: 0,
+      cleared: [],
+    });
+    const slot0 = () => screen.getAllByTestId('foundation')[0];
+    const progress = () => screen.getAllByTestId('foundation-progress')[0].textContent;
+
+    fireEvent.click(cardIn(column(2), 'King')); // King title (1 item) to slot 0
+    fireEvent.click(slot0());
+    expect(progress()).toBe('King 0/1');
+    expect(screen.getByTestId('score').textContent).toBe('Score: 0');
+
+    // wrong-category item is rejected: no progress, no score
+    fireEvent.click(cardIn(column(3), 'Rose'));
+    fireEvent.click(slot0());
+    expect(screen.getByTestId('illegal-move')).toBeTruthy();
+    expect(progress()).toBe('King 0/1');
+    expect(screen.getByTestId('score').textContent).toBe('Score: 0');
+
+    fireEvent.click(cardIn(column(0), 'Throne'));
+    fireEvent.click(slot0());
+    expect(screen.getByTestId('score').textContent).toBe('Score: 100');
+    expect(slot0().dataset.count).toBe('0');
+    expect(screen.getByTestId('glitter')).toBeTruthy();
+
+    // reuse slot 0 for Wine
+    fireEvent.click(cardIn(column(1), 'Wine'));
+    fireEvent.click(slot0());
+    expect(progress()).toBe('Wine 0/1');
+    fireEvent.click(cardIn(column(3), 'Rose'));
+    fireEvent.click(slot0());
+    expect(screen.getByTestId('score').textContent).toBe('Score: 200');
+    expect(slot0().dataset.count).toBe('0');
+  });
+});
