@@ -37,7 +37,7 @@ export function EmptySlot({ label, ...props }) {
   );
 }
 
-export default function Card({ card }) {
+export default function Card({ card, compact = false, selected = false }) {
   const isTitle = card.type === CARD_TYPE.TITLE;
   return (
     <Box
@@ -50,7 +50,9 @@ export default function Card({ card }) {
         color: isTitle ? 'primary.contrastText' : 'text.primary',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: compact ? 'flex-start' : 'center',
+        outline: selected ? '3px solid #ff9800' : 'none',
+        outlineOffset: -2,
         textAlign: 'center',
         overflowWrap: 'anywhere',
       }}
