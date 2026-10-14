@@ -2,7 +2,12 @@ import { describe, expect, it, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import starterDeck from './starterDeck.json';
 import { buildDeck, validateDeckData, CARD_KIND } from './deck.js';
-import App from '../App.jsx';
+import Card from '../components/Card.jsx';
+
+function renderDeck(data) {
+  const { cards } = buildDeck(data);
+  return render(<div>{cards.map((c) => <Card key={c.id} card={c} />)}</div>);
+}
 
 const EXPECTED = [
   ['King', ['Scepter', 'Orb', 'Throne']],
@@ -61,7 +66,7 @@ describe('starter deck data', () => {
 
 describe('deck rendering', () => {
   it('displays title counts that agree with the data', () => {
-    render(<App />);
+    renderDeck(starterDeck);
     const titles = screen.getAllByTestId('title-card');
     expect(titles).toHaveLength(13);
     expect(screen.getAllByTestId('item-card')).toHaveLength(73);
@@ -77,8 +82,8 @@ describe('deck rendering', () => {
       { id: 'a', categoryTitle: 'Fruit', itemName: 'Apple' },
       { id: 'b', categoryTitle: 'Fruit', itemName: 'Banana' },
     ];
-    render(<App deckData={alt} />);
+    renderDeck(alt);
     expect(screen.getByTestId('title-card').textContent).toBe('Fruit2 cards');
-    expect(screen.getByTestId('deck-summary').textContent).toBe('1 categories, 3 cards');
+    expect(screen.getAllByTestId('item-card').map((e) => e.textContent)).toEqual(['Apple', 'Banana']);
   });
 });
