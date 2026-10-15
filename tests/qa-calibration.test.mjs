@@ -35,3 +35,15 @@ describe('perception and policy guardrails',()=>{
 });
 
 it('draws instead of endlessly rearranging fully exposed groups',()=>{const o=b({stock:{empty:false,point:[20,20]},columns:[{empty:false,hidden:0,cards:[c('Orb'),c('Throne')],point:[50,100]},{empty:false,hidden:0,cards:[c('Scepter')],point:[150,100]},{empty:true,hidden:0,cards:[],point:[250,100]},{empty:true,hidden:0,cards:[],point:[350,100]},{empty:true,hidden:0,cards:[],point:[450,100]}]});expect(chooseAction(o).kind).toBe('draw');});
+
+describe('recycle history uncertainty', () => {
+  it('downgrades recycle-order findings after an unconfirmed waste move', () => {
+    const l=new Ledger();
+    l.drawHistory=['Bora','Riesling'];l.historyUncertain=true;
+    const exhausted=b({stock:{empty:true,count:0},waste:{empty:false,count:1,top:c('Riesling')}});
+    const recycled=b({stock:{empty:false,count:1},waste:{empty:true,count:0}});
+    l.verify(exhausted,{kind:'recycle'},recycled);
+    const r=l.verify(recycled,{kind:'draw'},b({stock:{empty:false,count:0},waste:{empty:false,count:1,top:c('Riesling')}}));
+    expect(r.findings.filter(f=>f.ruleId==='R03').map(f=>f.status)).toEqual(['suspected']);
+  });
+});

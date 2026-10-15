@@ -64,7 +64,7 @@ export async function run(config){
         await session.page.waitForTimeout(config.settleMs??600);o=await get(row.actions);
         // Two independently read settled observations must agree before adjudication.
         await session.page.waitForTimeout(Math.min(250,config.settleMs??600));const settled=await get(`${row.actions}-settled`);
-        let verdict;if(stateKey(o)!==stateKey(settled)||o.winClaim!==settled.winClaim){ledger.gaps++;verdict={effect:'UNKNOWN',reason:'UNSETTLED'};}else verdict=ledger.verify(before,a,settled,delivery);
+        let verdict;if(stateKey(o)!==stateKey(settled)||o.winClaim!==settled.winClaim){ledger.unsettled();verdict={effect:'UNKNOWN',reason:'UNSETTLED'};}else verdict=ledger.verify(before,a,settled,delivery);
         if(verdict.effect==='UNCHANGED'&&a.status==='LEGAL'&&delivery.confirmed&&!retried.has(key+actionKey(a))){retried.add(key+actionKey(a));tried.delete(actionKey(a));}
         o=settled;await event({type:'action',action:a,delivery,verdict,before,after:o,evidence:{before:pre,during,after:row.final}});
         row.ledger=ledger.json();row.seconds=(Date.now()-begin)/1000;await atomic(join(dir,'checkpoint.json'),row);

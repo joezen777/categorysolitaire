@@ -90,6 +90,8 @@ export class Ledger{
       if(total!==86)this.finding('R22','card_conservation',`Observable live plus independently completed inventory is ${total}; expected 86`,true);else this.coverage.R22.pass++;
     }else this.coverage.R22.unknown++;
   }
+  // An unsettled transition is a gap; any draw or waste move it hid makes recycle order uncertain.
+  unsettled(){this.gaps++;this.historyUncertain=true;}
   finding(ruleId,type,message,confirmed=false){const f={ruleId,type,message,status:confirmed?'confirmed':'suspected'};this.findings.push(f);if(confirmed)this.coverage[ruleId].fail++;return f;}
   verify(before,a,after,delivery={}){
     const findingStart=this.findings.length;
@@ -101,11 +103,11 @@ export class Ledger{
         result.effect='ACCEPTED';this.coverage.R02.pass++;
         if(before.stock.count!==null&&after.stock.count!==null&&before.stock.count-after.stock.count!==1)report('R02','incorrect_draw_count',`Stock changed by ${before.stock.count-after.stock.count}, expected one`);
         if(before.waste.count!==null&&after.waste.count!==null&&after.waste.count-before.waste.count!==1)report('R02','incorrect_draw_count',`Waste changed by ${after.waste.count-before.waste.count}, expected one`);
-        if(this.recycleExpected){const expected=this.recycleExpected.shift();if(expected&&expected!==after.waste.top.label)report('R03','incorrect_transition',`Expected recycled ${expected}, observed ${after.waste.top.label}`);if(!this.recycleExpected.length)this.recycleExpected=null;}
+        if(this.recycleExpected){const expected=this.recycleExpected.shift();if(expected&&expected!==after.waste.top.label)report('R03','incorrect_transition',`Expected recycled ${expected}, observed ${after.waste.top.label}`,!this.recycleUncertain);if(!this.recycleExpected.length)this.recycleExpected=null;}
         this.drawHistory.push(after.waste.top.label);
       }
     }else if(a.kind==='recycle'){
-      if(after.waste.empty===true&&after.stock.empty===false){result.effect='ACCEPTED';this.recycleExpected=[...this.drawHistory];this.drawHistory=[];this.coverage.R03.pass++;}
+      if(after.waste.empty===true&&after.stock.empty===false){result.effect='ACCEPTED';this.recycleExpected=[...this.drawHistory];this.recycleUncertain=!!this.historyUncertain;this.historyUncertain=false;this.drawHistory=[];this.coverage.R03.pass++;}
     }else if(a.kind==='move'){
       const moved=sourceCards(before,a),first=moved[0],srcAfter=a.source.zone==='waste'?(after.waste.top?[after.waste.top]:[]):after.columns[a.source.index].cards;
       const removed=moved.length>0&&moved.every(c=>!srcAfter.some(x=>x.label===c.label));
@@ -121,7 +123,10 @@ export class Ledger{
         if(['pointer-drag','pointer-tap','touch-drag','touch-tap'].includes(delivery.method))this.coverage.R17.pass++;
         if(a.source.zone==='tableau'){const old=before.columns[a.source.index],next=after.columns[a.source.index];if(old.cards.length===moved.length&&old.hidden>0&&next.hidden!==null){if(next.hidden!==old.hidden-1||next.cards.length!==1)report('R10','missing_or_incorrect_reveal','Removing all face-up cards must reveal exactly one hidden card');else this.coverage.R10.pass++;}
         const retained=old.cards.slice(0,a.source.offset);if(retained.some((c,i)=>next.cards[i]?.label!==c.label))report('R11','face_up_card_lost','Previously face-up source cards disappeared or changed order');}
-        if(!completed&&before.score!==null&&after.score!==null&&after.score!==before.score)report('R15','incorrect_score',`Score changed by ${after.score-before.score} without category completion`);
+        // A completion still animating (last item just deposited, or a full stack not yet cleared) may score before it is observed.
+        const finishing=first?.kind==='item'&&a.dest.zone==='foundation'&&before.foundations[a.dest.index]?.category===first.category&&(before.foundations[a.dest.index].count===DECK[first.category].length-1||this.deposits[first.category]?.size===DECK[first.category].length-1);
+        const pendingCompletion=finishing||before.foundations.some(f=>f.category&&f.count!==null&&f.count===DECK[f.category].length);
+        if(!completed&&before.score!==null&&after.score!==null&&after.score!==before.score)report('R15','incorrect_score',`Score changed by ${after.score-before.score} without category completion`,!(pendingCompletion&&after.score-before.score===100));
         result.effect='ACCEPTED';
         if(v.status==='ILLEGAL')report(v.ruleId,'illegal_action_accepted',`${first.label} accepted at ${a.dest.zone} ${a.dest.index+1}`);
         else if(v.status==='LEGAL'){
@@ -156,6 +161,8 @@ export class Ledger{
     const empty=after.stock.empty===true&&after.waste.empty===true&&after.columns.every(c=>c.empty===true)&&after.foundations.every(f=>f.empty===true);
     if(this.completed.size===13&&empty&&!after.winClaim)report('R16','missing_win_display','Complete independent ledger and empty board without a visible victory claim');
 
+    // An unconfirmed move out of the waste leaves the draw history uncertain.
+    if(a.kind==='move'&&a.source.zone==='waste'&&result.effect!=='ACCEPTED'&&after.waste.top?.label!==before.waste.top?.label)this.historyUncertain=true;
     result.findings=this.findings.slice(findingStart);return result;
   }
   outcome(o){

@@ -1,0 +1,12 @@
+{
+  "claude-vibe": {
+    "rejected": {
+      "R02:incorrect_draw_count": "Observer misread: on the 390px phone layout the waste count was taken from the adjacent foundation counter label (e.g. 'Wine 0/6'), not from the waste pile; see claude-vibe/game-06/2-settled.png."
+    }
+  },
+  "claude-cli-sonnet-5-5-steering": {
+    "rejected": {
+      "R22:card_conservation": "Observer miscounting: occurs 105× exclusively during recycle operations across 9 games; card totals decrease by 1 during the recycle animation. First case: game-02, recycle shows 27→26 cards. This is an observation artifact, not a conservation violation in the implementation."
+    }
+  }
+}

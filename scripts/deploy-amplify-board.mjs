@@ -7,6 +7,9 @@ import { collectMetrics, createNullMetrics } from './collect-metrics.mjs';
 // Frozen experiment evidence is collected outside implementation checkouts.
 const experimentPath = new URL('../experiments/claude-cli-20261014/results.json', import.meta.url);
 const experimentResults = existsSync(experimentPath) ? JSON.parse(readFileSync(experimentPath, 'utf8')) : [];
+// Independent ten-game QA scorecard, keyed by deploy branch.
+const qaScorecardPath = new URL('../qa/results/scorecard.json', import.meta.url);
+const qaScorecard = existsSync(qaScorecardPath) ? JSON.parse(readFileSync(qaScorecardPath, 'utf8')).implementations || {} : {};
 
 const config = {
   appName: process.env.AMPLIFY_APP_NAME || 'categorysolitaire-vibe-board',
@@ -504,6 +507,15 @@ function renderExperimentEvidence(result) {
   </section>`;
 }
 
+// Three gold stars only when fully operational; there are no one- or two-star ratings.
+function renderQaBadge(qa) {
+  if (!qa) return '';
+  const stars = qa.threeStars
+    ? `<div class="qa-stars" role="img" aria-label="Fully operational: three stars"><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span></div>`
+    : '';
+  return `${stars}<div class="qa-bugs" title="${htmlEscape(`${qa.wins}/${qa.games} games won; see QA evidence`)}"><b>${qa.bugs}</b> ${qa.bugs === 1 ? 'bug' : 'bugs'}</div>`;
+}
+
 function renderTraitFooter(traits) {
   return Object.entries(traits).map(([key, value]) => `<span><b>${htmlEscape(key)}:</b> ${htmlEscape(value)}</span>`).join('');
 }
@@ -548,6 +560,7 @@ function renderDashboard(app, deployedBranches) {
             </div>
           </div>
           </div>
+          ${renderQaBadge(qaScorecard[branch.deployBranch])}
           <div class="micro-meta" aria-label="Branch metadata">
             <span>ide: ${htmlEscape(branchConfig.ide)}</span>
             <span>url: ${htmlEscape(branch.experiment && !branch.experiment.deployable ? 'not deployed' : displayUrl.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</span>
@@ -585,6 +598,7 @@ function renderDashboard(app, deployedBranches) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Category Solitaire - Branch Variants</title>
 <style>
+.qa-bugs{position:absolute;top:-12px;left:-10px;z-index:3;background:var(--rust);color:#fff;border:2px solid var(--navy);padding:3px 8px;font:bold 11px var(--pixel);text-transform:uppercase;box-shadow:2px 2px 0 var(--shadow)}.qa-bugs b{font-size:14px}.qa-stars{position:absolute;top:-26px;right:-6px;z-index:3;width:96px;height:48px;transform:rotate(-30deg);pointer-events:none}.qa-stars span{position:absolute;font-size:28px;line-height:1;color:var(--gold2);-webkit-text-stroke:1.5px var(--shadow);text-shadow:0 2px 0 var(--shadow)}.qa-stars span:nth-child(1){left:0;top:20px;transform:rotate(-20deg)}.qa-stars span:nth-child(2){left:34px;top:4px}.qa-stars span:nth-child(3){left:68px;top:20px;transform:rotate(20deg)}
 .experiment-evidence{font-size:10px;line-height:1.5;padding:8px 0;overflow-wrap:anywhere}.experiment-evidence img{display:block;max-width:100%;height:auto;margin:8px auto;max-height:300px;object-fit:contain}.micro-meta span{overflow-wrap:anywhere}*{box-sizing:border-box;margin:0;padding:0}
 :root{--paper:#efe7cf;--navy:#092b47;--navy2:#061d31;--gold:#d6ad38;--gold2:#e7c85d;--ink:#120f0a;--cream:#f7e8b8;--rust:#b9482c;--shadow:#453014;--pixel-font:"Courier New",Courier,monospace;--pixel:var(--pixel-font);--header-text:#fff;--card-bg-claude:#f3df9e;--card-bg-codex:#d8c46b;--card-bg-cerebras:#dfbf6d;--card-bg-kiro:#e2b852;--condensed:Impact,"Arial Narrow",var(--pixel)}
 body{font-family:var(--pixel);background:radial-gradient(circle at 25% 8%,#fff8dc,transparent 28%),linear-gradient(180deg,#f4efd9,#e7dcc0);min-height:100vh;padding:20px 12px;color:var(--ink)}

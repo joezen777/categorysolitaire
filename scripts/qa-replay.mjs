@@ -24,7 +24,7 @@ export async function replay(tracePath,reviewPath,output){
    for(const evidence of correction.evidence){const file=resolve(dirname(tracePath),evidence.file);if(!file.startsWith(dirname(resolve(tracePath))+'/'))throw new Error('Evidence must be within the game directory');if(hash(await readFile(file))!==evidence.sha256)throw new Error(`Evidence hash mismatch: ${evidence.file}`);}
    after.foundations[Number(correction.field.split('.')[1])].empty=correction.value;applied.push(correction);
   }
-  if(event.verdict?.reason==='UNSETTLED'){ledger.gaps++;}else ledger.verify(event.before,event.action,after,event.delivery);
+  if(event.verdict?.reason==='UNSETTLED'){ledger.unsettled();}else ledger.verify(event.before,event.action,after,event.delivery);
   last=after;
  }
  if(review&&applied.length!==review.corrections.length)throw new Error('Some corrections did not match trace actions');

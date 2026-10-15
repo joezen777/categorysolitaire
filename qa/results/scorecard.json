@@ -1,0 +1,375 @@
+{
+  "generatedAt": "2026-10-15T12:51:19.209Z",
+  "criteria": "Three stars: zero confirmed bugs, all targeted rule probes passed, and at least one of ten games won completely (13 categories, score 1300, victory shown, no confirmed violation).",
+  "bugDefinition": "Distinct confirmed evaluator findings (rule + type), distinct uncaught page errors, and failed Claude CLI rule probes, minus findings rejected on screenshot review.",
+  "implementations": {
+    "cerebras-vibe": {
+      "branch": "cerebras-vibe",
+      "games": 10,
+      "started": 5,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 3,
+      "bugList": [
+        {
+          "key": "runtime:Card is not defined",
+          "description": "Uncaught error: Card is not defined",
+          "occurrences": 5,
+          "games": [
+            "game-01",
+            "game-02",
+            "game-03",
+            "game-04",
+            "game-05"
+          ]
+        },
+        {
+          "key": "R15:incorrect_score",
+          "description": "Score changed by N without category completion",
+          "occurrences": 3,
+          "games": [
+            "game-03",
+            "game-05"
+          ]
+        },
+        {
+          "key": "R22:duplicate_visible_card",
+          "description": "Unique card visible twice: Vase",
+          "occurrences": 72,
+          "games": [
+            "game-04"
+          ]
+        }
+      ],
+      "ruleProbes": null,
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 5,
+        "NOT_STARTED": 5
+      }
+    },
+    "claude-cli-opus-5-5-spec": {
+      "branch": "claude-cli-opus-5-5-spec",
+      "games": 10,
+      "started": 10,
+      "wins": 5,
+      "winningGames": [
+        "game-03",
+        "game-04",
+        "game-05",
+        "game-06",
+        "game-08"
+      ],
+      "terminalReview": [
+        "game-03",
+        "game-04",
+        "game-05",
+        "game-06",
+        "game-08"
+      ],
+      "bugs": 0,
+      "bugList": [],
+      "ruleProbes": {
+        "passed": 4,
+        "total": 4
+      },
+      "threeStars": true,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 5,
+        "INCOMPLETE": 5,
+        "NOT_STARTED": 0
+      }
+    },
+    "claude-cli-opus-5-5-steering": {
+      "branch": "claude-cli-opus-5-5-steering",
+      "games": 10,
+      "started": 10,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 1,
+      "bugList": [
+        {
+          "key": "probe:R01",
+          "description": "Rule probe failed: item group to foundation must be rejected",
+          "occurrences": 1,
+          "games": []
+        }
+      ],
+      "ruleProbes": {
+        "passed": 3,
+        "total": 4
+      },
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 10,
+        "NOT_STARTED": 0
+      }
+    },
+    "claude-cli-opus-5-5-vibe": {
+      "branch": "claude-cli-opus-5-5-vibe",
+      "games": 10,
+      "started": 10,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 2,
+      "bugList": [
+        {
+          "key": "probe:R01",
+          "description": "Rule probe failed: item group to foundation must be rejected",
+          "occurrences": 1,
+          "games": []
+        },
+        {
+          "key": "probe:R02",
+          "description": "Rule probe failed: group containing a title must be rejected",
+          "occurrences": 1,
+          "games": []
+        }
+      ],
+      "ruleProbes": {
+        "passed": 2,
+        "total": 4
+      },
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 10,
+        "NOT_STARTED": 0
+      }
+    },
+    "claude-cli-sonnet-5-5-spec": {
+      "branch": "claude-cli-sonnet-5-5-spec",
+      "games": 10,
+      "started": 10,
+      "wins": 1,
+      "winningGames": [
+        "game-06"
+      ],
+      "terminalReview": [
+        "game-06"
+      ],
+      "bugs": 1,
+      "bugList": [
+        {
+          "key": "R10:missing_or_incorrect_reveal",
+          "description": "Removing all face-up cards must reveal exactly one hidden card",
+          "occurrences": 1,
+          "games": [
+            "game-02"
+          ]
+        }
+      ],
+      "ruleProbes": {
+        "passed": 4,
+        "total": 4
+      },
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 1,
+        "INCOMPLETE": 9,
+        "NOT_STARTED": 0
+      }
+    },
+    "claude-cli-sonnet-5-5-steering": {
+      "branch": "claude-cli-sonnet-5-5-steering",
+      "games": 10,
+      "started": 10,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 2,
+      "bugList": [
+        {
+          "key": "probe:R01",
+          "description": "Rule probe failed: item group to foundation must be rejected",
+          "occurrences": 1,
+          "games": []
+        },
+        {
+          "key": "probe:R02",
+          "description": "Rule probe failed: group containing a title must be rejected",
+          "occurrences": 1,
+          "games": []
+        }
+      ],
+      "ruleProbes": {
+        "passed": 2,
+        "total": 4
+      },
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 10,
+        "NOT_STARTED": 0
+      }
+    },
+    "claude-cli-sonnet-5-5-vibe": {
+      "branch": "claude-cli-sonnet-5-5-vibe",
+      "games": 10,
+      "started": 10,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 2,
+      "bugList": [
+        {
+          "key": "R15:incorrect_score",
+          "description": "Score changed by N without category completion",
+          "occurrences": 8,
+          "games": [
+            "game-04",
+            "game-06",
+            "game-07"
+          ]
+        },
+        {
+          "key": "probe:R02",
+          "description": "Rule probe failed: group containing a title must be rejected",
+          "occurrences": 1,
+          "games": []
+        }
+      ],
+      "ruleProbes": {
+        "passed": 3,
+        "total": 4
+      },
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 10,
+        "NOT_STARTED": 0
+      }
+    },
+    "claude-vibe": {
+      "branch": "claude-vibe",
+      "games": 10,
+      "started": 10,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 2,
+      "bugList": [
+        {
+          "key": "R15:incorrect_score",
+          "description": "Score changed by N without category completion",
+          "occurrences": 283,
+          "games": [
+            "game-01",
+            "game-02",
+            "game-03",
+            "game-04",
+            "game-05",
+            "game-06",
+            "game-07",
+            "game-08",
+            "game-09",
+            "game-10"
+          ]
+        },
+        {
+          "key": "runtime:Cannot read properties of undefined (reading 'length')",
+          "description": "Uncaught error: Cannot read properties of undefined (reading 'length')",
+          "occurrences": 5,
+          "games": [
+            "game-04",
+            "game-05",
+            "game-06",
+            "game-07",
+            "game-08"
+          ]
+        }
+      ],
+      "ruleProbes": null,
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 10,
+        "NOT_STARTED": 0
+      }
+    },
+    "codex-vibe": {
+      "branch": "codex-vibe",
+      "games": 10,
+      "started": 10,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 0,
+      "bugList": [],
+      "ruleProbes": null,
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 10,
+        "NOT_STARTED": 0
+      }
+    },
+    "develop-kiro-vibe": {
+      "branch": "develop-kiro-vibe",
+      "games": 10,
+      "started": 10,
+      "wins": 2,
+      "winningGames": [
+        "game-01",
+        "game-03"
+      ],
+      "terminalReview": [
+        "game-01",
+        "game-03"
+      ],
+      "bugs": 0,
+      "bugList": [],
+      "ruleProbes": null,
+      "threeStars": true,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 2,
+        "INCOMPLETE": 8,
+        "NOT_STARTED": 0
+      }
+    },
+    "gemini-vibe": {
+      "branch": "gemini-vibe",
+      "games": 10,
+      "started": 10,
+      "wins": 0,
+      "winningGames": [],
+      "terminalReview": [],
+      "bugs": 0,
+      "bugList": [],
+      "ruleProbes": null,
+      "threeStars": false,
+      "outcomes": {
+        "VALID_OBSERVED_WIN": 0,
+        "WIN_CLAIM_WITH_VIOLATIONS": 0,
+        "WIN_CLAIM_UNVERIFIED": 0,
+        "INCOMPLETE": 10,
+        "NOT_STARTED": 0
+      }
+    }
+  }
+}
